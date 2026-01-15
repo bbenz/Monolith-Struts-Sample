@@ -4,7 +4,7 @@ import com.skishop.domain.address.Address;
 import java.util.List;
 
 public interface UserAddressDao {
-  List listByUserId(String userId);
+  List<Address> listByUserId(String userId);
 
   void save(Address address);
 }

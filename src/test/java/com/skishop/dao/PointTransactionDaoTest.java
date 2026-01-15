@@ -20,7 +20,7 @@ public class PointTransactionDaoTest extends DaoTestBase {
 
   @Test
   public void testInsertAndList() {
-    List initial = pointTransactionDao.listByUserId("u-1");
+    List<PointTransaction> initial = pointTransactionDao.listByUserId("u-1");
     Assert.assertFalse(initial.isEmpty());
 
     PointTransaction transaction = new PointTransaction();
@@ -35,7 +35,7 @@ public class PointTransactionDaoTest extends DaoTestBase {
     transaction.setCreatedAt(new Date());
     pointTransactionDao.insert(transaction);
 
-    List transactions = pointTransactionDao.listByUserId("u-1");
+    List<PointTransaction> transactions = pointTransactionDao.listByUserId("u-1");
     Assert.assertTrue(transactions.size() >= 2);
   }
 }

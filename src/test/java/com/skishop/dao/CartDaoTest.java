@@ -24,7 +24,7 @@ public class CartDaoTest extends DaoTestBase {
   public void testFindCartAndItems() {
     Cart cart = cartDao.findById("cart-1");
     Assert.assertNotNull(cart);
-    List items = cartDao.findItemsByCartId("cart-1");
+    List<CartItem> items = cartDao.findItemsByCartId("cart-1");
     Assert.assertEquals(1, items.size());
   }
 
@@ -47,8 +47,8 @@ public class CartDaoTest extends DaoTestBase {
     cartDao.addItem(item);
 
     cartDao.updateItemQuantity("cart-item-2", 3);
-    List items = cartDao.findItemsByCartId("cart-2");
-    CartItem updated = (CartItem) items.get(0);
+    List<CartItem> items = cartDao.findItemsByCartId("cart-2");
+    CartItem updated = items.get(0);
     Assert.assertEquals(3, updated.getQuantity());
   }
 }

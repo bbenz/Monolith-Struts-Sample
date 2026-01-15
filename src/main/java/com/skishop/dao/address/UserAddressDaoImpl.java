@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserAddressDaoImpl extends AbstractDao implements UserAddressDao {
-  public List listByUserId(String userId) {
+  public List<Address> listByUserId(String userId) {
     Connection con = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
-    List addresses = new ArrayList();
+    List<Address> addresses = new ArrayList<Address>();
     try {
       con = getConnection();
       ps = con.prepareStatement("SELECT id, user_id, label, recipient_name, postal_code, prefecture, address1, address2, phone, is_default, created_at, updated_at FROM user_addresses WHERE user_id = ? ORDER BY is_default DESC, created_at");

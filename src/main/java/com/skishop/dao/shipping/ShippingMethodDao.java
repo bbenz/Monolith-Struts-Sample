@@ -4,7 +4,7 @@ import com.skishop.domain.shipping.ShippingMethod;
 import java.util.List;
 
 public interface ShippingMethodDao {
-  List listActive();
+  List<ShippingMethod> listActive();
 
   ShippingMethod findByCode(String code);
 

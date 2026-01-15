@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShippingMethodDaoImpl extends AbstractDao implements ShippingMethodDao {
-  public List listActive() {
+  public List<ShippingMethod> listActive() {
     Connection con = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
-    List methods = new ArrayList();
+    List<ShippingMethod> methods = new ArrayList<ShippingMethod>();
     try {
       con = getConnection();
       ps = con.prepareStatement("SELECT id, code, name, fee, is_active, sort_order FROM shipping_methods WHERE is_active = TRUE ORDER BY sort_order");

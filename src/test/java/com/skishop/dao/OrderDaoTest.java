@@ -24,7 +24,7 @@ public class OrderDaoTest extends DaoTestBase {
   public void testFindByIdAndList() {
     Order order = orderDao.findById("order-1");
     Assert.assertNotNull(order);
-    List orders = orderDao.listByUserId("u-1");
+    List<Order> orders = orderDao.listByUserId("u-1");
     Assert.assertFalse(orders.isEmpty());
   }
 

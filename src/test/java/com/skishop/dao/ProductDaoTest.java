@@ -26,7 +26,7 @@ public class ProductDaoTest extends DaoTestBase {
 
   @Test
   public void testFindPaged() {
-    List products = productDao.findPaged("Ski", "c-1", 0, 10);
+    List<Product> products = productDao.findPaged("Ski", "c-1", 0, 10);
     Assert.assertFalse(products.isEmpty());
   }
 }

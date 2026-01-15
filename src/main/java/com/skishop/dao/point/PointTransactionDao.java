@@ -6,5 +6,5 @@ import java.util.List;
 public interface PointTransactionDao {
   void insert(PointTransaction transaction);
 
-  List listByUserId(String userId);
+  List<PointTransaction> listByUserId(String userId);
 }

@@ -53,11 +53,11 @@ public class EmailQueueDaoImpl extends AbstractDao implements EmailQueueDao {
     }
   }
 
-  public List findByStatus(String status) {
+  public List<EmailQueue> findByStatus(String status) {
     Connection con = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
-    List mails = new ArrayList();
+    List<EmailQueue> mails = new ArrayList<EmailQueue>();
     try {
       con = getConnection();
       ps = con.prepareStatement("SELECT id, to_addr, subject, body, status, retry_count, last_error, scheduled_at, sent_at FROM email_queue WHERE status = ? ORDER BY scheduled_at");

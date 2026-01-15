@@ -8,5 +8,5 @@ public interface EmailQueueDao {
 
   void updateStatus(String id, String status, int retryCount, String lastError);
 
-  List findByStatus(String status);
+  List<EmailQueue> findByStatus(String status);
 }

@@ -77,11 +77,11 @@ public class CartDaoImpl extends AbstractDao implements CartDao {
     }
   }
 
-  public List findItemsByCartId(String cartId) {
+  public List<CartItem> findItemsByCartId(String cartId) {
     Connection con = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
-    List items = new ArrayList();
+    List<CartItem> items = new ArrayList<CartItem>();
     try {
       con = getConnection();
       ps = con.prepareStatement("SELECT id, cart_id, product_id, quantity, unit_price FROM cart_items WHERE cart_id = ? ORDER BY id");

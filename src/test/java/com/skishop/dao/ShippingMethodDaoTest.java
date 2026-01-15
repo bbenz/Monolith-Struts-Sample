@@ -20,7 +20,7 @@ public class ShippingMethodDaoTest extends DaoTestBase {
 
   @Test
   public void testListActiveAndFind() {
-    List methods = shippingMethodDao.listActive();
+    List<ShippingMethod> methods = shippingMethodDao.listActive();
     Assert.assertFalse(methods.isEmpty());
 
     ShippingMethod method = shippingMethodDao.findByCode("STANDARD");

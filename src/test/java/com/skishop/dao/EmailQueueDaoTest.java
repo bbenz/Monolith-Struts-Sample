@@ -20,11 +20,11 @@ public class EmailQueueDaoTest extends DaoTestBase {
 
   @Test
   public void testFindByStatusAndUpdate() {
-    List pending = emailQueueDao.findByStatus("PENDING");
+    List<EmailQueue> pending = emailQueueDao.findByStatus("PENDING");
     Assert.assertEquals(1, pending.size());
 
     emailQueueDao.updateStatus("mail-1", "SENT", 1, null);
-    List updated = emailQueueDao.findByStatus("SENT");
+    List<EmailQueue> updated = emailQueueDao.findByStatus("SENT");
     Assert.assertEquals(1, updated.size());
   }
 
@@ -42,7 +42,7 @@ public class EmailQueueDaoTest extends DaoTestBase {
     mail.setSentAt(null);
     emailQueueDao.enqueue(mail);
 
-    List pending = emailQueueDao.findByStatus("PENDING");
+    List<EmailQueue> pending = emailQueueDao.findByStatus("PENDING");
     Assert.assertTrue(pending.size() >= 2);
   }
 }

@@ -20,7 +20,7 @@ public class UserAddressDaoTest extends DaoTestBase {
 
   @Test
   public void testListAndSave() {
-    List addresses = userAddressDao.listByUserId("u-1");
+    List<Address> addresses = userAddressDao.listByUserId("u-1");
     Assert.assertEquals(1, addresses.size());
 
     Address address = new Address();
@@ -38,7 +38,7 @@ public class UserAddressDaoTest extends DaoTestBase {
     address.setUpdatedAt(new Date());
     userAddressDao.save(address);
 
-    List updated = userAddressDao.listByUserId("u-1");
+    List<Address> updated = userAddressDao.listByUserId("u-1");
     Assert.assertEquals(2, updated.size());
   }
 }

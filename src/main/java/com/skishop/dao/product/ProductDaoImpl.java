@@ -31,11 +31,11 @@ public class ProductDaoImpl extends AbstractDao implements ProductDao {
     }
   }
 
-  public List findPaged(String keyword, String categoryId, int offset, int limit) {
+  public List<Product> findPaged(String keyword, String categoryId, int offset, int limit) {
     Connection con = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
-    List products = new ArrayList();
+    List<Product> products = new ArrayList<Product>();
     try {
       StringBuffer sql = new StringBuffer();
       sql.append("SELECT id, name, brand, description, category_id, sku, status, created_at, updated_at FROM products WHERE 1=1");

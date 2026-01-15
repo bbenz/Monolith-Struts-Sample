@@ -35,11 +35,11 @@ public class PointTransactionDaoImpl extends AbstractDao implements PointTransac
     }
   }
 
-  public List listByUserId(String userId) {
+  public List<PointTransaction> listByUserId(String userId) {
     Connection con = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
-    List transactions = new ArrayList();
+    List<PointTransaction> transactions = new ArrayList<PointTransaction>();
     try {
       con = getConnection();
       ps = con.prepareStatement("SELECT id, user_id, type, amount, reference_id, description, expires_at, is_expired, created_at FROM point_transactions WHERE user_id = ? ORDER BY created_at DESC");

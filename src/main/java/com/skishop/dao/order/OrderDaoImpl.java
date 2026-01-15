@@ -33,11 +33,11 @@ public class OrderDaoImpl extends AbstractDao implements OrderDao {
     }
   }
 
-  public List listByUserId(String userId) {
+  public List<Order> listByUserId(String userId) {
     Connection con = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
-    List orders = new ArrayList();
+    List<Order> orders = new ArrayList<Order>();
     try {
       con = getConnection();
       ps = con.prepareStatement("SELECT id, order_number, user_id, status, payment_status, subtotal, tax, shipping_fee, discount_amount, total_amount, coupon_code, used_points, created_at, updated_at FROM orders WHERE user_id = ? ORDER BY created_at DESC");
