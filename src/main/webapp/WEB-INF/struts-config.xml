@@ -18,6 +18,7 @@
   <controller
       multipartClass="org.apache.struts.upload.CommonsMultipartRequestHandler"
       maxFileSize="2M"
+      memFileSize="64K"
       bufferSize="4096"/>
 
   <message-resources parameter="messages"/>
