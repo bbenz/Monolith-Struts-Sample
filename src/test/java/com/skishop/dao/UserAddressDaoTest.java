@@ -6,19 +6,16 @@ import com.skishop.domain.address.Address;
 import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class UserAddressDaoTest extends DaoTestBase {
   private UserAddressDao userAddressDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     userAddressDao = new UserAddressDaoImpl();
   }
 
-  @Test
   public void testListAndSave() {
     List<Address> addresses = userAddressDao.listByUserId("u-1");
     Assert.assertEquals(1, addresses.size());

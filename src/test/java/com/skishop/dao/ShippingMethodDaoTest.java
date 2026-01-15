@@ -6,19 +6,16 @@ import com.skishop.domain.shipping.ShippingMethod;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class ShippingMethodDaoTest extends DaoTestBase {
   private ShippingMethodDao shippingMethodDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     shippingMethodDao = new ShippingMethodDaoImpl();
   }
 
-  @Test
   public void testListActiveAndFind() {
     List<ShippingMethod> methods = shippingMethodDao.listActive();
     Assert.assertFalse(methods.isEmpty());
@@ -27,7 +24,6 @@ public class ShippingMethodDaoTest extends DaoTestBase {
     Assert.assertNotNull(method);
   }
 
-  @Test
   public void testInsert() {
     ShippingMethod method = new ShippingMethod();
     method.setId("ship-exp");

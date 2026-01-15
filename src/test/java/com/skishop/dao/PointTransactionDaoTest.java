@@ -6,19 +6,16 @@ import com.skishop.domain.point.PointTransaction;
 import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class PointTransactionDaoTest extends DaoTestBase {
   private PointTransactionDao pointTransactionDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     pointTransactionDao = new PointTransactionDaoImpl();
   }
 
-  @Test
   public void testInsertAndList() {
     List<PointTransaction> initial = pointTransactionDao.listByUserId("u-1");
     Assert.assertFalse(initial.isEmpty());

@@ -5,26 +5,22 @@ import com.skishop.dao.user.UserDaoImpl;
 import com.skishop.domain.user.User;
 import java.util.Date;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class UserDaoTest extends DaoTestBase {
   private UserDao userDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     userDao = new UserDaoImpl();
   }
 
-  @Test
   public void testFindByEmail() {
     User user = userDao.findByEmail("user@example.com");
     Assert.assertNotNull(user);
     Assert.assertEquals("u-1", user.getId());
   }
 
-  @Test
   public void testInsertAndUpdateStatus() {
     User user = new User();
     user.setId("u-2");

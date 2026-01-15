@@ -8,19 +8,16 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class OrderDaoTest extends DaoTestBase {
   private OrderDao orderDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     orderDao = new OrderDaoImpl();
   }
 
-  @Test
   public void testFindByIdAndList() {
     Order order = orderDao.findById("order-1");
     Assert.assertNotNull(order);
@@ -28,7 +25,6 @@ public class OrderDaoTest extends DaoTestBase {
     Assert.assertFalse(orders.isEmpty());
   }
 
-  @Test
   public void testInsertOrderAndItem() {
     Order order = new Order();
     order.setId("order-2");

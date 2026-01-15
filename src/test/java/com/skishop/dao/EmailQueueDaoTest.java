@@ -6,19 +6,16 @@ import com.skishop.domain.mail.EmailQueue;
 import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class EmailQueueDaoTest extends DaoTestBase {
   private EmailQueueDao emailQueueDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     emailQueueDao = new EmailQueueDaoImpl();
   }
 
-  @Test
   public void testFindByStatusAndUpdate() {
     List<EmailQueue> pending = emailQueueDao.findByStatus("PENDING");
     Assert.assertEquals(1, pending.size());
@@ -28,7 +25,6 @@ public class EmailQueueDaoTest extends DaoTestBase {
     Assert.assertEquals(1, updated.size());
   }
 
-  @Test
   public void testEnqueue() {
     EmailQueue mail = new EmailQueue();
     mail.setId("mail-2");

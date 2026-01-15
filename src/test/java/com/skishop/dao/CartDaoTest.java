@@ -8,19 +8,16 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class CartDaoTest extends DaoTestBase {
   private CartDao cartDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     cartDao = new CartDaoImpl();
   }
 
-  @Test
   public void testFindCartAndItems() {
     Cart cart = cartDao.findById("cart-1");
     Assert.assertNotNull(cart);
@@ -28,7 +25,6 @@ public class CartDaoTest extends DaoTestBase {
     Assert.assertEquals(1, items.size());
   }
 
-  @Test
   public void testInsertAndUpdateItem() {
     Cart cart = new Cart();
     cart.setId("cart-2");

@@ -5,19 +5,16 @@ import com.skishop.dao.user.PasswordResetTokenDaoImpl;
 import com.skishop.domain.user.PasswordResetToken;
 import java.util.Date;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class PasswordResetTokenDaoTest extends DaoTestBase {
   private PasswordResetTokenDao tokenDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     tokenDao = new PasswordResetTokenDaoImpl();
   }
 
-  @Test
   public void testFindAndMarkUsed() {
     PasswordResetToken token = tokenDao.findByToken("token-1");
     Assert.assertNotNull(token);
@@ -27,7 +24,6 @@ public class PasswordResetTokenDaoTest extends DaoTestBase {
     Assert.assertNotNull(updated.getUsedAt());
   }
 
-  @Test
   public void testInsert() {
     PasswordResetToken token = new PasswordResetToken();
     token.setId("prt-2");

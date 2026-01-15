@@ -4,19 +4,16 @@ import com.skishop.dao.inventory.InventoryDao;
 import com.skishop.dao.inventory.InventoryDaoImpl;
 import com.skishop.domain.inventory.Inventory;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class InventoryDaoTest extends DaoTestBase {
   private InventoryDao inventoryDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     inventoryDao = new InventoryDaoImpl();
   }
 
-  @Test
   public void testReserve() {
     boolean reserved = inventoryDao.reserve("P001", 2);
     Assert.assertTrue(reserved);

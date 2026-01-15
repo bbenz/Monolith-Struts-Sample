@@ -30,8 +30,6 @@ import java.sql.PreparedStatement;
 import java.util.Calendar;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class OrderFacadeTest extends DaoTestBase {
   private OrderFacade orderFacade;
@@ -42,8 +40,8 @@ public class OrderFacadeTest extends DaoTestBase {
   private OrderDao orderDao;
   private ReturnDao returnDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     orderFacade = new OrderFacadeImpl();
     couponDao = new CouponDaoImpl();
@@ -56,7 +54,6 @@ public class OrderFacadeTest extends DaoTestBase {
     updatePointExpiry();
   }
 
-  @Test
   public void testCheckoutWithCouponAndPoints() {
     PaymentInfo paymentInfo = createPaymentInfo();
     Order order = orderFacade.placeOrder("cart-1", "SAVE10", 100, paymentInfo, "u-1");
@@ -67,6 +64,10 @@ public class OrderFacadeTest extends DaoTestBase {
     BigDecimal tax = taxable.multiply(new BigDecimal("0.10")).setScale(2, RoundingMode.HALF_UP);
     BigDecimal expectedTotal = taxable.add(tax);
     Assert.assertEquals(0, order.getTotalAmount().compareTo(expectedTotal));
+    Assert.assertEquals(0, order.getTax().compareTo(tax));
+    Assert.assertEquals(0, order.getShippingFee().compareTo(BigDecimal.ZERO));
+    Assert.assertEquals(0, order.getDiscountAmount().compareTo(discount));
+    Assert.assertEquals(100, order.getUsedPoints());
 
     Coupon coupon = couponDao.findByCode("SAVE10");
     Assert.assertEquals(1, coupon.getUsedCount());
@@ -80,7 +81,6 @@ public class OrderFacadeTest extends DaoTestBase {
     Assert.assertEquals(1, inventory.getReservedQuantity());
   }
 
-  @Test
   public void testCancelOrder() {
     PaymentInfo paymentInfo = createPaymentInfo();
     Order order = orderFacade.placeOrder("cart-1", "SAVE10", 100, paymentInfo, "u-1");
@@ -100,7 +100,6 @@ public class OrderFacadeTest extends DaoTestBase {
     Assert.assertEquals(0, inventory.getReservedQuantity());
   }
 
-  @Test
   public void testReturnOrder() {
     PaymentInfo paymentInfo = createPaymentInfo();
     Order order = orderFacade.placeOrder("cart-1", "SAVE10", 100, paymentInfo, "u-1");

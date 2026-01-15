@@ -6,14 +6,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.Statement;
+import junit.framework.TestCase;
 import org.h2.jdbcx.JdbcDataSource;
-import org.junit.BeforeClass;
 
-public abstract class DaoTestBase {
+public abstract class DaoTestBase extends TestCase {
   private static JdbcDataSource dataSource;
 
-  @BeforeClass
-  public static void initDataSource() {
+  protected void setUp() throws Exception {
+    super.setUp();
+    initDataSource();
+  }
+
+  private static synchronized void initDataSource() {
     if (dataSource == null) {
       dataSource = new JdbcDataSource();
       dataSource.setURL("jdbc:h2:mem:skishop;DB_CLOSE_DELAY=-1");

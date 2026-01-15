@@ -4,19 +4,16 @@ import com.skishop.dao.point.PointAccountDao;
 import com.skishop.dao.point.PointAccountDaoImpl;
 import com.skishop.domain.point.PointAccount;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class PointAccountDaoTest extends DaoTestBase {
   private PointAccountDao pointAccountDao;
 
-  @Before
-  public void setUp() throws Exception {
+  protected void setUp() throws Exception {
+    super.setUp();
     resetDatabase();
     pointAccountDao = new PointAccountDaoImpl();
   }
 
-  @Test
   public void testFindAndIncrement() {
     PointAccount account = pointAccountDao.findByUserId("u-1");
     Assert.assertNotNull(account);
