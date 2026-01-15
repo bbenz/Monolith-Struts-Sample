@@ -7,4 +7,6 @@ public interface ProductDao {
   Product findById(String id);
 
   List<Product> findPaged(String keyword, String categoryId, int offset, int limit);
+
+  void update(Product product);
 }

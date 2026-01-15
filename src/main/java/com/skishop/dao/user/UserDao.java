@@ -9,5 +9,7 @@ public interface UserDao {
 
   void insert(User user);
 
+  void updatePassword(String userId, String passwordHash, String salt);
+
   void updateStatus(String userId, String status);
 }

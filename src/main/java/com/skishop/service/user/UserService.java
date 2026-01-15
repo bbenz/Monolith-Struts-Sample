@@ -33,4 +33,8 @@ public class UserService {
     userDao.insert(user);
     return user;
   }
+
+  public void updatePassword(String userId, String passwordHash, String salt) {
+    userDao.updatePassword(userId, passwordHash, salt);
+  }
 }

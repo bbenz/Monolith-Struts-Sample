@@ -73,6 +73,24 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
     }
   }
 
+  public void updatePassword(String userId, String passwordHash, String salt) {
+    Connection con = null;
+    PreparedStatement ps = null;
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("UPDATE users SET password_hash = ?, salt = ?, updated_at = ? WHERE id = ?");
+      ps.setString(1, passwordHash);
+      ps.setString(2, salt);
+      ps.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+      ps.setString(4, userId);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(null, ps, con);
+    }
+  }
+
   public void updateStatus(String userId, String status) {
     Connection con = null;
     PreparedStatement ps = null;

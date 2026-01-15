@@ -54,6 +54,27 @@ public class OrderDaoImpl extends AbstractDao implements OrderDao {
     }
   }
 
+  public List<Order> listAll(int limit) {
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    List<Order> orders = new ArrayList<Order>();
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("SELECT id, order_number, user_id, status, payment_status, subtotal, tax, shipping_fee, discount_amount, total_amount, coupon_code, used_points, created_at, updated_at FROM orders ORDER BY created_at DESC LIMIT ?");
+      ps.setInt(1, limit);
+      rs = ps.executeQuery();
+      while (rs.next()) {
+        orders.add(mapOrder(rs));
+      }
+      return orders;
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(rs, ps, con);
+    }
+  }
+
   public void insertOrder(Order order) {
     Connection con = null;
     PreparedStatement ps = null;

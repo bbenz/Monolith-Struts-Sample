@@ -28,6 +28,14 @@ public class OrderService {
     return orderDao.findById(orderId);
   }
 
+  public List<Order> listByUserId(String userId) {
+    return orderDao.listByUserId(userId);
+  }
+
+  public List<Order> listAll(int limit) {
+    return orderDao.listAll(limit);
+  }
+
   public List<OrderItem> listItems(String orderId) {
     return orderDao.listItemsByOrderId(orderId);
   }

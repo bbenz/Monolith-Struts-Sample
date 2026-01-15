@@ -71,6 +71,28 @@ public class ProductDaoImpl extends AbstractDao implements ProductDao {
     }
   }
 
+  public void update(Product product) {
+    Connection con = null;
+    PreparedStatement ps = null;
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("UPDATE products SET name = ?, brand = ?, description = ?, category_id = ?, sku = ?, status = ?, updated_at = ? WHERE id = ?");
+      ps.setString(1, product.getName());
+      ps.setString(2, product.getBrand());
+      ps.setString(3, product.getDescription());
+      ps.setString(4, product.getCategoryId());
+      ps.setString(5, product.getSku());
+      ps.setString(6, product.getStatus());
+      ps.setTimestamp(7, new java.sql.Timestamp(System.currentTimeMillis()));
+      ps.setString(8, product.getId());
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(null, ps, con);
+    }
+  }
+
   private Product mapProduct(ResultSet rs) throws SQLException {
     Product product = new Product();
     product.setId(rs.getString("id"));

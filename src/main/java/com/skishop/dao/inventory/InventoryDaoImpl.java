@@ -35,6 +35,42 @@ public class InventoryDaoImpl extends AbstractDao implements InventoryDao {
     }
   }
 
+  public void insert(Inventory inventory) {
+    Connection con = null;
+    PreparedStatement ps = null;
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("INSERT INTO inventory(id, product_id, quantity, reserved_quantity, status) VALUES(?,?,?,?,?)");
+      ps.setString(1, inventory.getId());
+      ps.setString(2, inventory.getProductId());
+      ps.setInt(3, inventory.getQuantity());
+      ps.setInt(4, inventory.getReservedQuantity());
+      ps.setString(5, inventory.getStatus());
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(null, ps, con);
+    }
+  }
+
+  public void updateQuantity(String productId, int quantity, String status) {
+    Connection con = null;
+    PreparedStatement ps = null;
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("UPDATE inventory SET quantity = ?, status = ? WHERE product_id = ?");
+      ps.setInt(1, quantity);
+      ps.setString(2, status);
+      ps.setString(3, productId);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(null, ps, con);
+    }
+  }
+
   public boolean reserve(String productId, int quantity) {
     Connection con = null;
     PreparedStatement ps = null;

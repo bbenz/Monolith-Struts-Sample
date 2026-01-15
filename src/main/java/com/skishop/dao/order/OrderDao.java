@@ -9,6 +9,8 @@ public interface OrderDao {
 
   List<Order> listByUserId(String userId);
 
+  List<Order> listAll(int limit);
+
   void insertOrder(Order order);
 
   void insertOrderItem(OrderItem item);

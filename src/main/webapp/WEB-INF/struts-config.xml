@@ -3,8 +3,24 @@
           "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
           "http://struts.apache.org/dtds/struts-config_1_2.dtd">
 <struts-config>
+  <form-beans>
+    <form-bean name="loginForm" type="com.skishop.web.form.LoginForm"/>
+    <form-bean name="registerForm" type="com.skishop.web.form.RegisterForm"/>
+    <form-bean name="passwordResetRequestForm" type="com.skishop.web.form.PasswordResetRequestForm"/>
+    <form-bean name="passwordResetForm" type="com.skishop.web.form.PasswordResetForm"/>
+    <form-bean name="productSearchForm" type="com.skishop.web.form.ProductSearchForm"/>
+    <form-bean name="addCartForm" type="com.skishop.web.form.AddCartForm"/>
+    <form-bean name="checkoutForm" type="com.skishop.web.form.CheckoutForm"/>
+    <form-bean name="couponForm" type="com.skishop.web.form.CouponForm"/>
+    <form-bean name="addressForm" type="com.skishop.web.form.AddressForm"/>
+    <form-bean name="adminProductForm" type="com.skishop.web.form.admin.AdminProductForm"/>
+  </form-beans>
+
   <global-forwards>
     <forward name="home" path="/home.do"/>
+    <forward name="login" path="/login.do"/>
+    <forward name="products" path="/products.do"/>
+    <forward name="cart" path="/cart.do"/>
   </global-forwards>
 
   <!-- Tiles is intentionally not configured in Phase 0. -->
@@ -13,6 +29,179 @@
             type="org.apache.struts.actions.ForwardAction"
             parameter="/WEB-INF/jsp/home.jsp"
             validate="false"/>
+
+    <action path="/login"
+            type="com.skishop.web.action.LoginAction"
+            name="loginForm"
+            input="/WEB-INF/jsp/auth/login.jsp"
+            scope="request"
+            validate="true">
+      <forward name="success" path="/home.do"/>
+      <forward name="failure" path="/WEB-INF/jsp/auth/login.jsp"/>
+    </action>
+
+    <action path="/register"
+            type="com.skishop.web.action.RegisterAction"
+            name="registerForm"
+            input="/WEB-INF/jsp/auth/register.jsp"
+            scope="request"
+            validate="true">
+      <forward name="success" path="/login.do"/>
+      <forward name="failure" path="/WEB-INF/jsp/auth/register.jsp"/>
+    </action>
+
+    <action path="/password/forgot"
+            type="com.skishop.web.action.PasswordForgotAction"
+            name="passwordResetRequestForm"
+            input="/WEB-INF/jsp/auth/password/forgot.jsp"
+            scope="request"
+            validate="true">
+      <forward name="success" path="/WEB-INF/jsp/auth/password/forgot_complete.jsp"/>
+      <forward name="failure" path="/WEB-INF/jsp/auth/password/forgot.jsp"/>
+    </action>
+
+    <action path="/password/reset"
+            type="com.skishop.web.action.PasswordResetAction"
+            name="passwordResetForm"
+            input="/WEB-INF/jsp/auth/password/reset.jsp"
+            scope="request"
+            validate="true">
+      <forward name="success" path="/login.do"/>
+      <forward name="failure" path="/WEB-INF/jsp/auth/password/reset.jsp"/>
+    </action>
+
+    <action path="/products"
+            type="com.skishop.web.action.ProductListAction"
+            name="productSearchForm"
+            input="/WEB-INF/jsp/products/list.jsp"
+            scope="request"
+            validate="false"/>
+
+    <action path="/product"
+            type="com.skishop.web.action.ProductDetailAction"
+            input="/WEB-INF/jsp/products/detail.jsp"
+            scope="request"
+            validate="false">
+      <forward name="success" path="/WEB-INF/jsp/products/detail.jsp"/>
+      <forward name="notfound" path="/WEB-INF/jsp/products/notfound.jsp"/>
+    </action>
+
+    <action path="/cart"
+            type="com.skishop.web.action.CartAction"
+            name="addCartForm"
+            input="/WEB-INF/jsp/cart/view.jsp"
+            scope="session"
+            validate="true">
+      <forward name="success" path="/WEB-INF/jsp/cart/view.jsp"/>
+    </action>
+
+    <action path="/checkout"
+            type="com.skishop.web.action.CheckoutAction"
+            name="checkoutForm"
+            input="/WEB-INF/jsp/cart/checkout.jsp"
+            scope="request"
+            validate="true">
+      <forward name="success" path="/WEB-INF/jsp/cart/confirmation.jsp"/>
+      <forward name="failure" path="/WEB-INF/jsp/cart/checkout.jsp"/>
+    </action>
+
+    <action path="/coupon/apply"
+            type="com.skishop.web.action.CouponApplyAction"
+            name="couponForm"
+            input="/WEB-INF/jsp/cart/view.jsp"
+            scope="request"
+            validate="true">
+      <forward name="success" path="/WEB-INF/jsp/cart/view.jsp"/>
+      <forward name="failure" path="/WEB-INF/jsp/cart/view.jsp"/>
+    </action>
+
+    <action path="/orders"
+            type="com.skishop.web.action.OrderHistoryAction"
+            input="/WEB-INF/jsp/orders/history.jsp"
+            scope="request"
+            validate="false">
+      <forward name="login" path="/login.do"/>
+    </action>
+
+    <action path="/orders/cancel"
+            type="com.skishop.web.action.OrderCancelAction"
+            scope="request"
+            validate="false">
+      <forward name="success" path="/orders.do"/>
+      <forward name="failure" path="/WEB-INF/jsp/orders/history.jsp"/>
+    </action>
+
+    <action path="/orders/return"
+            type="com.skishop.web.action.OrderReturnAction"
+            scope="request"
+            validate="false">
+      <forward name="success" path="/orders.do"/>
+      <forward name="failure" path="/WEB-INF/jsp/orders/history.jsp"/>
+    </action>
+
+    <action path="/points"
+            type="com.skishop.web.action.PointBalanceAction"
+            input="/WEB-INF/jsp/points/balance.jsp"
+            scope="request"
+            validate="false">
+      <forward name="login" path="/login.do"/>
+    </action>
+
+    <action path="/addresses"
+            type="com.skishop.web.action.AddressListAction"
+            input="/WEB-INF/jsp/account/addresses.jsp"
+            scope="request"
+            validate="false">
+      <forward name="login" path="/login.do"/>
+    </action>
+
+    <action path="/addresses/save"
+            type="com.skishop.web.action.AddressSaveAction"
+            name="addressForm"
+            input="/WEB-INF/jsp/account/address_edit.jsp"
+            scope="request"
+            validate="true">
+      <forward name="success" path="/addresses.do"/>
+      <forward name="failure" path="/WEB-INF/jsp/account/address_edit.jsp"/>
+      <forward name="login" path="/login.do"/>
+    </action>
+
+    <action path="/logout"
+            type="com.skishop.web.action.LogoutAction"
+            scope="request"
+            validate="false">
+      <forward name="success" path="/home.do"/>
+    </action>
+
+    <action path="/admin/products"
+            type="com.skishop.web.action.admin.AdminProductListAction"
+            input="/WEB-INF/jsp/admin/products/list.jsp"
+            scope="request"
+            validate="false"/>
+
+    <action path="/admin/product/edit"
+            type="com.skishop.web.action.admin.AdminProductEditAction"
+            name="adminProductForm"
+            input="/WEB-INF/jsp/admin/products/edit.jsp"
+            scope="request"
+            validate="true">
+      <forward name="success" path="/admin/products.do"/>
+      <forward name="failure" path="/WEB-INF/jsp/admin/products/edit.jsp"/>
+    </action>
+
+    <action path="/admin/orders"
+            type="com.skishop.web.action.admin.AdminOrderListAction"
+            input="/WEB-INF/jsp/admin/orders/list.jsp"
+            scope="request"
+            validate="false"/>
+
+    <action path="/admin/order/update"
+            type="com.skishop.web.action.admin.AdminOrderUpdateAction"
+            scope="request"
+            validate="false">
+      <forward name="success" path="/admin/orders.do"/>
+      <forward name="failure" path="/WEB-INF/jsp/admin/orders/list.jsp"/>
+    </action>
   </action-mappings>
 
   <controller
@@ -20,6 +209,10 @@
       maxFileSize="2M"
       memFileSize="64K"
       bufferSize="4096"/>
+
+  <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property property="pathnames" value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml"/>
+  </plug-in>
 
   <message-resources parameter="messages"/>
 </struts-config>
