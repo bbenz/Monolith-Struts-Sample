@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+          "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<struts-config>
+  <global-forwards>
+    <forward name="home" path="/home.do"/>
+  </global-forwards>
+
+  <action-mappings>
+    <action path="/home"
+            type="org.apache.struts.actions.ForwardAction"
+            parameter="/WEB-INF/jsp/home.jsp"
+            validate="false"/>
+  </action-mappings>
+
+  <message-resources parameter="messages"/>
+</struts-config>
