@@ -74,9 +74,24 @@ public class UserAddressDaoImpl extends AbstractDao implements UserAddressDao {
     } catch (SQLException e) {
       throw new DaoException(e);
     } finally {
-      closeQuietly(null, resetPs, null);
-      closeQuietly(null, insertPs, null);
-      closeQuietly(null, null, con);
+      try {
+        if (resetPs != null) {
+          resetPs.close();
+        }
+      } catch (Exception e) {
+      }
+      try {
+        if (insertPs != null) {
+          insertPs.close();
+        }
+      } catch (Exception e) {
+      }
+      try {
+        if (con != null) {
+          con.close();
+        }
+      } catch (Exception e) {
+      }
     }
   }
 

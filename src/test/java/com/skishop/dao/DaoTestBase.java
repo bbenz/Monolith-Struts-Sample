@@ -47,22 +47,42 @@ public abstract class DaoTestBase {
     if (stream == null) {
       throw new IllegalStateException("SQL resource not found: " + path);
     }
-    StringBuilder buffer = new StringBuilder();
-    try (InputStream inputStream = stream;
-         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))) {
+    BufferedReader reader = null;
+    Statement statement = null;
+    try {
+      reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+      StringBuilder buffer = new StringBuilder();
       String line;
       while ((line = reader.readLine()) != null) {
         buffer.append(line);
         buffer.append('\n');
       }
-    }
-    String[] statements = buffer.toString().split(";");
-    try (Statement statement = con.createStatement()) {
+      String[] statements = buffer.toString().split(";");
+      statement = con.createStatement();
       for (int i = 0; i < statements.length; i++) {
         String sql = statements[i].trim();
         if (sql.length() > 0) {
           statement.execute(sql);
         }
+      }
+    } finally {
+      try {
+        if (statement != null) {
+          statement.close();
+        }
+      } catch (Exception e) {
+      }
+      try {
+        if (reader != null) {
+          reader.close();
+        }
+      } catch (Exception e) {
+      }
+      try {
+        if (stream != null) {
+          stream.close();
+        }
+      } catch (Exception e) {
       }
     }
   }
