@@ -38,7 +38,7 @@ public class PasswordForgotAction extends Action {
       token.setUsedAt(null);
       tokenDao.insert(token);
       request.setAttribute("resetToken", token.getToken());
-      mailService.enqueue(user.getEmail(), "Password reset", "Reset token: " + token.getToken());
+      mailService.enqueuePasswordReset(user.getEmail(), token.getToken());
     }
     return mapping.findForward("success");
   }

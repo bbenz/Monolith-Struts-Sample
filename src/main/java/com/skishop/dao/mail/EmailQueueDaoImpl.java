@@ -35,16 +35,18 @@ public class EmailQueueDaoImpl extends AbstractDao implements EmailQueueDao {
     }
   }
 
-  public void updateStatus(String id, String status, int retryCount, String lastError) {
+  public void updateStatus(String id, String status, int retryCount, String lastError, java.util.Date scheduledAt, java.util.Date sentAt) {
     Connection con = null;
     PreparedStatement ps = null;
     try {
       con = getConnection();
-      ps = con.prepareStatement("UPDATE email_queue SET status = ?, retry_count = ?, last_error = ? WHERE id = ?");
+      ps = con.prepareStatement("UPDATE email_queue SET status = ?, retry_count = ?, last_error = ?, scheduled_at = ?, sent_at = ? WHERE id = ?");
       ps.setString(1, status);
       ps.setInt(2, retryCount);
       ps.setString(3, lastError);
-      ps.setString(4, id);
+      ps.setTimestamp(4, toTimestamp(scheduledAt));
+      ps.setTimestamp(5, toTimestamp(sentAt));
+      ps.setString(6, id);
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new DaoException(e);

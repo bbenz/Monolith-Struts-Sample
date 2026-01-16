@@ -20,7 +20,7 @@ public class EmailQueueDaoTest extends DaoTestBase {
     List<EmailQueue> pending = emailQueueDao.findByStatus("PENDING");
     Assert.assertEquals(1, pending.size());
 
-    emailQueueDao.updateStatus("mail-1", "SENT", 1, null);
+    emailQueueDao.updateStatus("mail-1", "SENT", 1, null, new Date(), new Date());
     List<EmailQueue> updated = emailQueueDao.findByStatus("SENT");
     Assert.assertEquals(1, updated.size());
   }

@@ -10,16 +10,19 @@ import com.skishop.domain.order.Order;
 import com.skishop.domain.order.OrderItem;
 import com.skishop.domain.order.OrderShipping;
 import com.skishop.domain.product.Product;
+import com.skishop.domain.user.User;
 import com.skishop.service.cart.CartService;
 import com.skishop.service.catalog.ProductService;
 import com.skishop.service.coupon.CouponService;
 import com.skishop.service.inventory.InventoryService;
+import com.skishop.service.mail.MailService;
 import com.skishop.service.payment.PaymentInfo;
 import com.skishop.service.payment.PaymentResult;
 import com.skishop.service.payment.PaymentService;
 import com.skishop.service.point.PointService;
 import com.skishop.service.shipping.ShippingService;
 import com.skishop.service.tax.TaxService;
+import com.skishop.service.user.UserService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -37,6 +40,8 @@ public class OrderFacadeImpl implements OrderFacade {
   private final TaxService taxService = new TaxService();
   private final ProductService productService = new ProductService();
   private final UserAddressDao userAddressDao = new UserAddressDaoImpl();
+  private final MailService mailService = new MailService();
+  private final UserService userService = new UserService();
 
   public Order placeOrder(String cartId, String couponCode, int usePoints, PaymentInfo paymentInfo, String userId) {
     Cart cart = cartService.getCart(cartId);
@@ -94,6 +99,7 @@ public class OrderFacadeImpl implements OrderFacade {
       pointService.awardPoints(userId, orderId, totalAmount);
       saveShipping(orderId, shippingFee, userId);
       cartService.clearCart(cartId);
+      sendOrderConfirmation(order, userId);
       return order;
     } catch (RuntimeException e) {
       if (paymentResult != null && paymentResult.isSuccess()) {
@@ -216,5 +222,20 @@ public class OrderFacadeImpl implements OrderFacade {
     shipping.setShippingFee(shippingFee);
     shipping.setRequestedDeliveryDate(null);
     shippingService.saveOrderShipping(shipping);
+  }
+
+  private void sendOrderConfirmation(Order order, String userId) {
+    if (userId == null) {
+      return;
+    }
+    User user = userService.findById(userId);
+    if (user == null || user.getEmail() == null) {
+      return;
+    }
+    try {
+      mailService.enqueueOrderConfirmation(user.getEmail(), order);
+    } catch (RuntimeException e) {
+      // Ignore mail queue failures so order placement still succeeds.
+    }
   }
 }
