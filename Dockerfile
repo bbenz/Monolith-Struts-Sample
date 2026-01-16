@@ -20,7 +20,9 @@ RUN set -eux; \
     echo "Set JDK_LICENSE=accept to acknowledge the JDK 5 license." >&2; \
     exit 1; \
   fi; \
-  apt-get update; \
+  echo "deb http://snapshot.debian.org/archive/debian/20190331T000000Z stretch main" > /etc/apt/sources.list; \
+  echo "deb http://snapshot.debian.org/archive/debian-security/20190331T000000Z stretch/updates main" >> /etc/apt/sources.list; \
+  apt-get -o Acquire::Check-Valid-Until=false update; \
   apt-get install -y --no-install-recommends ca-certificates curl gzip libstdc++5 tar; \
   rm -rf /var/lib/apt/lists/*; \
   curl -fsSL -o /tmp/jdk.bin ${JDK_URL}; \
@@ -56,7 +58,9 @@ COPY --from=build ${JAVA_HOME} ${JAVA_HOME}
 
 # Tomcat 6.0.53 (latest 6.x) from archive
 RUN set -eux; \
-  apt-get update; \
+  echo "deb http://snapshot.debian.org/archive/debian/20190331T000000Z stretch main" > /etc/apt/sources.list; \
+  echo "deb http://snapshot.debian.org/archive/debian-security/20190331T000000Z stretch/updates main" >> /etc/apt/sources.list; \
+  apt-get -o Acquire::Check-Valid-Until=false update; \
   apt-get install -y --no-install-recommends ca-certificates curl gzip libstdc++5 tar; \
   rm -rf /var/lib/apt/lists/*; \
   curl -fsSL https://archive.apache.org/dist/tomcat/tomcat-6/v6.0.53/bin/apache-tomcat-6.0.53.tar.gz \
