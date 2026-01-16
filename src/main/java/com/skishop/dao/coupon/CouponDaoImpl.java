@@ -22,20 +22,7 @@ public class CouponDaoImpl extends AbstractDao implements CouponDao {
       ps.setString(1, code);
       rs = ps.executeQuery();
       if (rs.next()) {
-        Coupon coupon = new Coupon();
-        coupon.setId(rs.getString("id"));
-        coupon.setCampaignId(rs.getString("campaign_id"));
-        coupon.setCode(rs.getString("code"));
-        coupon.setCouponType(rs.getString("coupon_type"));
-        coupon.setDiscountValue(rs.getBigDecimal("discount_value"));
-        coupon.setDiscountType(rs.getString("discount_type"));
-        coupon.setMinimumAmount(rs.getBigDecimal("minimum_amount"));
-        coupon.setMaximumDiscount(rs.getBigDecimal("maximum_discount"));
-        coupon.setUsageLimit(rs.getInt("usage_limit"));
-        coupon.setUsedCount(rs.getInt("used_count"));
-        coupon.setActive(rs.getBoolean("is_active"));
-        coupon.setExpiresAt(rs.getTimestamp("expires_at"));
-        return coupon;
+        return mapCoupon(rs);
       }
       return null;
     } catch (SQLException e) {
@@ -57,20 +44,7 @@ public class CouponDaoImpl extends AbstractDao implements CouponDao {
       rs = ps.executeQuery();
       List<Coupon> coupons = new ArrayList<Coupon>();
       while (rs.next()) {
-        Coupon coupon = new Coupon();
-        coupon.setId(rs.getString("id"));
-        coupon.setCampaignId(rs.getString("campaign_id"));
-        coupon.setCode(rs.getString("code"));
-        coupon.setCouponType(rs.getString("coupon_type"));
-        coupon.setDiscountValue(rs.getBigDecimal("discount_value"));
-        coupon.setDiscountType(rs.getString("discount_type"));
-        coupon.setMinimumAmount(rs.getBigDecimal("minimum_amount"));
-        coupon.setMaximumDiscount(rs.getBigDecimal("maximum_discount"));
-        coupon.setUsageLimit(rs.getInt("usage_limit"));
-        coupon.setUsedCount(rs.getInt("used_count"));
-        coupon.setActive(rs.getBoolean("is_active"));
-        coupon.setExpiresAt(rs.getTimestamp("expires_at"));
-        coupons.add(coupon);
+        coupons.add(mapCoupon(rs));
       }
       return coupons;
     } catch (SQLException e) {
@@ -82,6 +56,37 @@ public class CouponDaoImpl extends AbstractDao implements CouponDao {
 
   public void incrementUsedCount(String couponId) {
     updateUsageCount(couponId, 1);
+  }
+
+  public List<Coupon> listAll() {
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("SELECT id, campaign_id, code, coupon_type, discount_value, discount_type, minimum_amount, maximum_discount, usage_limit, used_count, is_active, expires_at FROM coupons ORDER BY code");
+      rs = ps.executeQuery();
+      List<Coupon> coupons = new ArrayList<Coupon>();
+      while (rs.next()) {
+        coupons.add(mapCoupon(rs));
+      }
+      return coupons;
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(rs, ps, con);
+    }
+  }
+
+  public void saveOrUpdate(Coupon coupon) {
+    Coupon existing = findByCode(coupon.getCode());
+    if (existing == null) {
+      insert(coupon);
+    } else {
+      coupon.setId(existing.getId());
+      coupon.setUsedCount(existing.getUsedCount());
+      update(coupon);
+    }
   }
 
   public void decrementUsedCount(String couponId) {
@@ -102,5 +107,73 @@ public class CouponDaoImpl extends AbstractDao implements CouponDao {
     } finally {
       closeQuietly(null, ps, con);
     }
+  }
+
+  private void insert(Coupon coupon) {
+    Connection con = null;
+    PreparedStatement ps = null;
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("INSERT INTO coupons(id, campaign_id, code, coupon_type, discount_value, discount_type, minimum_amount, maximum_discount, usage_limit, used_count, is_active, expires_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
+      ps.setString(1, coupon.getId());
+      ps.setString(2, coupon.getCampaignId());
+      ps.setString(3, coupon.getCode());
+      ps.setString(4, coupon.getCouponType());
+      ps.setBigDecimal(5, coupon.getDiscountValue());
+      ps.setString(6, coupon.getDiscountType());
+      ps.setBigDecimal(7, coupon.getMinimumAmount());
+      ps.setBigDecimal(8, coupon.getMaximumDiscount());
+      ps.setInt(9, coupon.getUsageLimit());
+      ps.setInt(10, coupon.getUsedCount());
+      ps.setBoolean(11, coupon.isActive());
+      ps.setTimestamp(12, coupon.getExpiresAt() != null ? new Timestamp(coupon.getExpiresAt().getTime()) : null);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(null, ps, con);
+    }
+  }
+
+  private void update(Coupon coupon) {
+    Connection con = null;
+    PreparedStatement ps = null;
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("UPDATE coupons SET campaign_id = ?, coupon_type = ?, discount_value = ?, discount_type = ?, minimum_amount = ?, maximum_discount = ?, usage_limit = ?, used_count = ?, is_active = ?, expires_at = ? WHERE code = ?");
+      ps.setString(1, coupon.getCampaignId());
+      ps.setString(2, coupon.getCouponType());
+      ps.setBigDecimal(3, coupon.getDiscountValue());
+      ps.setString(4, coupon.getDiscountType());
+      ps.setBigDecimal(5, coupon.getMinimumAmount());
+      ps.setBigDecimal(6, coupon.getMaximumDiscount());
+      ps.setInt(7, coupon.getUsageLimit());
+      ps.setInt(8, coupon.getUsedCount());
+      ps.setBoolean(9, coupon.isActive());
+      ps.setTimestamp(10, coupon.getExpiresAt() != null ? new Timestamp(coupon.getExpiresAt().getTime()) : null);
+      ps.setString(11, coupon.getCode());
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(null, ps, con);
+    }
+  }
+
+  private Coupon mapCoupon(ResultSet rs) throws SQLException {
+    Coupon coupon = new Coupon();
+    coupon.setId(rs.getString("id"));
+    coupon.setCampaignId(rs.getString("campaign_id"));
+    coupon.setCode(rs.getString("code"));
+    coupon.setCouponType(rs.getString("coupon_type"));
+    coupon.setDiscountValue(rs.getBigDecimal("discount_value"));
+    coupon.setDiscountType(rs.getString("discount_type"));
+    coupon.setMinimumAmount(rs.getBigDecimal("minimum_amount"));
+    coupon.setMaximumDiscount(rs.getBigDecimal("maximum_discount"));
+    coupon.setUsageLimit(rs.getInt("usage_limit"));
+    coupon.setUsedCount(rs.getInt("used_count"));
+    coupon.setActive(rs.getBoolean("is_active"));
+    coupon.setExpiresAt(rs.getTimestamp("expires_at"));
+    return coupon;
   }
 }

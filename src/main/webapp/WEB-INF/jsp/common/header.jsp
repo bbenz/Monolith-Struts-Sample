@@ -15,6 +15,8 @@
       <logic:equal name="loginUser" property="role" value="ADMIN">
         <li><html:link page="/admin/products.do">管理:商品</html:link></li>
         <li><html:link page="/admin/orders.do">管理:注文</html:link></li>
+        <li><html:link page="/admin/coupons.do">管理:クーポン</html:link></li>
+        <li><html:link page="/admin/shipping.do">管理:配送方法</html:link></li>
       </logic:equal>
     </logic:present>
     <logic:notPresent name="loginUser" scope="session">

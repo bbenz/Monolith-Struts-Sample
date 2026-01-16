@@ -37,4 +37,17 @@ public class ShippingMethodDaoTest extends DaoTestBase {
     ShippingMethod loaded = shippingMethodDao.findByCode("EXPRESS");
     Assert.assertNotNull(loaded);
   }
+
+  public void testListAllAndUpdate() {
+    List<ShippingMethod> methods = shippingMethodDao.listAll();
+    Assert.assertFalse(methods.isEmpty());
+
+    ShippingMethod method = shippingMethodDao.findByCode("STANDARD");
+    method.setName("Standard Updated");
+    method.setFee(new BigDecimal("900"));
+    shippingMethodDao.update(method);
+
+    ShippingMethod updated = shippingMethodDao.findByCode("STANDARD");
+    Assert.assertEquals("Standard Updated", updated.getName());
+  }
 }

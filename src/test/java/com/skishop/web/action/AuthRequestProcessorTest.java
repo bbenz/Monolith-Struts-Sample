@@ -47,4 +47,12 @@ public class AuthRequestProcessorTest extends StrutsActionTestBase {
     HttpServletResponseSimulator response = (HttpServletResponseSimulator) getResponse();
     assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatusCode());
   }
+
+  public void testAdminRoleAllowsAccess() throws Exception {
+    setLoginUser("admin-1", "ADMIN");
+    setRequestPathInfo("/admin/products");
+    setGetRequest();
+    actionPerform();
+    verifyForward("success");
+  }
 }

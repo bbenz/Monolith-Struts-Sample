@@ -7,6 +7,13 @@
   <p>状態: <bean:write name="order" property="status" filter="true"/></p>
   <p>支払状態: <bean:write name="order" property="paymentStatus" filter="true"/></p>
   <p>合計金額: <bean:write name="order" property="totalAmount" filter="true"/></p>
+  <logic:equal name="order" property="status" value="DELIVERED">
+    <html:form action="/admin/order/refund.do" method="post">
+      <html:hidden name="order" property="id"/>
+      <html:token/>
+      <html:submit value="返金処理"/>
+    </html:form>
+  </logic:equal>
 </logic:present>
 <logic:notPresent name="order">
   <p>注文情報がありません。</p>

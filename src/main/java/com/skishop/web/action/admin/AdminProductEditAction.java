@@ -24,6 +24,7 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 
 public class AdminProductEditAction extends Action {
+  private static final int PRODUCT_ID_RANDOM_LENGTH = 12;
   private final ProductService productService = new ProductService();
   private final ProductDao productDao = new ProductDaoImpl();
   private final PriceDao priceDao = new PriceDaoImpl();
@@ -52,14 +53,18 @@ public class AdminProductEditAction extends Action {
             productForm.setInventoryQty(inventory.getQuantity());
           }
         }
+      } else {
+        productForm.setId(generateProductId());
+        productForm.setStatus("ACTIVE");
+        productForm.setPrice("0");
+        productForm.setInventoryQty(0);
       }
       return mapping.getInputForward();
     }
 
-    Product existing = productService.findById(productForm.getId());
-    if (existing == null) {
+    if (productForm.getId() == null || productForm.getId().length() == 0) {
       ActionMessages errors = new ActionMessages();
-      errors.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("error.admin.product.notfound"));
+      errors.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("error.admin.product.id"));
       saveErrors(request, errors);
       return mapping.findForward("failure");
     }
@@ -74,15 +79,25 @@ public class AdminProductEditAction extends Action {
       return mapping.findForward("failure");
     }
 
+    Product existing = productService.findById(productForm.getId());
+
     Product product = new Product();
     product.setId(productForm.getId());
     product.setName(productForm.getName());
     product.setBrand(productForm.getBrand());
     product.setDescription(productForm.getDescription());
     product.setCategoryId(productForm.getCategoryId());
-    product.setSku(existing.getSku());
     product.setStatus(productForm.getStatus());
-    productDao.update(product);
+    if (existing == null) {
+      product.setSku("SKU-" + productForm.getId());
+      Date now = new Date();
+      product.setCreatedAt(now);
+      product.setUpdatedAt(now);
+      productDao.insert(product);
+    } else {
+      product.setSku(existing.getSku());
+      productDao.update(product);
+    }
 
     Price price = new Price();
     price.setId(UUID.randomUUID().toString());
@@ -111,5 +126,10 @@ public class AdminProductEditAction extends Action {
 
     request.setAttribute("updatedAt", new Date());
     return mapping.findForward("success");
+  }
+
+  private String generateProductId() {
+    String raw = UUID.randomUUID().toString().replace("-", "");
+    return "P" + raw.substring(0, PRODUCT_ID_RANDOM_LENGTH);
   }
 }

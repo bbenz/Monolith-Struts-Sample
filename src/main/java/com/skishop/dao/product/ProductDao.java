@@ -8,5 +8,7 @@ public interface ProductDao {
 
   List<Product> findPaged(String keyword, String categoryId, int offset, int limit);
 
+  void insert(Product product);
+
   void update(Product product);
 }

@@ -14,6 +14,8 @@
     <form-bean name="couponForm" type="com.skishop.web.form.CouponForm"/>
     <form-bean name="addressForm" type="com.skishop.web.form.AddressForm"/>
     <form-bean name="adminProductForm" type="com.skishop.web.form.admin.AdminProductForm"/>
+    <form-bean name="adminCouponForm" type="com.skishop.web.form.admin.AdminCouponForm"/>
+    <form-bean name="adminShippingMethodForm" type="com.skishop.web.form.admin.AdminShippingMethodForm"/>
   </form-beans>
 
   <global-forwards>
@@ -225,6 +227,15 @@
       <forward name="failure" path="admin.products.edit"/>
     </action>
 
+    <action path="/admin/product/delete"
+            type="com.skishop.web.action.admin.AdminProductDeleteAction"
+            roles="ADMIN"
+            scope="request"
+            validate="false">
+      <forward name="success" path="/admin/products.do"/>
+      <forward name="failure" path="admin.products.list"/>
+    </action>
+
     <action path="/admin/orders"
             type="com.skishop.web.action.admin.AdminOrderListAction"
             input="admin.orders.list"
@@ -250,6 +261,55 @@
             validate="false">
       <forward name="success" path="/admin/orders.do"/>
       <forward name="failure" path="admin.orders.list"/>
+    </action>
+
+    <action path="/admin/order/refund"
+            type="com.skishop.web.action.admin.AdminOrderRefundAction"
+            roles="ADMIN"
+            scope="request"
+            validate="false">
+      <forward name="success" path="/admin/orders.do"/>
+      <forward name="failure" path="admin.orders.list"/>
+    </action>
+
+    <action path="/admin/coupons"
+            type="com.skishop.web.action.admin.AdminCouponListAction"
+            input="admin.coupons.list"
+            roles="ADMIN"
+            scope="request"
+            validate="false">
+      <forward name="success" path="admin.coupons.list"/>
+    </action>
+
+    <action path="/admin/coupon/edit"
+            type="com.skishop.web.action.admin.AdminCouponEditAction"
+            name="adminCouponForm"
+            input="admin.coupons.edit"
+            roles="ADMIN"
+            scope="request"
+            validate="true">
+      <forward name="success" path="/admin/coupons.do"/>
+      <forward name="failure" path="admin.coupons.edit"/>
+    </action>
+
+    <action path="/admin/shipping"
+            type="com.skishop.web.action.admin.AdminShippingMethodListAction"
+            input="admin.shipping.list"
+            roles="ADMIN"
+            scope="request"
+            validate="false">
+      <forward name="success" path="admin.shipping.list"/>
+    </action>
+
+    <action path="/admin/shipping/edit"
+            type="com.skishop.web.action.admin.AdminShippingMethodEditAction"
+            name="adminShippingMethodForm"
+            input="admin.shipping.edit"
+            roles="ADMIN"
+            scope="request"
+            validate="true">
+      <forward name="success" path="/admin/shipping.do"/>
+      <forward name="failure" path="admin.shipping.edit"/>
     </action>
   </action-mappings>
 

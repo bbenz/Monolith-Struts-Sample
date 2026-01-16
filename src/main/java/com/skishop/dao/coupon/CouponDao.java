@@ -8,6 +8,10 @@ public interface CouponDao {
 
   List<Coupon> listActive();
 
+  List<Coupon> listAll();
+
+  void saveOrUpdate(Coupon coupon);
+
   void incrementUsedCount(String couponId);
 
   void decrementUsedCount(String couponId);

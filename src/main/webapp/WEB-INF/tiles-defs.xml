@@ -117,4 +117,24 @@
     <put name="title" value="管理:注文詳細"/>
     <put name="body" value="/WEB-INF/jsp/admin/orders/detail.jsp"/>
   </definition>
+
+  <definition name="admin.coupons.list" extends="baseLayout">
+    <put name="title" value="管理:クーポン一覧"/>
+    <put name="body" value="/WEB-INF/jsp/admin/coupons/list.jsp"/>
+  </definition>
+
+  <definition name="admin.coupons.edit" extends="baseLayout">
+    <put name="title" value="管理:クーポン編集"/>
+    <put name="body" value="/WEB-INF/jsp/admin/coupons/edit.jsp"/>
+  </definition>
+
+  <definition name="admin.shipping.list" extends="baseLayout">
+    <put name="title" value="管理:配送方法"/>
+    <put name="body" value="/WEB-INF/jsp/admin/shipping/list.jsp"/>
+  </definition>
+
+  <definition name="admin.shipping.edit" extends="baseLayout">
+    <put name="title" value="管理:配送方法編集"/>
+    <put name="body" value="/WEB-INF/jsp/admin/shipping/edit.jsp"/>
+  </definition>
 </tiles-definitions>

@@ -31,6 +31,26 @@ public class ShippingMethodDaoImpl extends AbstractDao implements ShippingMethod
     }
   }
 
+  public List<ShippingMethod> listAll() {
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    List<ShippingMethod> methods = new ArrayList<ShippingMethod>();
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("SELECT id, code, name, fee, is_active, sort_order FROM shipping_methods ORDER BY sort_order");
+      rs = ps.executeQuery();
+      while (rs.next()) {
+        methods.add(mapMethod(rs));
+      }
+      return methods;
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(rs, ps, con);
+    }
+  }
+
   public ShippingMethod findByCode(String code) {
     Connection con = null;
     PreparedStatement ps = null;
@@ -63,6 +83,25 @@ public class ShippingMethodDaoImpl extends AbstractDao implements ShippingMethod
       ps.setBigDecimal(4, method.getFee());
       ps.setBoolean(5, method.isActive());
       ps.setInt(6, method.getSortOrder());
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(null, ps, con);
+    }
+  }
+
+  public void update(ShippingMethod method) {
+    Connection con = null;
+    PreparedStatement ps = null;
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("UPDATE shipping_methods SET name = ?, fee = ?, is_active = ?, sort_order = ? WHERE code = ?");
+      ps.setString(1, method.getName());
+      ps.setBigDecimal(2, method.getFee());
+      ps.setBoolean(3, method.isActive());
+      ps.setInt(4, method.getSortOrder());
+      ps.setString(5, method.getCode());
       ps.executeUpdate();
     } catch (SQLException e) {
       throw new DaoException(e);
