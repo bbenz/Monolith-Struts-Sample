@@ -1,4 +1,6 @@
 target
+logs
+*.log
 .git
 .gitignore
 node_modules

@@ -4,6 +4,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        JDK_LICENSE: accept
+        JDK_URL: https://archive.org/download/Java_5_update_22/jdk-1_5_0_22-linux-amd64.bin
+        JDK_SHA256: 2788b0c787cfa8d314e427d59fabf0b64a1c535d0b15a5437f38c0ede7beae4c
     container_name: skishop-app-tomcat6
     ports:
       - "8080:8080"
@@ -13,10 +17,15 @@ services:
       DB_NAME: skishop
       DB_USER: skishop
       DB_PASSWORD: skishop
+      DB_POOL_MAX_ACTIVE: 20
+      DB_POOL_MAX_IDLE: 5
+      DB_POOL_MAX_WAIT: 10000
     depends_on:
       - db
+    volumes:
+      - tomcat-logs:/opt/tomcat/logs
   db:
-    image: postgres:12-alpine
+    image: postgres:9.2
     container_name: skishop-db
     environment:
       POSTGRES_DB: skishop
@@ -33,3 +42,4 @@ services:
       retries: 5
 volumes:
   db-data:
+  tomcat-logs:
