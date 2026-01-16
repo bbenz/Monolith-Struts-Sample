@@ -9,6 +9,7 @@ import com.skishop.domain.coupon.CouponUsage;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class CouponService {
@@ -37,6 +38,10 @@ public class CouponService {
       throw new IllegalArgumentException("Coupon expired");
     }
     return coupon;
+  }
+
+  public List<Coupon> listActiveCoupons() {
+    return couponDao.listActive();
   }
 
   public BigDecimal calculateDiscount(Coupon coupon, BigDecimal amount) {

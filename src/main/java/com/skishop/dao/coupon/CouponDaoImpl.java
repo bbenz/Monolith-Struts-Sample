@@ -7,6 +7,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CouponDaoImpl extends AbstractDao implements CouponDao {
   public Coupon findByCode(String code) {
@@ -35,6 +38,41 @@ public class CouponDaoImpl extends AbstractDao implements CouponDao {
         return coupon;
       }
       return null;
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    } finally {
+      closeQuietly(rs, ps, con);
+    }
+  }
+
+  public List<Coupon> listActive() {
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    try {
+      con = getConnection();
+      ps = con.prepareStatement("SELECT id, campaign_id, code, coupon_type, discount_value, discount_type, minimum_amount, maximum_discount, usage_limit, used_count, is_active, expires_at FROM coupons WHERE is_active = ? AND (expires_at IS NULL OR expires_at > ?) ORDER BY code");
+      ps.setBoolean(1, true);
+      ps.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+      rs = ps.executeQuery();
+      List<Coupon> coupons = new ArrayList<Coupon>();
+      while (rs.next()) {
+        Coupon coupon = new Coupon();
+        coupon.setId(rs.getString("id"));
+        coupon.setCampaignId(rs.getString("campaign_id"));
+        coupon.setCode(rs.getString("code"));
+        coupon.setCouponType(rs.getString("coupon_type"));
+        coupon.setDiscountValue(rs.getBigDecimal("discount_value"));
+        coupon.setDiscountType(rs.getString("discount_type"));
+        coupon.setMinimumAmount(rs.getBigDecimal("minimum_amount"));
+        coupon.setMaximumDiscount(rs.getBigDecimal("maximum_discount"));
+        coupon.setUsageLimit(rs.getInt("usage_limit"));
+        coupon.setUsedCount(rs.getInt("used_count"));
+        coupon.setActive(rs.getBoolean("is_active"));
+        coupon.setExpiresAt(rs.getTimestamp("expires_at"));
+        coupons.add(coupon);
+      }
+      return coupons;
     } catch (SQLException e) {
       throw new DaoException(e);
     } finally {

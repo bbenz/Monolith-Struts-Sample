@@ -12,6 +12,7 @@
       <th>状態</th>
       <th>支払状態</th>
       <th>合計</th>
+      <th>詳細</th>
       <th>更新</th>
     </tr>
     <logic:iterate id="order" name="orders">
@@ -23,6 +24,9 @@
         <td><bean:write name="order" property="status" filter="true"/></td>
         <td><bean:write name="order" property="paymentStatus" filter="true"/></td>
         <td><bean:write name="order" property="totalAmount" filter="true"/></td>
+        <td>
+          <html:link page="/admin/orders/detail.do" paramId="orderId" paramName="order" paramProperty="id">詳細</html:link>
+        </td>
         <td>
           <html:form action="/admin/order/update.do" method="post">
             <html:hidden property="orderId" value="<%= org.apache.struts.util.ResponseUtils.filter(orderId) %>"/>

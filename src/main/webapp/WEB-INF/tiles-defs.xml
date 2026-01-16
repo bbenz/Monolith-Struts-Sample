@@ -53,6 +53,11 @@
     <put name="body" value="/WEB-INF/jsp/products/notfound.jsp"/>
   </definition>
 
+  <definition name="coupons.available" extends="baseLayout">
+    <put name="title" value="クーポン一覧"/>
+    <put name="body" value="/WEB-INF/jsp/coupons/available.jsp"/>
+  </definition>
+
   <definition name="cart.view" extends="baseLayout">
     <put name="title" value="カート"/>
     <put name="body" value="/WEB-INF/jsp/cart/view.jsp"/>

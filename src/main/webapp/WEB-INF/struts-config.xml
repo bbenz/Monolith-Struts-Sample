@@ -88,6 +88,14 @@
       <forward name="notfound" path="products.notfound"/>
     </action>
 
+    <action path="/coupons/available"
+            type="com.skishop.web.action.CouponAvailableAction"
+            input="coupons.available"
+            scope="request"
+            validate="false">
+      <forward name="success" path="coupons.available"/>
+    </action>
+
     <action path="/cart"
             type="com.skishop.web.action.CartAction"
             name="addCartForm"
@@ -123,6 +131,15 @@
             scope="request"
             validate="false">
       <forward name="success" path="orders.history"/>
+      <forward name="login" path="/login.do"/>
+    </action>
+
+    <action path="/orders/detail"
+            type="com.skishop.web.action.OrderDetailAction"
+            input="orders.detail"
+            scope="request"
+            validate="false">
+      <forward name="success" path="orders.detail"/>
       <forward name="login" path="/login.do"/>
     </action>
 
@@ -202,6 +219,14 @@
             scope="request"
             validate="false">
       <forward name="success" path="admin.orders.list"/>
+    </action>
+
+    <action path="/admin/orders/detail"
+            type="com.skishop.web.action.admin.AdminOrderDetailAction"
+            input="admin.orders.detail"
+            scope="request"
+            validate="false">
+      <forward name="success" path="admin.orders.detail"/>
     </action>
 
     <action path="/admin/order/update"

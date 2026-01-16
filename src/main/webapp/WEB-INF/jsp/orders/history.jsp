@@ -20,6 +20,8 @@
         <td><bean:write name="order" property="status" filter="true"/></td>
         <td><bean:write name="order" property="totalAmount" filter="true"/></td>
         <td>
+          <html:link page="/orders/detail.do" paramId="orderId" paramName="order" paramProperty="id">詳細</html:link>
+          <br/>
           <html:form action="/orders/cancel.do" method="post">
             <html:hidden property="orderId" value="<%= org.apache.struts.util.ResponseUtils.filter(orderId) %>"/>
             <html:token/>
