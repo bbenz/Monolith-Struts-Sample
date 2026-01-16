@@ -42,7 +42,7 @@
             input="auth.login"
             scope="request"
             validate="true">
-      <forward name="success" path="/home.do"/>
+      <forward name="success" path="/home.do" redirect="true"/>
       <forward name="failure" path="auth.login"/>
     </action>
 
@@ -52,7 +52,7 @@
             input="auth.register"
             scope="request"
             validate="true">
-      <forward name="success" path="/login.do"/>
+      <forward name="success" path="/login.do" redirect="true"/>
       <forward name="failure" path="auth.register"/>
     </action>
 
