@@ -38,7 +38,7 @@ services:
 
   db:
     image: postgres:15-alpine
-    container_name: skishop-db
+    container_name: skishop-postgres
     environment:
       POSTGRES_DB: skishop
       POSTGRES_USER: skishop

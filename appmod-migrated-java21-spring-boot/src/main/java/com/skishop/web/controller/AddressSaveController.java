@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/address/save")
+@RequestMapping("/addresses/save")
 public class AddressSaveController {
     private static final int MAX_ADDRESSES_PER_USER = 10;
     private final UserAddressDao addressDao;

@@ -143,7 +143,7 @@ src/main/resources/
 
 ```text
 NAME                     STATUS
-skishop-db               Up (healthy)
+skishop-postgres         Up (healthy)
 skishop-springboot-app   Up (healthy)
 ```
 

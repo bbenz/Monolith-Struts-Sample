@@ -24,7 +24,7 @@ docker-compose up -d --build
 
 **期待される結果:**
 ```
-✔ Container skishop-db              Healthy
+✔ Container skishop-postgres        Healthy
 ✔ Container skishop-springboot-app  Started
 ```
 
@@ -37,7 +37,7 @@ docker-compose ps
 **期待される結果:**
 ```
 NAME                     STATUS                    PORTS
-skishop-db               Up (healthy)             0.0.0.0:5432->5432/tcp
+skishop-postgres         Up (healthy)             0.0.0.0:5432->5432/tcp
 skishop-springboot-app   Up (healthy)             0.0.0.0:8080->8080/tcp
 ```
 
@@ -118,7 +118,7 @@ SELECT * FROM users LIMIT 5;
 ### コンテナリソース使用状況
 
 ```bash
-docker stats skishop-springboot-app skishop-db
+docker stats skishop-springboot-app skishop-postgres
 ```
 
 ### ネットワーク接続の確認

@@ -65,7 +65,7 @@ public class PasswordResetController {
             userService.updatePassword(user.getId(), hashed, salt);
             tokenDao.markUsed(token.getId());
             return "password-reset-success";
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException e) {
             model.addAttribute("error", "Password reset failed. Please try again.");
             return "password-reset-failure";
         }

@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public class CheckoutRequest {
-    @NotBlank(message = "Cart ID is required")
     private String cartId;
 
     private String couponCode;
@@ -20,7 +19,7 @@ public class CheckoutRequest {
     private String billingZip;
 
     @Min(value = 0, message = "Points must be non-negative")
-    private int usePoints;
+    private Integer usePoints;
 
     public String getCartId() {
         return cartId;
@@ -87,10 +86,10 @@ public class CheckoutRequest {
     }
 
     public int getUsePoints() {
-        return usePoints;
+        return usePoints != null ? usePoints : 0;
     }
 
-    public void setUsePoints(int usePoints) {
+    public void setUsePoints(Integer usePoints) {
         this.usePoints = usePoints;
     }
 

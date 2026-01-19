@@ -26,11 +26,13 @@ public class CheckoutController {
 
     @GetMapping
     public String showCheckout(HttpSession session, Model model) {
-        String cartId = (String) session.getAttribute("cartId");
+        var cartId = (String) session.getAttribute("cartId");
         if (cartId == null) {
             return "redirect:/cart";
         }
-        model.addAttribute("checkoutRequest", new CheckoutRequest());
+        var checkoutRequest = new CheckoutRequest();
+        checkoutRequest.setCartId(cartId);
+        model.addAttribute("checkoutRequest", checkoutRequest);
         return "cart/checkout";
     }
 
@@ -62,10 +64,10 @@ public class CheckoutController {
                 userId
             );
             model.addAttribute("order", order);
-            return "checkout-success";
+            return "cart/confirmation";
         } catch (RuntimeException e) {
             model.addAttribute("error", "Checkout failed. Please try again.");
-            return "checkout-failure";
+            return "cart/checkout";
         }
     }
 }

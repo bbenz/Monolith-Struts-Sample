@@ -12,18 +12,18 @@
     <main class="site-container">
         <h2 class="page-title">チェックアウト</h2>
         
-        <form th:action="@{/checkout}" method="post" class="card">
-            <input type="hidden" name="cartId" th:value="${session.cartId}"/>
+        <form th:action="@{/checkout}" method="post" class="card" th:object="${checkoutRequest}">
+            <input type="hidden" th:field="*{cartId}"/>
             
             <table>
                 <tr>
                     <th>クーポンコード</th>
-                    <td><input type="text" name="couponCode" size="20"/></td>
+                    <td><input type="text" th:field="*{couponCode}" size="20"/></td>
                 </tr>
                 <tr>
                     <th>支払い方法</th>
                     <td>
-                        <select name="paymentMethod">
+                        <select th:field="*{paymentMethod}">
                             <option value="CARD">カード</option>
                             <option value="COD">代金引換</option>
                         </select>
@@ -31,29 +31,39 @@
                 </tr>
                 <tr>
                     <th>カード番号</th>
-                    <td><input type="text" name="cardNumber" size="20"/></td>
+                    <td><input type="text" th:field="*{cardNumber}" size="20"/></td>
                 </tr>
                 <tr>
                     <th>有効期限（月）</th>
-                    <td><input type="text" name="cardExpMonth" size="4"/></td>
+                    <td><input type="text" th:field="*{cardExpMonth}" size="4"/></td>
                 </tr>
                 <tr>
                     <th>有効期限（年）</th>
-                    <td><input type="text" name="cardExpYear" size="6"/></td>
+                    <td><input type="text" th:field="*{cardExpYear}" size="6"/></td>
                 </tr>
                 <tr>
                     <th>CVV</th>
-                    <td><input type="password" name="cardCvv" size="6"/></td>
+                    <td><input type="password" th:field="*{cardCvv}" size="6"/></td>
                 </tr>
                 <tr>
                     <th>郵便番号</th>
-                    <td><input type="text" name="billingZip" size="10"/></td>
+                    <td><input type="text" th:field="*{billingZip}" size="10"/></td>
                 </tr>
                 <tr>
                     <th>ポイント使用</th>
-                    <td><input type="text" name="usePoints" size="6"/></td>
+                    <td><input type="number" th:field="*{usePoints}" size="6" min="0" value="0"/></td>
                 </tr>
             </table>
+
+            <div th:if="${#fields.hasErrors()}" class="validation-errors">
+                <ul>
+                    <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                </ul>
+            </div>
+
+            <div th:if="${error}" class="validation-errors">
+                <p th:text="${error}"></p>
+            </div>
             
             <input type="submit" value="注文確定"/>
         </form>
