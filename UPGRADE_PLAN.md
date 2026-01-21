@@ -657,7 +657,55 @@ public class ProductFormDTO {
 | `<logic:notPresent name="var">` | `th:if="${var == null}"` | 非存在チェック |
 | `<logic:equal name="var" value="val">` | `th:if="${var == 'val'}"` | 値比較 |
 
-### フェーズ5: 設定とその他の移行（1週間）
+### フェーズ5: モダンJavaリファクタリング（1週間）
+
+#### 目的
+
+- Java 5時代のコードスタイルやAPIを Java 21 のモダンな書き方へ刷新し、可読性・安全性・性能を向上させる。
+
+#### チェックポイント
+
+| 項目 | Before 例 | After 例 | 備考 |
+| --- | --- | --- | --- |
+| リソース解放 | `try { ... } finally { close(); }` | `try (var in = ...) { ... }` | try-with-resources |
+| 型推論 | `Map<String, List<String>> map = new HashMap<String, List<String>>();` | `var map = new HashMap<String, List<String>>();` | diamond + var |
+| instanceof | `if (obj instanceof Foo) { Foo f = (Foo) obj; }` | `if (obj instanceof Foo f) { ... }` | pattern matching |
+| 文字列 | `"line1\nline2"` | `"""line1\nline2"""` | text blocks |
+| 日付/時刻 | `Date/Calendar` | `LocalDateTime/Instant` | java.time |
+| コレクション | `new ArrayList<>()` then add | `List.of(...)` | 不変リスト |
+| コレクション工場 | `new HashSet<>(); add...` | `Set.of(...) / Map.of(...)` | 不変Set/Map |
+| Map初期化 | `if (!map.containsKey(k)) map.put(k, ...)` | `map.computeIfAbsent(k, ...)` | Java 8 |
+| ループ | `for (String s : list) { ... }` | `list.stream().map(...).toList()` | Streams（適材適所） |
+| DTO | `class Foo { ... }` | `record Foo(...) {}` | DTO/Value Objectのみ |
+| HTTP | `HttpURLConnection` | `HttpClient` | Java 11 |
+| 並行処理 | `ExecutorService` | `virtual threads (Threads.ofVirtual().factory())` | 要検討 |
+| ラムダ/メソッド参照 | `new Runnable(){ public void run(){...}}` | `Runnable r = () -> {...}` / `System.out::println` | Java 8 |
+| 関数型IF | 独自IF多数 | `java.util.function.*` | 再利用と統一 |
+| switch構文 | `switch(x){case A: ... break;}` | `switch (x) { case A -> ...; default -> ...; }` | switch expressions |
+| switchパターン | `if/else`で型分岐 | `switch (obj) { case String s -> ... }` | Java 21 |
+| マルチキャッチ | 複数catch重複 | `catch (IOException\|SQLException e)` | Java 7 |
+| 数値リテラル | `1000000` | `1_000_000` | 可読性 |
+| Optional | `if (obj == null) ...` | `Optional.ofNullable(obj).ifPresent(...)` | null安全 |
+| Stream拡張 | `collect(Collectors.toList())` | `.toList()` | Java 16 |
+| Stream拡張2 | 手続きforループ | `stream().takeWhile(...).dropWhile(...)` | Java 9 |
+| Optional拡張 | `if (obj == null) ...` | `opt.ifPresentOrElse(...); opt.orElseThrow(); opt.stream()` | Java 9/10 |
+| NIO.2 | `new File(...)` | `Path/Files.walk(...)` | Java 7 |
+| CompletableFuture | `Future` + `get()` | `CompletableFuture.supplyAsync(...)` | 非同期処理 |
+| Sealed | `abstract class`で制御 | `sealed interface Shape permits Circle, Square {}` | Java 17 |
+| Stringユーティリティ | `trim().isEmpty()` | `isBlank()/strip()/lines()/repeat()` | Java 11 |
+| Random | `new Random()` | `ThreadLocalRandom.current()` / `RandomGenerator` | 並列安全/再現性 |
+| finalize | `protected void finalize()` | `Cleaner` / try-with-resources | Java 9+非推奨 |
+| レコードパターン | `if (obj instanceof Point) { ... }` | `if (obj instanceof Point(int x, int y)) { ... }` | Java 21 |
+| 文字列テンプレート | `"Hello " + name` | `STR."Hello ${name}"` | Java 21 (Preview) |
+
+#### 実施ステップ
+
+1. 静的解析（IDE inspections, SpotBugs, Checkstyle, SonarLint）で候補検出
+2. IDEリファクタリング + 自動修正適用（try-with-resources, diamond, var, pattern matching, text blocks）
+3. 手動レビュー（java.time/Streams/Optional/records適用箇所の設計判断）
+4. 全テスト実行・パフォーマンス確認
+
+### フェーズ6: 設定とその他の移行（1週間）
 
 #### 例外処理
 
@@ -693,7 +741,7 @@ public class GlobalExceptionHandler {
 }
 ```
 
-### フェーズ6: テストの作成（2週間）
+### フェーズ7: テストの作成（2週間）
 
 #### リポジトリテスト
 
@@ -912,7 +960,7 @@ class ProductIntegrationTest {
 }
 ```
 
-### フェーズ7: パフォーマンステストとチューニング（1週間）
+### フェーズ8: パフォーマンステストとチューニング（1週間）
 
 #### パフォーマンステストの実施
 
@@ -1001,7 +1049,7 @@ public class ProductServiceImpl implements ProductService {
 - [ ] JVMヒープサイズの調整
 - [ ] ガベージコレクションの最適化
 
-### フェーズ8: ドキュメント化と運用準備（1週間）
+### フェーズ9: ドキュメント化と運用準備（1週間）
 
 #### 作成すべきドキュメント
 
@@ -1167,7 +1215,7 @@ jobs:
         docker push skishop-app:${{ github.sha }}
 ```
 
-### フェーズ9: レガシーコードのクリーンアップと最終検証（1週間）
+### フェーズ10: レガシーコードのクリーンアップと最終検証（1週間）
 
 #### クリーンアップの目的
 
@@ -1688,18 +1736,19 @@ public String listProducts() {
 | フェーズ2: データアクセス層 | 2週間 | 2-3名 | エンティティ、リポジトリ、サービス |
 | フェーズ3: コントローラー層 | 3週間 | 3-4名 | 全Controller、DTO、バリデーション |
 | フェーズ4: ビュー層 | 3週間 | 2-3名 | 全Thymeleafテンプレート |
-| フェーズ5: 設定・その他 | 1週間 | 2名 | 例外処理、ファイルアップロード等 |
-| フェーズ6: テスト | 2週間 | 3-4名 | 単体・統合テスト |
-| フェーズ7: パフォーマンステスト | 1週間 | 2名 | 性能測定、チューニング |
-| フェーズ8: ドキュメント化 | 1週間 | 1-2名 | 技術ドキュメント、運用手順書 |
-| フェーズ9: レガシーコードクリーンアップ | 1週間 | 2-3名 | クリーンなコードベース、最終検証 |
-| **合計** | **約16週間（4ヶ月）** | **2-4名** | |
+| フェーズ5: モダンJavaリファクタリング | 1週間 | 2名 | Java 21モダンコード適用 |
+| フェーズ6: 設定・その他 | 1週間 | 2名 | 例外処理、ファイルアップロード等 |
+| フェーズ7: テスト | 2週間 | 3-4名 | 単体・統合テスト |
+| フェーズ8: パフォーマンステスト | 1週間 | 2名 | 性能測定、チューニング |
+| フェーズ9: ドキュメント化 | 1週間 | 1-2名 | 技術ドキュメント、運用手順書 |
+| フェーズ10: レガシーコードクリーンアップ | 1週間 | 2-3名 | クリーンなコードベース、最終検証 |
+| **合計** | **約17週間（4.25ヶ月）** | **2-4名** | |
 
 ### 並行作業の可能性
 
 - フェーズ3とフェーズ4は一部並行実施可能
 - テストは各フェーズで並行して作成
-- フェーズ9は全機能移行完了後に実施（並行作業不可）
+- フェーズ10は全機能移行完了後に実施（並行作業不可）
 
 ## 段階的リリース戦略
 
@@ -1786,6 +1835,17 @@ public String listProducts() {
 - [ ] セキュリティ設定（必要に応じて）
 - [ ] ログ設定の確認
 
+### モダンJavaリファクタリング
+
+- [ ] try-with-resourcesの適用
+- [ ] diamond演算子・`var`の適用
+- [ ] `instanceof`/`switch`のパターンマッチ適用
+- [ ] text blocks適用（SQL/JSON/HTML）
+- [ ] `java.time`への移行
+- [ ] Stream/Optionalへの移行（適材適所）
+- [ ] `record`/DTOの適用（JPAエンティティは除外）
+- [ ] `HttpClient`/virtual threadsの検討
+
 ### テストとデプロイ
 
 - [ ] 単体テストの完了
@@ -1870,6 +1930,7 @@ public String listProducts() {
 2. **十分なテスト**: 各フェーズで徹底的にテスト
 3. **継続的インテグレーション**: 自動テストとビルド
 4. **パフォーマンス監視**: 移行前後での性能測定
+5. **モダンJavaの適用**: try-with-resources, `java.time`, Streams, pattern matching, records
 
 ### 組織面
 
@@ -1908,13 +1969,13 @@ public String listProducts() {
 
 ### 推奨実装アプローチ
 
-**期間**: 約6ヶ月（16週間の開発 + テスト・デプロイ・クリーンアップ）
+**期間**: 約6ヶ月（17週間の開発 + テスト・デプロイ・クリーンアップ）
 
 **リソース**: 2-4名の開発者
 
 **リリース戦略**: ストラングラーパターンによる段階的移行（推奨）
 
-**最終フェーズ**: レガシーコードの完全削除によるコードベースのクリーンアップ
+**最終フェーズ**: フェーズ5でモダンJava適用、フェーズ10でレガシーコードを完全削除
 
 ### 投資対効果
 
@@ -1942,7 +2003,7 @@ public String listProducts() {
 
 ### 移行完了後の最終作業
 
-移行が完了し、Spring Bootアプリケーションが正常に動作することを確認した後、**フェーズ9でレガシーコードのクリーンアップ**を実施します。これにより：
+移行が完了し、Spring Bootアプリケーションが正常に動作することを確認した後、**フェーズ10でレガシーコードのクリーンアップ**を実施します。これにより：
 
 - 古いStrutsコードとJSPファイルを完全に削除
 - 不要な依存関係を削除してアプリケーションサイズを削減
