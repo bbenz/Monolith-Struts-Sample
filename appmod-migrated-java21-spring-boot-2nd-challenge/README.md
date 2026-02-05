@@ -7,7 +7,7 @@
 ## ✅ Prerequisites
 
 - Docker (Compose plugin)
-- Docker Desktop（Apple Silicon 対応済み）
+- Docker Desktop (Apple Silicon compatible)
 
 ## 🚀 Quickstart
 
@@ -66,19 +66,19 @@ docker run --rm --name skishop-app-tomcat6-alt \
 
 ```text
 .
-├── docker-compose.yml       # docker compose 設定
+├── docker-compose.yml       # docker compose configuration
 ├── Dockerfile               # multi-stage (build + runtime)
 ├── src/main/java            # Legacy Struts 1.x Java sources
 ├── src/main/webapp          # Legacy JSP/WEB-INF/struts-config.xml
 ├── src/main/resources/db    # Postgres init SQL (01-schema.sql, 02-data.sql)
 ├── spring-boot-app/         # Spring Boot app (jar)
-├── answer.md                # 埋め込んだ課題一覧と理想解
+├── answer.md                # Embedded challenge list and ideal solutions
 └── docs/operations.md       # Spring Boot ops notes
 ```
 
 ## 🧪 Local Maven Build (optional)
 
-> JDK 21 / Maven Wrapper 同梱 (`./mvnw`).
+> JDK 21 / Maven Wrapper included (`./mvnw`).
 
 ```bash
 ./mvnw -B package -DskipTests
@@ -93,13 +93,13 @@ WAR: `target/skishop-monolith.war`
 
 ## 🌱 Spring Boot Prototype
 
-試験的に `spring-boot-app/` に Spring Boot 3.2.x (Java 21) プロジェクトを追加済み:
+Experimentally added Spring Boot 3.2.x (Java 21) project to `spring-boot-app/`:
 
 ```bash
 ./mvnw -f spring-boot-app/pom.xml spring-boot:run
 ```
 
-テンプレート: `src/main/resources/templates/index.html`
+Template: `src/main/resources/templates/index.html`
 
 ### Monitoring / Docs
 
@@ -110,40 +110,39 @@ WAR: `target/skishop-monolith.war`
 - OpenAPI: `/v3/api-docs`, `/swagger-ui.html`
 - Docs: [`docs/operations.md`](docs/operations.md), [`docs/architecture.md`](docs/architecture.md)
 
-### Phase 2 (JPA フルカバレッジ)
+### Phase 2 (Full JPA Coverage)
 
-- **全テーブル**のエンティティ/リポジトリ/サービス実装済み
-- Lombok非使用（明示的 getter/setter, public no-arg ctor）
-- テスト: `./mvnw -f spring-boot-app/pom.xml -B test` ✅ (2026-01-22 02:28 JST)
-- 備考: JPAエンティティはRecord未採用（ライフサイクル/可変フィールドのため）
+- **All tables** entity/repository/service implementation complete
+- No Lombok (explicit getter/setter, public no-arg ctor)
+- Tests: `./mvnw -f spring-boot-app/pom.xml -B test` ✅ (2026-01-22 02:28 JST)
+- Note: JPA entities do not adopt Record (due to lifecycle/mutable fields)
 
-### Phase 3 (REST API & DTO & Thymeleaf素体)
+### Phase 3 (REST API & DTO & Thymeleaf Framework)
 
-- RESTコントローラ/DTO/例外ハンドラ実装（商品/カート/注文/ポイント/ユーザ/住所/クーポン/返品/Admin系）
-- WebMvcTest: リポジトリをMockしサービス実装を注入する構成で緑
-- Thymeleaf: `layout/main`, `fragments/header|footer`, `products/list`, `cart/detail`, `orders/detail`, `admin/*` の素体追加
-- テスト: `./mvnw -f spring-boot-app/pom.xml -B test` ✅ (2026-01-22 02:28 JST)
+- REST controller/DTO/exception handler implementation (product/cart/order/point/user/address/coupon/return/Admin systems)
+- WebMvcTest: Green configuration with mocked repositories and injected service implementation
+- Thymeleaf: Added framework for `layout/main`, `fragments/header|footer`, `products/list`, `cart/detail`, `orders/detail`, `admin/*`
+- Tests: `./mvnw -f spring-boot-app/pom.xml -B test` ✅ (2026-01-22 02:28 JST)
 
-### Phase 4 (Thymeleaf本実装: JSP→Thymeleaf)
+### Phase 4 (Thymeleaf Full Implementation: JSP→Thymeleaf)
 
-- **完了**: UIコントローラ（`ViewController`, `AdminViewController`）、テンプレート全画面実装、ヘッダ/フッタ/スタイル、メッセージリソース整備、ビュー系テスト追加
-- テスト: `./mvnw -f spring-boot-app/pom.xml -B test` ✅ (2026-01-22 03:04 JST)
+- **Complete**: UI controller (`ViewController`, `AdminViewController`), all screen templates implementation, header/footer/styles, message resource organization, view test addition
+- Tests: `./mvnw -f spring-boot-app/pom.xml -B test` ✅ (2026-01-22 03:04 JST)
 
-### Phase 5-8 完了
+### Phase 5-8 Complete
 
-- Phase5: モダンJavaリファクタリング済
-- Phase6: REST/UI例外ハンドラ・エラーページ
-- Phase7: テスト拡充 (UI/REST例外 & 統合)
-- Phase8: 監視/キャッシュ (Actuator+Prometheus, Spring Cache, HTTPキャッシュ性能確認)
+- Phase5: Modern Java refactoring complete
+- Phase6: REST/UI exception handler & error pages
+- Phase7: Enhanced testing (UI/REST exceptions & integration)
+- Phase8: Monitoring/caching (Actuator+Prometheus, Spring Cache, HTTP cache performance verification)
 
-#### テスト
+#### Tests
 
 ```bash
 ./mvnw -f spring-boot-app/pom.xml -B test
 ```
-- 成功: 2026-01-22 15:19 JST
+- Success: 2026-01-22 15:19 JST
 
 ### Phase 9-10
-- Phase9: Docs/運用(OpenAPI, operations/architecture)
-- **Phase10: レガシーStruts整理** — Boot内にStruts参照なし、`docs/legacy.md` にアーカイブ指針を記載。RootのStrutsアプリは現状保持（ワークショップ用途）。
-
+- Phase9: Docs/operations (OpenAPI, operations/architecture)
+- **Phase10: Legacy Struts cleanup** — No Struts references in Boot, archival policy documented in `docs/legacy.md`. Root Struts app remains current (for workshop purposes).
