@@ -1,82 +1,82 @@
-# コントローラーテンプレート名修正レポート
+# Controller Template Name Fix Report
 
-## 問題の特定
-ヘッダーメニューから「クーポン」と「カート」にアクセスすると500エラーが発生していました。
+## Problem Identification
+500 errors occurred when accessing "Coupons" and "Cart" from the header menu.
 
-### 原因
-コントローラーが返すテンプレート名と、実際に作成したThymeleafテンプレートのパスが一致していませんでした。
+### Cause
+The template names returned by the controllers did not match the paths of the actually created Thymeleaf templates.
 
-## 修正内容
+## Fix Details
 
-### 1. カート関連
-**修正前**: `return "cart"`  
-**修正後**: `return "cart/view"`  
-**テンプレート**: `/templates/cart/view.html`
+### 1. Cart Related
+**Before**: `return "cart"`  
+**After**: `return "cart/view"`  
+**Template**: `/templates/cart/view.html`
 
-**修正ファイル**:
-- `CartController.java` - GET/POSTメソッド両方
+**Fixed Files**:
+- `CartController.java` - Both GET/POST methods
 
-### 2. クーポン関連
-**修正前**: `return "coupon-available"`  
-**修正後**: `return "coupons/available"`  
-**テンプレート**: `/templates/coupons/available.html`
+### 2. Coupon Related
+**Before**: `return "coupon-available"`  
+**After**: `return "coupons/available"`  
+**Template**: `/templates/coupons/available.html`
 
-**修正ファイル**:
+**Fixed Files**:
 - `CouponAvailableController.java`
 
-### 3. 商品詳細
-**修正前**: `return "product-detail"`  
-**修正後**: `return "products/detail"`  
-**テンプレート**: `/templates/products/detail.html`
+### 3. Product Detail
+**Before**: `return "product-detail"`  
+**After**: `return "products/detail"`  
+**Template**: `/templates/products/detail.html`
 
-**修正ファイル**:
+**Fixed Files**:
 - `ProductDetailController.java`
 
-### 4. 注文関連
-**修正前**: `return "order-history"`  
-**修正後**: `return "orders/history"`  
-**テンプレート**: `/templates/orders/history.html`
+### 4. Order Related
+**Before**: `return "order-history"`  
+**After**: `return "orders/history"`  
+**Template**: `/templates/orders/history.html`
 
-**修正前**: `return "order-detail"`  
-**修正後**: `return "orders/detail"`  
-**テンプレート**: `/templates/orders/detail.html`
+**Before**: `return "order-detail"`  
+**After**: `return "orders/detail"`  
+**Template**: `/templates/orders/detail.html`
 
-**修正ファイル**:
+**Fixed Files**:
 - `OrderHistoryController.java`
 - `OrderDetailController.java`
 
-### 5. チェックアウト
-**修正前**: `return "checkout"`  
-**修正後**: `return "cart/checkout"`  
-**テンプレート**: `/templates/cart/checkout.html`
+### 5. Checkout
+**Before**: `return "checkout"`  
+**After**: `return "cart/checkout"`  
+**Template**: `/templates/cart/checkout.html`
 
-**修正ファイル**:
-- `CheckoutController.java` - GET/POSTメソッド両方
+**Fixed Files**:
+- `CheckoutController.java` - Both GET/POST methods
 
-### 6. ポイント残高
-**修正前**: `return "point-balance"`  
-**修正後**: `return "points/balance"`  
-**テンプレート**: `/templates/points/balance.html`
+### 6. Points Balance
+**Before**: `return "point-balance"`  
+**After**: `return "points/balance"`  
+**Template**: `/templates/points/balance.html`
 
-**修正ファイル**:
+**Fixed Files**:
 - `PointBalanceController.java`
 
-### 7. 住所管理
-**修正前**: `return "address-list"`  
-**修正後**: `return "account/addresses"`  
-**テンプレート**: `/templates/account/addresses.html`
+### 7. Address Management
+**Before**: `return "address-list"`  
+**After**: `return "account/addresses"`  
+**Template**: `/templates/account/addresses.html`
 
-**修正前**: `return "address-form"`  
-**修正後**: `return "account/address_edit"`  
-**テンプレート**: `/templates/account/address_edit.html`
+**Before**: `return "address-form"`  
+**After**: `return "account/address_edit"`  
+**Template**: `/templates/account/address_edit.html`
 
-**修正ファイル**:
+**Fixed Files**:
 - `AddressListController.java`
 - `AddressSaveController.java`
 
-## テンプレート命名規則
+## Template Naming Convention
 
-修正後の統一された命名規則：
+Unified naming convention after fixes:
 ```
 /templates/
   ├── cart/
@@ -108,21 +108,21 @@
       └── coupons/
 ```
 
-## 動作確認
+## Operation Verification
 
-### テスト結果
+### Test Results
 - ✅ `/cart` - HTTP 200
 - ✅ `/coupons/available` - HTTP 200
 - ✅ `/products` - HTTP 200
 - ✅ `/login` - HTTP 200
 - ✅ `/` - HTTP 200
 
-### ページ表示確認
-- ✅ カートページ: 正しいヘッダー、タイトル、CSS適用
-- ✅ クーポンページ: 正しいヘッダー、タイトル、CSS適用
-- ✅ app.css正常に読み込まれている
+### Page Display Verification
+- ✅ Cart page: Correct header, title, CSS applied
+- ✅ Coupon page: Correct header, title, CSS applied
+- ✅ app.css loading normally
 
-## 修正したコントローラー一覧
+## Fixed Controllers List
 1. CartController.java
 2. CouponAvailableController.java
 3. ProductDetailController.java
@@ -133,9 +133,9 @@
 8. AddressListController.java
 9. AddressSaveController.java
 
-## まとめ
-全9つのコントローラーで、テンプレート名をディレクトリ構造に合わせて修正しました。
-これにより、ヘッダーメニューからのすべてのナビゲーションが正常に動作するようになりました。
+## Summary
+Fixed template names in all 9 controllers to match the directory structure.
+This made all navigation from the header menu work normally.
 
-修正日時: 2026年1月19日
-ステータス: ✅ 完了
+Fix Date: January 19, 2026
+Status: ✅ Complete

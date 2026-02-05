@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ホーム - Ski Resort Shop</title>
+    <title>Home - Ski Resort Shop</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
@@ -11,15 +11,15 @@
     
     <main class="site-container">
         <div class="hero">
-            <h1>Ski Resort Shop へようこそ</h1>
-            <p>最高品質のスキー・スノーボード用品で、あなたの冬のアドベンチャーを始めよう。</p>
+            <h1>Welcome to Ski Resort Shop</h1>
+            <p>Start your winter adventure with the highest quality ski and snowboard equipment.</p>
             <div class="hero-actions">
-                <a th:href="@{/products}" class="btn">商品を見る</a>
-                <a th:href="@{/coupons/available}" class="btn btn-secondary">クーポンを確認</a>
+                <a th:href="@{/products}" class="btn">View Products</a>
+                <a th:href="@{/coupons/available}" class="btn btn-secondary">Check Coupons</a>
             </div>
         </div>
         
-        <h2 class="page-title">おすすめスキー用品</h2>
+        <h2 class="page-title">Recommended Ski Equipment</h2>
         
         <div th:if="${featuredProducts != null and !featuredProducts.isEmpty()}" class="products-grid">
             <div th:each="product : ${featuredProducts}" class="product-card">
@@ -34,13 +34,13 @@
                           class="tag" th:text="${product.brand}">Brand</span>
                 </div>
                 <div>
-                    <a th:href="@{/product(id=${product.id})}" class="btn">詳細を見る</a>
+                    <a th:href="@{/product(id=${product.id})}" class="btn">View Details</a>
                 </div>
             </div>
         </div>
         
         <p th:if="${featuredProducts == null or featuredProducts.isEmpty()}">
-            おすすめ商品を準備中です。
+            Recommended products are being prepared.
         </p>
     </main>
     

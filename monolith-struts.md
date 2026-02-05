@@ -1,77 +1,77 @@
-# Monolithic Struts 詳細設計書（Java 1.5 / JSP / Struts 1.2.9）
+# Monolithic Struts Detailed Design Document (Java 1.5 / JSP / Struts 1.2.9)
 
 <!-- markdownlint-disable MD013 -->
 
-## 1. 概要
+## 1. Overview
 
-- スキーショップECを**モノリシック**に実装（マイクロサービス群を単一 WAR に統合）。
-- 技術制約: **Java 1.5**, **JSP**, **Struts 1.2.9**, Strutsタグライブラリ（`html`, `bean`, `logic`, `tiles`）。
-- 設計方針: **レイヤードアーキテクチャ** + **オーソドックスなGoF/EEパターン**
-  - Front Controller（Struts ActionServlet）
-  - Command（Action）、ActionForm
-  - MVC（JSP=View, Action=Controller, Service/Domain=Model）
+- Implements a ski shop EC site **monolithically** (consolidating microservices into a single WAR).
+- Technical constraints: **Java 1.5**, **JSP**, **Struts 1.2.9**, Struts tag libraries (`html`, `bean`, `logic`, `tiles`).
+- Design approach: **Layered Architecture** + **Orthodox GoF/EE Patterns**
+  - Front Controller (Struts ActionServlet)
+  - Command (Action), ActionForm
+  - MVC (JSP=View, Action=Controller, Service/Domain=Model)
   - Service Facade / Business Delegate / Service Locator
   - DAO + DTO/ValueObject
-  - Template Method（DAO共通化）
-  - Intercepting Filter / RequestProcessor（認証・権限チェック）
-  - Singleton（サービスロケータ、ファクトリ）
+  - Template Method (DAO commonization)
+  - Intercepting Filter / RequestProcessor (authentication/authorization check)
+  - Singleton (service locator, factory)
 
-## 2. 要件・制約
+## 2. Requirements and Constraints
 
-- **言語仕様**: Java 1.5（ジェネリクスは任意、注釈無し、ラムダ不可、Stream不可）
-- **UI**: JSP + Strutsタグ (`<html:form>`, `<html:text>`, `<bean:write>`, `<logic:iterate>`)
-- **Controller**: Struts 1.2.9（XML設定ベース）
-- **DI**: 手動（ServiceLocator / Factory）
-- **永続化**: JDBC + DAO（Commons DBCP, Commons DbUtils 可）
-- **View合成**: Tiles 1.x（任意） or JSP include
-- **ビルド**: Maven 2 もしくは Ant（推奨: Maven 2, maven-compiler-plugin 1.5）
-- **アプリサーバ**: Tomcat 6.x / Java 5 対応コンテナ
-- **ログ**: log4j 1.2
-- **テスト**: JUnit 4.12（Java5対応）または JUnit 3.8 + StrutsTestCase
-- **メール送信**: JavaMail 1.4.x（SMTP）
+- **Language specification**: Java 1.5 (generics optional, no annotations, no lambdas, no Streams)
+- **UI**: JSP + Struts tags (`<html:form>`, `<html:text>`, `<bean:write>`, `<logic:iterate>`)
+- **Controller**: Struts 1.2.9 (XML-based configuration)
+- **DI**: Manual (ServiceLocator / Factory)
+- **Persistence**: JDBC + DAO (Commons DBCP, Commons DbUtils allowed)
+- **View composition**: Tiles 1.x (optional) or JSP include
+- **Build**: Maven 2 or Ant (recommended: Maven 2, maven-compiler-plugin 1.5)
+- **Application server**: Tomcat 6.x / Java 5 compatible container
+- **Logging**: log4j 1.2
+- **Testing**: JUnit 4.12 (Java5 compatible) or JUnit 3.8 + StrutsTestCase
+- **Email sending**: JavaMail 1.4.x (SMTP)
 
-## 3. 技術スタック
+## 3. Technology Stack
 
-| 区分 | 技術 | バージョン | 用途 |
+| Category | Technology | Version | Purpose |
 | ---- | ---- | ---------- | ---- |
-| 言語 | Java | 1.5 | アプリ実装 |
+| Language | Java | 1.5 | Application implementation |
 | Web FW | Struts | 1.2.9 | MVC, Front Controller |
-| View | JSP | 2.0 | テンプレート |
-| Taglib | struts-html/bean/logic/tiles | 1.2.x | ビュー操作 |
-| JDBC | commons-dbcp | 1.2.x | コネクションプール |
-| JDBC補助 | commons-dbutils | 1.1 | クエリ補助（任意） |
-| ログ | log4j | 1.2.17 | ロギング |
-| メール | JavaMail | 1.4.7 | 通知メール |
-| テスト | JUnit | 3.8/4.x | 単体テスト |
-| ビルド | Maven | 2.2.x | 依存管理 |
+| View | JSP | 2.0 | Template |
+| Taglib | struts-html/bean/logic/tiles | 1.2.x | View manipulation |
+| JDBC | commons-dbcp | 1.2.x | Connection pool |
+| JDBC helper | commons-dbutils | 1.1 | Query helper (optional) |
+| Logging | log4j | 1.2.17 | Logging |
+| Email | JavaMail | 1.4.7 | Notification email |
+| Testing | JUnit | 3.8/4.x | Unit testing |
+| Build | Maven | 2.2.x | Dependency management |
 
-## 4. レイヤードアーキテクチャ
+## 4. Layered Architecture
 
 ```text
 Presentation (JSP/Tiles + Struts Taglib)
    ↑ Action (Controller) - org.apache.struts.action.Action
-   ↑ Form (ActionForm) - 入力検証 (Commons Validator)
+   ↑ Form (ActionForm) - Input validation (Commons Validator)
    ↑ Service Facade / Business Delegate
    ↑ Domain/DTO (POJO, JavaBean)
    ↑ DAO (JDBC) + Template Method
-   ↑ Infrastructure (DBCP, Transaction管理, ServiceLocator)
+   ↑ Infrastructure (DBCP, Transaction management, ServiceLocator)
 ```
 
-### デザインパターン適用
+### Design Pattern Application
 
 - **Front Controller**: `ActionServlet` + `RequestProcessor`
-- **Command**: `Action` クラス単位で処理
-- **Service Facade**: `*Service` はユースケース単位のAPIを提供
-- **Facade**: `OrderFacade` で注文処理など複合ユースケースを集約
-- **Business Delegate**: Action → Serviceを仲介（結合度低減）
-- **DAO**: DBアクセスをカプセル化、SQL管理
-- **DTO/VO**: JSPへ渡す表示データオブジェクト
-- **Template Method**: `AbstractDao` に共通処理（接続/例外/close）
-- **Intercepting Filter**: 認証・権限チェック（`AuthRequestProcessor`）
+- **Command**: Processing per `Action` class
+- **Service Facade**: `*Service` provides use case-level API
+- **Facade**: `OrderFacade` aggregates composite use cases like order processing
+- **Business Delegate**: Mediates between Action → Service (reduces coupling)
+- **DAO**: Encapsulates DB access, SQL management
+- **DTO/VO**: Display data objects passed to JSP
+- **Template Method**: Common processing in `AbstractDao` (connection/exception/close)
+- **Intercepting Filter**: Authentication/authorization check (`AuthRequestProcessor`)
 
-## 5. モジュール構成（マイクロサービス統合）
+## 5. Module Structure (Microservice Integration)
 
-| 元サービス | モノリス内モジュール/パッケージ例 |
+| Original Service | Monolith Module/Package Example |
 | ------------ | ------------------------------- |
 | frontend-service | `com.skishop.web` (Actions/JSP), `com.skishop.service.catalog` |
 | authentication-service | `com.skishop.service.auth`, `com.skishop.domain.user` |
@@ -82,7 +82,7 @@ Presentation (JSP/Tiles + Struts Taglib)
 | sales-management-service | `com.skishop.service.order` |
 | user-management-service | `com.skishop.service.user` |
 
-### パッケージ例
+### Package Example
 
 ```text
 com.skishop.common
@@ -132,9 +132,9 @@ com.skishop.web
   ├─ tiles (layouts)
 ```
 
-## 6. Struts設定
+## 6. Struts Configuration
 
-### web.xml（抜粋）
+### web.xml (excerpt)
 
 ```xml
 <web-app>
@@ -174,7 +174,7 @@ com.skishop.web
 </web-app>
 ```
 
-### struts-config.xml（抜粋）
+### struts-config.xml (excerpt)
 
 ```xml
 <struts-config>
@@ -242,7 +242,7 @@ com.skishop.web
 </struts-config>
 ```
 
-### Tiles（任意） tiles-defs.xml（抜粋）
+### Tiles (optional) tiles-defs.xml (excerpt)
 
 ```xml
 <tiles-definitions>
@@ -259,7 +259,7 @@ com.skishop.web
 </tiles-definitions>
 ```
 
-### validation.xml（抜粋）
+### validation.xml (excerpt)
 
 ```xml
 <form-validation>
@@ -277,7 +277,7 @@ com.skishop.web
 </form-validation>
 ```
 
-## 7. データモデル（主なテーブル）
+## 7. Data Model (Main Tables)
 
 ### User & Auth
 
@@ -320,16 +320,16 @@ com.skishop.web
 - `point_accounts(id UUID PK, user_id FK, balance INT, lifetime_earned INT, lifetime_redeemed INT)`
 - `point_transactions(id UUID PK, user_id FK, type, amount INT, reference_id, description, expires_at, is_expired, created_at)`
 
-> ※ テーブルはモノリス内で共有DB（スキーマ統一）。必要に応じてインデックス追加。
+> ※ Tables are shared within the monolith DB (unified schema). Add indexes as needed.
 
 ### Admin / Config
 
 - `shipping_methods(id UUID PK, code UNIQUE, name, fee DECIMAL, is_active, sort_order)`
 - `email_queue(id UUID PK, to_addr, subject, body, status, retry_count, last_error, scheduled_at, sent_at)`
 
-## 8. 主要ユースケース・フロー
+## 8. Main Use Cases and Flows
 
-### ログイン
+### Login
 
 ```mermaid
 sequenceDiagram
@@ -345,7 +345,7 @@ sequenceDiagram
   A-->>U: success -> redirect home / failure -> login.jsp
 ```
 
-### 商品一覧 & 詳細
+### Product List & Detail
 
 ```mermaid
 sequenceDiagram
@@ -357,7 +357,7 @@ sequenceDiagram
   ProductListAction-->>U: render list.jsp (logic:iterate)
 ```
 
-### カート追加 & 確認 & チェックアウト
+### Add to Cart & Confirm & Checkout
 
 ```mermaid
 sequenceDiagram
@@ -377,7 +377,7 @@ sequenceDiagram
   CheckoutAction-->>U: order/confirmation.jsp
 ```
 
-### ポイント付与
+### Point Award
 
 ```mermaid
 sequenceDiagram
@@ -386,12 +386,12 @@ sequenceDiagram
   PointService->>PointTransactionDao: record
 ```
 
-## 9. JSPビュー設計
+## 9. JSP View Design
 
-- **共通**: `/WEB-INF/jsp/layouts/base.jsp` (Tiles) or includes
+- **Common**: `/WEB-INF/jsp/layouts/base.jsp` (Tiles) or includes
   - `header.jsp`, `footer.jsp`, `messages.jsp` (`<html:errors/>`)
-- **ページ**:
-  - `home.jsp`: おすすめ商品（`logic:iterate`）
+- **Pages**:
+  - `home.jsp`: Featured products (`logic:iterate`)
   - `auth/login.jsp`: `<html:form action="/login.do">`
   - `auth/register.jsp`: `<html:form action="/register.do">`
   - `auth/password/forgot.jsp`, `auth/password/reset.jsp`
@@ -402,11 +402,11 @@ sequenceDiagram
   - `account/addresses.jsp`, `account/address_edit.jsp`
   - `coupons/available.jsp`
   - `admin/products/list.jsp`, `admin/products/edit.jsp`, `admin/orders/list.jsp`, `admin/orders/detail.jsp`
-- **タグlib**:
+- **Taglibs**:
   - `<%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>`
   - `<%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>`
   - `<%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>`
-- **例: products/list.jsp（抜粋）**
+- **Example: products/list.jsp (excerpt)**
 
 ```jsp
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
@@ -422,7 +422,7 @@ sequenceDiagram
         <html:form action="/cart.do">
           <html:hidden property="productId"><bean:write name="prod" property="id"/></html:hidden>
           <html:text property="quantity" value="1" size="2"/>
-          <html:submit value="カートに追加"/>
+          <html:submit value="Add to Cart"/>
         </html:form>
       </td>
     </tr>
@@ -430,16 +430,16 @@ sequenceDiagram
 </table>
 ```
 
-## 10. セキュリティ/セッション/例外
+## 10. Security/Session/Exception
 
-- **認証**: `AuthRequestProcessor` で `request.getSession(false)` をチェック、未ログインは `/login.do` にリダイレクト。
-- **認可**: Actionにカスタム属性（`roles`）を設定し `AuthRequestProcessor` で検査（ActionMapping拡張）。
+- **Authentication**: `AuthRequestProcessor` checks `request.getSession(false)`, redirects to `/login.do` if not logged in.
+- **Authorization**: Set custom attribute (`roles`) on Action and check in `AuthRequestProcessor` (ActionMapping extension).
 - **CSRF**: Struts Token (`saveToken`, `isTokenValid`)
-- **入力検証**: Struts Validator（`validation.xml`） + `LoginForm.validate()`
-- **例外処理**: `global-exceptions` → `error.jsp`、ログ出力 log4j
-- **セッション保持**: `Cart` はセッション or DB（cart_id in cookie）
+- **Input validation**: Struts Validator (`validation.xml`) + `LoginForm.validate()`
+- **Exception handling**: `global-exceptions` → `error.jsp`, log output with log4j
+- **Session persistence**: `Cart` in session or DB (cart_id in cookie)
 
-## 11. DAO/Service 実装方針（サンプル）
+## 11. DAO/Service Implementation Policy (Sample)
 
 ### AbstractDao.java
 
@@ -456,7 +456,7 @@ public abstract class AbstractDao {
 }
 ```
 
-### UserDao.java（抜粋）
+### UserDao.java (excerpt)
 
 ```java
 public class UserDao extends AbstractDao {
@@ -485,7 +485,7 @@ public class UserDao extends AbstractDao {
 }
 ```
 
-### AuthService.java（抜粋）
+### AuthService.java (excerpt)
 
 ```java
 public class AuthService {
@@ -501,7 +501,7 @@ public class AuthService {
 }
 ```
 
-### LoginAction.java（抜粋）
+### LoginAction.java (excerpt)
 
 ```java
 public class LoginAction extends Action {
@@ -510,7 +510,7 @@ public class LoginAction extends Action {
     LoginForm f = (LoginForm) form;
     AuthResult result = authService.authenticate(f.getEmail(), f.getPassword());
     if (!result.isSuccess()) {
-      req.setAttribute("error", "ログインに失敗しました");
+      req.setAttribute("error", "Login failed");
       return mapping.findForward("failure");
     }
     req.getSession(true).setAttribute("loginUser", result.getUser());
@@ -519,7 +519,7 @@ public class LoginAction extends Action {
 }
 ```
 
-### OrderFacade（Facade パターン）
+### OrderFacade (Facade Pattern)
 
 ```java
 public interface OrderFacade {
@@ -549,7 +549,7 @@ public class OrderFacadeImpl implements OrderFacade {
 }
 ```
 
-#### CheckoutAction での利用例
+#### CheckoutAction Usage Example
 
 ```java
 public class CheckoutAction extends Action {
@@ -570,10 +570,9 @@ public class CheckoutAction extends Action {
 }
 ```
 
-## 12. ビルド/デプロイ/テスト
+## 12. Build/Deploy/Test
 
-### Maven 2（例）
-    <dependency><groupId>javax.mail</groupId><artifactId>mail</artifactId><version>1.4.7</version></dependency>
+### Maven 2 (example)
 
 ```xml
 <project>
@@ -588,6 +587,7 @@ public class CheckoutAction extends Action {
     <dependency><groupId>commons-dbcp</groupId><artifactId>commons-dbcp</artifactId><version>1.2.2</version></dependency>
     <dependency><groupId>commons-pool</groupId><artifactId>commons-pool</artifactId><version>1.2</version></dependency>
     <dependency><groupId>log4j</groupId><artifactId>log4j</artifactId><version>1.2.17</version></dependency>
+    <dependency><groupId>javax.mail</groupId><artifactId>mail</artifactId><version>1.4.7</version></dependency>
     <dependency><groupId>junit</groupId><artifactId>junit</artifactId><version>4.12</version><scope>test</scope></dependency>
   </dependencies>
   <build>
@@ -602,83 +602,83 @@ public class CheckoutAction extends Action {
 </project>
 ```
 
-### テスト
+### Testing
 
-- **Action単体**: StrutsTestCase（MockHttpServletRequest）
-- **Service/DAO**: JUnit + H2 (HSQLDB) インメモリ、DBUnitで固定データ投入
+- **Action unit testing**: StrutsTestCase (MockHttpServletRequest)
+- **Service/DAO**: JUnit + H2 (HSQLDB) in-memory, insert fixed data with DBUnit
 
-### デプロイ
+### Deployment
 
-- `mvn package` → `target/skishop-monolith.war` → Tomcat 6 の `webapps/`
+- `mvn package` → `target/skishop-monolith.war` → Tomcat 6's `webapps/`
 
-## 13. 非機能・運用
+## 13. Non-functional/Operations
 
-- **接続プール**: commons-dbcp (maxActive, maxIdle 設定)
-- **キャッシュ**: シンプルな LRU（`LinkedHashMap`） or EHCache 1.x（任意）
-- **監視**: Apache Access Log, log4j RollingFileAppender
-- **国際化**: `messages.properties`, `messages_ja.properties`
-- **設定**: `WEB-INF/classes/app.properties`（DB接続文字列など）
+- **Connection pool**: commons-dbcp (maxActive, maxIdle configuration)
+- **Cache**: Simple LRU (`LinkedHashMap`) or EHCache 1.x (optional)
+- **Monitoring**: Apache Access Log, log4j RollingFileAppender
+- **Internationalization**: `messages.properties`, `messages_ja.properties`
+- **Configuration**: `WEB-INF/classes/app.properties` (DB connection string, etc.)
 
 ---
-本設計書は、Java 1.5 / Struts 1.2.9 時代の構文・設定方針のみを使用しています。最新機能（アノテーション、DIフレームワーク、ラムダ等）は一切利用しません。
+This design document uses only Java 1.5 / Struts 1.2.9 era syntax and configuration policies. Modern features (annotations, DI frameworks, lambdas, etc.) are not used at all.
 
-## 14. GoF パターン適用一覧
+## 14. GoF Pattern Application List
 
-| パターン | 用途 | 実装例 |
+| Pattern | Purpose | Implementation Example |
 | --- | --- | --- |
-| Facade | 複合ユースケース集約 | `OrderFacade` |
-| Business Delegate | Action と Service の結合度低減 | `CheckoutAction` → `OrderFacade` |
-| Service Locator | DI代替、サービス取得 | `ServiceLocator` |
-| Template Method | DAO共通処理 | `AbstractDao` |
-| Strategy | 価格計算/クーポン適用/ポイント計算 | `PricingStrategy`, `CouponRuleEvaluator` |
-| Adapter | 外部決済/認証連携 | `StripePaymentAdapter`（例） |
-| Singleton | DataSourceやServiceLocator | `DataSourceLocator` |
-| Front Controller | リクエスト集約 | `ActionServlet`, `AuthRequestProcessor` |
-| Command | リクエストごとの処理 | 各 `Action` |
-| DAO | 永続化カプセル化 | `UserDao`, `OrderDao` |
-| DTO/VO | 表示/転送オブジェクト | `ProductDto`, `OrderDto` |
-| Observer (手動) | ドメインイベント通知 | ポイント付与通知、ログ出力 |
-| Abstract Factory | DAO生成切替 | `DaoFactory`（拡張余地） |
+| Facade | Composite use case aggregation | `OrderFacade` |
+| Business Delegate | Reduce coupling between Action and Service | `CheckoutAction` → `OrderFacade` |
+| Service Locator | DI alternative, service retrieval | `ServiceLocator` |
+| Template Method | DAO common processing | `AbstractDao` |
+| Strategy | Price calculation/coupon application/point calculation | `PricingStrategy`, `CouponRuleEvaluator` |
+| Adapter | External payment/authentication integration | `StripePaymentAdapter` (example) |
+| Singleton | DataSource and ServiceLocator | `DataSourceLocator` |
+| Front Controller | Request aggregation | `ActionServlet`, `AuthRequestProcessor` |
+| Command | Processing per request | Each `Action` |
+| DAO | Persistence encapsulation | `UserDao`, `OrderDao` |
+| DTO/VO | Display/transfer objects | `ProductDto`, `OrderDto` |
+| Observer (manual) | Domain event notification | Point award notification, log output |
+| Abstract Factory | DAO creation switching | `DaoFactory` (extension room) |
 
-## 15. URL & ナビゲーション一覧
+## 15. URL & Navigation List
 
-| URL | HTTP | Action | Form | Forwards | 要認証 | 備考 |
+| URL | HTTP | Action | Form | Forwards | Auth Required | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| `/home.do` | GET | HomeAction | - | input=`/WEB-INF/jsp/home.jsp` | 不要 | Top
-| `/login.do` | GET/POST | LoginAction | loginForm | success=`/home.do`, failure=`/WEB-INF/jsp/auth/login.jsp` | 不要 | ログイン成功時セッション更新
-| `/register.do` | GET/POST | RegisterAction | registerForm | success=`/login.do`, failure=`/WEB-INF/jsp/auth/register.jsp` | 不要 | 会員登録（メール重複不可）
-| `/password/forgot.do` | POST | PasswordForgotAction | passwordResetRequestForm | success=`/WEB-INF/jsp/auth/password/forgot_complete.jsp`, failure=`/WEB-INF/jsp/auth/password/forgot.jsp` | 不要 | メール送信
-| `/password/reset.do` | POST | PasswordResetAction | passwordResetForm | success=`/login.do`, failure=`/WEB-INF/jsp/auth/password/reset.jsp` | 不要 | トークン検証
-| `/logout.do` | GET | LogoutAction | - | success=`/home.do` | 要 | セッションinvalidate後homeへ
-| `/products.do` | GET | ProductListAction | productSearchForm | input=`/WEB-INF/jsp/products/list.jsp` | 不要 | ページングパラメータ
-| `/product.do?id=...` | GET | ProductDetailAction | - | success=`/WEB-INF/jsp/products/detail.jsp` | 不要 | `id`必須
-| `/cart.do` | GET/POST | CartAction | addCartForm (scope=session) | success=`/WEB-INF/jsp/cart/view.jsp` | 不要 | POSTで追加, GETで表示
-| `/checkout.do` | POST | CheckoutAction | checkoutForm | success=`/WEB-INF/jsp/cart/confirmation.jsp`, failure=`/WEB-INF/jsp/cart/checkout.jsp` | 要 | CSRF Token必須
-| `/coupon/apply.do` | POST | CouponApplyAction | couponForm | success=`/WEB-INF/jsp/cart/view.jsp`, failure=`/WEB-INF/jsp/cart/view.jsp` | 要 | カートと連動
-| `/orders.do` | GET | OrderHistoryAction | - | input=`/WEB-INF/jsp/orders/history.jsp` | 要 | ログインユーザのみ
-| `/orders/cancel.do` | POST | OrderCancelAction | - | success=`/orders.do` | 要 | 状態: CREATED/CONFIRMED のみ
-| `/orders/return.do` | POST | OrderReturnAction | - | success=`/orders.do` | 要 | 状態: DELIVERED のみ
-| `/points.do` | GET | PointBalanceAction | - | input=`/WEB-INF/jsp/points/balance.jsp` | 要 | ログインユーザのみ
-| `/addresses.do` | GET | AddressListAction | - | input=`/WEB-INF/jsp/account/addresses.jsp` | 要 | 住所帳表示
-| `/addresses/save.do` | POST | AddressSaveAction | addressForm | success=`/addresses.do`, failure=`/WEB-INF/jsp/account/address_edit.jsp` | 要 | 上限10件
-| `/admin/*` | - | AdminActions | - | admin配下JSP | 要+ROLE=admin | ActionMapping拡張でroles指定
+| `/home.do` | GET | HomeAction | - | input=`/WEB-INF/jsp/home.jsp` | No | Top
+| `/login.do` | GET/POST | LoginAction | loginForm | success=`/home.do`, failure=`/WEB-INF/jsp/auth/login.jsp` | No | Session update on successful login
+| `/register.do` | GET/POST | RegisterAction | registerForm | success=`/login.do`, failure=`/WEB-INF/jsp/auth/register.jsp` | No | Member registration (no duplicate emails)
+| `/password/forgot.do` | POST | PasswordForgotAction | passwordResetRequestForm | success=`/WEB-INF/jsp/auth/password/forgot_complete.jsp`, failure=`/WEB-INF/jsp/auth/password/forgot.jsp` | No | Send email
+| `/password/reset.do` | POST | PasswordResetAction | passwordResetForm | success=`/login.do`, failure=`/WEB-INF/jsp/auth/password/reset.jsp` | No | Token verification
+| `/logout.do` | GET | LogoutAction | - | success=`/home.do` | Yes | Invalidate session then redirect to home
+| `/products.do` | GET | ProductListAction | productSearchForm | input=`/WEB-INF/jsp/products/list.jsp` | No | Paging parameters
+| `/product.do?id=...` | GET | ProductDetailAction | - | success=`/WEB-INF/jsp/products/detail.jsp` | No | `id` required
+| `/cart.do` | GET/POST | CartAction | addCartForm (scope=session) | success=`/WEB-INF/jsp/cart/view.jsp` | No | POST to add, GET to display
+| `/checkout.do` | POST | CheckoutAction | checkoutForm | success=`/WEB-INF/jsp/cart/confirmation.jsp`, failure=`/WEB-INF/jsp/cart/checkout.jsp` | Yes | CSRF Token required
+| `/coupon/apply.do` | POST | CouponApplyAction | couponForm | success=`/WEB-INF/jsp/cart/view.jsp`, failure=`/WEB-INF/jsp/cart/view.jsp` | Yes | Linked with cart
+| `/orders.do` | GET | OrderHistoryAction | - | input=`/WEB-INF/jsp/orders/history.jsp` | Yes | Logged in users only
+| `/orders/cancel.do` | POST | OrderCancelAction | - | success=`/orders.do` | Yes | Status: CREATED/CONFIRMED only
+| `/orders/return.do` | POST | OrderReturnAction | - | success=`/orders.do` | Yes | Status: DELIVERED only
+| `/points.do` | GET | PointBalanceAction | - | input=`/WEB-INF/jsp/points/balance.jsp` | Yes | Logged in users only
+| `/addresses.do` | GET | AddressListAction | - | input=`/WEB-INF/jsp/account/addresses.jsp` | Yes | Display address book
+| `/addresses/save.do` | POST | AddressSaveAction | addressForm | success=`/addresses.do`, failure=`/WEB-INF/jsp/account/address_edit.jsp` | Yes | Limit 10 addresses
+| `/admin/*` | - | AdminActions | - | admin JSPs | Yes+ROLE=admin | Specify roles with ActionMapping extension
 
-## 16. Form 定義一覧
+## 16. Form Definition List
 
-| Form名 | プロパティ | 型 | 必須 | 検証 | 備考 |
+| Form Name | Properties | Type | Required | Validation | Notes |
 | --- | --- | --- | --- | --- | --- |
-| LoginForm | email, password | String | Yes | email, minlength=8 | セッション更新
+| LoginForm | email, password | String | Yes | email, minlength=8 | Session update
 | ProductSearchForm | keyword, categoryId, page, size, sort | String, String, int, int, String | No | page>=1, size∈{10,20,50} | sort: priceAsc/priceDesc/newest |
 | AddCartForm | productId, quantity | String, int | Yes | quantity>=1 | scope=session |
-| CheckoutForm | cartId, couponCode, paymentMethod, cardNumber, cardExpMonth, cardExpYear, cardCvv, billingZip | String | Yes | card番号Luhn, 月1-12, 年=現在以上, CVV=3-4桁 | 支払情報は ephemeral (保持しない) |
+| CheckoutForm | cartId, couponCode, paymentMethod, cardNumber, cardExpMonth, cardExpYear, cardCvv, billingZip | String | Yes | card number Luhn, month 1-12, year=current or later, CVV=3-4 digits | Payment info is ephemeral (not persisted) |
 | CouponForm | code | String | Yes | minlength=3 | |
-| RegisterForm | email, password, passwordConfirm, username | String | Yes | email, minlength=8, equals(passwordConfirm) | 重複メール不可 |
+| RegisterForm | email, password, passwordConfirm, username | String | Yes | email, minlength=8, equals(passwordConfirm) | No duplicate emails |
 | PasswordResetRequestForm | email | String | Yes | email | |
 | PasswordResetForm | token, password, passwordConfirm | String | Yes | token required, minlength=8, equals(passwordConfirm) | |
-| AddressForm | id, label, recipientName, postalCode, prefecture, address1, address2, phone, isDefault | String, boolean | Yes | postalCode mask, phone mask | 上限10件 |
-| AdminProductForm | id, name, brand, description, categoryId, price, status, inventoryQty | String, BigDecimal, int | Yes | price>=0, inventory>=0 | admin用 |
+| AddressForm | id, label, recipientName, postalCode, prefecture, address1, address2, phone, isDefault | String, boolean | Yes | postalCode mask, phone mask | Limit 10 addresses |
+| AdminProductForm | id, name, brand, description, categoryId, price, status, inventoryQty | String, BigDecimal, int | Yes | price>=0, inventory>=0 | admin use |
 
-### validation.xml 追記（例）
+### validation.xml Addition (example)
 
 ```xml
 <form-validation>
@@ -727,40 +727,40 @@ public class CheckoutAction extends Action {
 </form-validation>
 ```
 
-## 17. セッション/スコープ/属性キー
+## 17. Session/Scope/Attribute Keys
 
-| スコープ | キー | 型 | 設定箇所 | 備考 |
+| Scope | Key | Type | Set Location | Notes |
 | --- | --- | --- | --- | --- |
-| session | `loginUser` | `User` | LoginAction | ログインユーザ |
-| session | `cartId` | `String` | CartAction (新規生成時) | Cookie `CART_ID` と同期 |
-| session | `cart` | `CartDto` | CartAction | 参照専用、更新はサービス経由 |
-| request | `productList` | `List<ProductDto>` | ProductListAction | JSP表示用 |
-| request | `product` | `ProductDto` | ProductDetailAction | JSP表示用 |
-| request | `order` | `OrderDto` | CheckoutAction | 確認画面 |
+| session | `loginUser` | `User` | LoginAction | Logged in user |
+| session | `cartId` | `String` | CartAction (on new generation) | Synced with cookie `CART_ID` |
+| session | `cart` | `CartDto` | CartAction | Read-only reference, update via service |
+| request | `productList` | `List<ProductDto>` | ProductListAction | For JSP display |
+| request | `product` | `ProductDto` | ProductDetailAction | For JSP display |
+| request | `order` | `OrderDto` | CheckoutAction | Confirmation screen |
 | request | `pointBalance` | `PointBalanceDto` | PointBalanceAction | |
-| request | `error` | `String` or `ActionMessages` | 各Action | `<html:errors/>` で表示 |
-| cookie | `CART_ID` | String(UUID) | CartAction | 有効期限: 30日 |
+| request | `error` | `String` or `ActionMessages` | Each Action | Display with `<html:errors/>` |
+| cookie | `CART_ID` | String(UUID) | CartAction | Expiration: 30 days |
 
-## 18. トランザクション/整合性
+## 18. Transaction/Consistency
 
-- **トランザクション開始/終了**: Service層（例: `OrderService.placeOrder`）で `autoCommit=false`、成功時 `commit`、例外時 `rollback`。
-- **隔離レベル**: READ_COMMITTED（DB設定）、在庫更新時は `SELECT ... FOR UPDATE` で悲観ロック。
-- **オーダー確定フロー**:
-  1. カート取得 & バリデーション
-  2. クーポン検証（使用回数/期間/最低金額）
-  3. 在庫確保（reserved_quantity += qty, 在庫不足なら例外）
-  4. 決済オーソリ（外部連携は失敗時例外、成功時 intent_id 保持）
-  5. 注文保存（orders, order_items）
-  6. ポイント付与（point_accounts 更新, point_transactions 追加）
-  7. カートクリア、コミット
-  8. コミット後に決済キャプチャ（必要に応じリトライ）
-- **一致保証**: 決済成功後DB失敗の場合は決済void/キャンセル処理を実施。
+- **Transaction start/end**: Service layer (e.g., `OrderService.placeOrder`) sets `autoCommit=false`, `commit` on success, `rollback` on exception.
+- **Isolation level**: READ_COMMITTED (DB configuration), pessimistic locking with `SELECT ... FOR UPDATE` for inventory updates.
+- **Order confirmation flow**:
+  1. Get cart & validation
+  2. Coupon verification (usage count/period/minimum amount)
+  3. Reserve inventory (reserved_quantity += qty, exception if insufficient)
+  4. Payment authorization (external integration fails with exception, success holds intent_id)
+  5. Save order (orders, order_items)
+  6. Award points (update point_accounts, add point_transactions)
+  7. Clear cart, commit
+  8. Payment capture after commit (retry if needed)
+- **Consistency guarantee**: If DB fails after payment success, execute payment void/cancel processing.
 
-- **キャンセル/返品フロー**:
-  - キャンセル: `status=CREATED/CONFIRMED` のみ、在庫予約戻し、決済 void/refund、ポイント減算、クーポン使用数減算。
-  - 返品: `status=DELIVERED`、返品数量<=注文数量、在庫戻し（任意）、返金トランザクション記録、ポイント調整。
+- **Cancel/return flow**:
+  - Cancel: `status=CREATED/CONFIRMED` only, return inventory reservation, payment void/refund, deduct points, decrement coupon usage count.
+  - Return: `status=DELIVERED`, return quantity<=order quantity, return inventory (optional), record refund transaction, adjust points.
 
-## 19. ステータス/定数定義（enum 推奨）
+## 19. Status/Constant Definitions (enum recommended)
 
 - `users.status`: ACTIVE, LOCKED, INACTIVE
 - `orders.status`: CREATED, CONFIRMED, SHIPPED, DELIVERED, CANCELLED, RETURNED
@@ -769,12 +769,12 @@ public class CheckoutAction extends Action {
 - `inventory.status`: AVAILABLE, OUT_OF_STOCK
 - `coupons.coupon_type`: PERCENT, FIXED
 - `coupons.discount_type`: ORDER, SHIPPING
-- 金額: `BigDecimal` scale=2, rounding=HALF_UP, 通貨: `JPY` 前提（拡張余地）
-- ポイント: 1pt = 1円、付与率=1%（floor(total_amount))、有効期限=365日
-- 税: 消費税率=10%、`tax = round(subtotal * 0.1)`
-- 送料: 800円（税抜）*、10,000円以上で無料 (*税込計算時は税率適用)
+- Amounts: `BigDecimal` scale=2, rounding=HALF_UP, currency: `JPY` assumption (extension room)
+- Points: 1pt = 1 yen, award rate=1% (floor(total_amount)), expiration=365 days
+- Tax: Consumption tax rate=10%, `tax = round(subtotal * 0.1)`
+- Shipping: 800 yen (before tax)*, free for 10,000 yen or more (*apply tax rate when calculating tax-included)
 
-## 20. スキーマ制約/インデックス（抜粋）
+## 20. Schema Constraints/Indexes (excerpt)
 
 - `users.email` UNIQUE, INDEX
 - `cart_items(cart_id, product_id)` UNIQUE
@@ -782,43 +782,43 @@ public class CheckoutAction extends Action {
 - `order_items.order_id` INDEX
 - `inventory.product_id` UNIQUE
 - `coupons.code` UNIQUE
-- `user_addresses(user_id, is_default)` 部分 UNIQUE (1件のみ)
+- `user_addresses(user_id, is_default)` partial UNIQUE (only 1 record)
 - `password_reset_tokens(token)` UNIQUE, INDEX
 - FK: `order_items.order_id` → `orders.id`, `orders.user_id` → `users.id`, etc.
-- インデックス例:
+- Index examples:
   - `products(category_id)`, `products(status)`
   - `prices(product_id)`, `inventory(status)`
   - `coupon_usage(coupon_id, user_id)`
   - `email_queue(status, scheduled_at)`
 
-## 21. DAO SQL 一覧（サンプル）
+## 21. DAO SQL List (Sample)
 
 - `ProductDao.findPaged`: `SELECT ... FROM products WHERE status='ACTIVE' AND (:categoryId IS NULL OR category_id=?) AND name LIKE ? ORDER BY ? LIMIT ? OFFSET ?`
 - `InventoryDao.reserve`: `UPDATE inventory SET reserved_quantity = reserved_quantity + ? WHERE product_id = ? AND (quantity - reserved_quantity) >= ?`
 - `CouponDao.validate`: `SELECT ... FROM coupons WHERE code=? AND is_active=1 AND expires_at>NOW()`
 - `PointAccountDao.increment`: `UPDATE point_accounts SET balance=balance+?, lifetime_earned=lifetime_earned+? WHERE user_id=?`
 - `UserAddressDao.list`: `SELECT * FROM user_addresses WHERE user_id=? ORDER BY is_default DESC, created_at`
-- `UserAddressDao.save`: `INSERT ... ON CONFLICT(user_id,is_default) DO ...` (RDB依存: PostgreSQL); is_default=1 の場合他を0に更新
+- `UserAddressDao.save`: `INSERT ... ON CONFLICT(user_id,is_default) DO ...` (DB-dependent: PostgreSQL); if is_default=1, update others to 0
 - `ShippingMethodDao.listActive`: `SELECT * FROM shipping_methods WHERE is_active=1 ORDER BY sort_order`
 - `EmailQueueDao.enqueue`: `INSERT INTO email_queue(...) VALUES (...)`
 
-## 22. セキュリティ詳細
+## 22. Security Details
 
-- **パスワードハッシュ**: `SHA-256` + per-user salt + 1000 iterations。
+- **Password hash**: `SHA-256` + per-user salt + 1000 iterations.
   ```java
   MessageDigest md = MessageDigest.getInstance("SHA-256");
   byte[] salt = Base64.decode(user.getSalt());
   byte[] input = concat(salt, password.getBytes("UTF-8"));
   for (int i=0;i<1000;i++) { input = md.digest(input); md.reset(); input = concat(salt, input); }
   ```
-- **セッション固定化対策**: ログイン成功時 `session.invalidate()` → 新規セッション発行。
-- **CSRF**: `saveToken(request)` をフォーム描画時、POST時 `isTokenValid` で検証、成功時 `resetToken`。
-- **XSS**: JSP は `<bean:write filter="true"/>` をデフォルト、入力値は再エスケープ。
-- **Cookie**: `CART_ID` は HttpOnly（response header で付与）、Secure(HTTPS前提) 推奨。
-- **ログイン試行制限**: 5回失敗で `users.status=LOCKED`、`security_logs` へ記録。
-- **パスワードリセット**: 1時間有効のトークンを `password_reset_tokens` に保存、1回使い切り、メール本文にリセットURLを付与。
+- **Session fixation countermeasure**: On successful login, `session.invalidate()` → issue new session.
+- **CSRF**: `saveToken(request)` when rendering form, verify with `isTokenValid` on POST, `resetToken` on success.
+- **XSS**: JSP uses `<bean:write filter="true"/>` by default, re-escape input values.
+- **Cookie**: `CART_ID` is HttpOnly (set via response header), Secure (HTTPS assumption) recommended.
+- **Login attempt limit**: Lock after 5 failures with `users.status=LOCKED`, record in `security_logs`.
+- **Password reset**: Store 1-hour valid token in `password_reset_tokens`, one-time use, attach reset URL in email body.
 
-## 23. 設定ファイル例
+## 23. Configuration File Examples
 
 `WEB-INF/classes/app.properties`
 ```properties
@@ -865,7 +865,7 @@ log4j.appender.R.layout.ConversionPattern=%d{ISO8601} %-5p %c %X{reqId} - %m%n
 log4j.logger.com.skishop=INFO
 ```
 
-## 24. ServiceLocator / Factory（骨子）
+## 24. ServiceLocator / Factory (Skeleton)
 
 ```java
 public class ServiceLocator {
@@ -876,7 +876,7 @@ public class ServiceLocator {
   public static OrderFacade getOrderFacade() { return orderFacade; }
   public static CartService getCartService() { return new CartService(); }
   public static MailService getMailService() { return mailService; }
-  // 他サービスも同様に
+  // Other services similarly
 }
 ```
 
@@ -894,22 +894,22 @@ public class DataSourceLocator {
 }
 ```
 
-## 25. ポイント/クーポン計算ルール
+## 25. Point/Coupon Calculation Rules
 
-- **ポイント**: 付与 = floor(`total_amount` * 0.01)。利用時は `used_points` を注文に記録、ポイント残高から差引き。
-- **クーポン**:
+- **Points**: Award = floor(`total_amount` * 0.01). When using, record `used_points` in order, deduct from point balance.
+- **Coupon**:
   - PERCENT: `discount = min(total * discount_value/100, maximum_discount)`
   - FIXED: `discount = discount_value`
-  - 検証: `usage_limit` > `used_count`, `minimum_amount` <= total, 期間内, is_active=1
-  - 適用順序: クーポン → ポイント → 税・送料計算 (税込価格)
+  - Validation: `usage_limit` > `used_count`, `minimum_amount` <= total, within period, is_active=1
+  - Application order: Coupon → Points → Tax/shipping calculation (tax-included price)
 
-## 26. ログ/監視
+## 26. Log/Monitoring
 
-- **MDC**: `reqId` を `X-Request-Id` ヘッダ or UUIDで生成し、`MDC.put("reqId", ...)`。
-- **アクセスログ**: Tomcat AccessLogValve 使用。
-- **監視**: ログローテーション、Deadlock検知はスレッドダンプ取得手順をRunbookに記載。
+- **MDC**: Generate `reqId` from `X-Request-Id` header or UUID, `MDC.put("reqId", ...)`.
+- **Access log**: Use Tomcat AccessLogValve.
+- **Monitoring**: Log rotation, deadlock detection procedure documented in Runbook.
 
-## 27. テストデータ（サンプル）
+## 27. Test Data (Sample)
 
 ```sql
 INSERT INTO users(id,email,username,password_hash,salt,status,role) VALUES
@@ -925,38 +925,38 @@ INSERT INTO inventory(id,product_id,quantity,reserved_quantity,status) VALUES
 ('inv-1','P001',10,0,'AVAILABLE');
 
 INSERT INTO user_addresses(id, user_id, label, recipient_name, postal_code, prefecture, address1, address2, phone, is_default, created_at, updated_at) VALUES
-('addr-1','u-1','自宅','山田 太郎','160-0022','東京都','新宿区新宿1-1-1','マンション101','0312345678',true,NOW(),NOW());
+('addr-1','u-1','Home','Taro Yamada','160-0022','Tokyo','Shinjuku-ku Shinjuku 1-1-1','Mansion 101','0312345678',true,NOW(),NOW());
 ```
 
-## 28. コーディング規約/その他
+## 28. Coding Conventions/Others
 
-- **命名**: クラス `PascalCase`、メソッド/変数 `camelCase`、定数 `UPPER_SNAKE_CASE`。
-- **例外**: DAOは `DaoException` にラップ、Actionは `ActionMessages` に詰めてforward。
-- **DTO**: JSPへの渡しは DTO のみ（ドメインモデルを直接渡さない）。
-- **時間**: 全て UTC 保存、表示時にローカライズ。
-- **文字コード**: UTF-8 固定。
+- **Naming**: Classes `PascalCase`, methods/variables `camelCase`, constants `UPPER_SNAKE_CASE`.
+- **Exceptions**: DAO wraps in `DaoException`, Action puts in `ActionMessages` and forwards.
+- **DTO**: Only pass DTOs to JSP (don't pass domain models directly).
+- **Time**: Store all in UTC, localize on display.
+- **Character encoding**: Fixed to UTF-8.
 
-## 29. 機能要件一覧（EC標準）
+## 29. Functional Requirements List (EC Standard)
 
-| 区分 | 要件 | 状態 | 備考 |
+| Category | Requirement | Status | Notes |
 | --- | --- | --- | --- |
-| 会員 | 会員登録/ログイン/ログアウト | 対応 | 登録時メール重複不可、パスワード8桁以上 |
-| 会員 | パスワードリセット | 対応 | 1時間トークン、メール送信 |
-| 会員 | プロフィール編集 | 対応 | usernameのみ |
-| 会員 | 住所帳 | 対応 | 上限10件、デフォルト1件 |
-| 検索 | 商品検索/カテゴリ/並び替え | 対応 | keyword, categoryId, priceAsc/Desc/newest |
-| 在庫 | 在庫表示/在庫確保 | 対応 | reserved_quantity, 悲観ロック |
-| カート | 追加/更新/削除 | 対応 | セッション or DB cart_id/cookie |
-| 決済 | クレカオーソリ（擬似） | 対応 | 外部Adapter、テストカード |
-| 割引 | クーポン | 対応 | PERCENT/FIXED, usage_limit |
-| ポイント | 付与/利用/残高 | 対応 | 1%付与、365日 |
-| 注文 | 注文履歴/詳細 | 対応 | ログイン必須 |
-| 注文 | キャンセル/返品 | 対応 | 状態制約あり |
-| 配送 | 送料計算/配送先指定 | 対応 | 800円/1万円以上無料、住所帳選択 |
-| 税 | 消費税計算 | 対応 | 10% |
-| 通知 | メール通知 | 対応 | 注文確定メール、リセットメール |
-| 管理 | 商品/カテゴリ/在庫管理 | 対応 | admin role |
-| 管理 | クーポン管理 | 対応 | admin role |
-| 管理 | 注文ステータス更新/返金 | 対応 | admin role |
+| Member | Member registration/login/logout | Supported | No duplicate email on registration, password 8+ characters |
+| Member | Password reset | Supported | 1-hour token, email sending |
+| Member | Profile editing | Supported | username only |
+| Member | Address book | Supported | Limit 10 addresses, 1 default |
+| Search | Product search/category/sort | Supported | keyword, categoryId, priceAsc/Desc/newest |
+| Inventory | Inventory display/reservation | Supported | reserved_quantity, pessimistic locking |
+| Cart | Add/update/delete | Supported | Session or DB cart_id/cookie |
+| Payment | Credit card authorization (mock) | Supported | External adapter, test card |
+| Discount | Coupon | Supported | PERCENT/FIXED, usage_limit |
+| Points | Award/use/balance | Supported | 1% award, 365 days |
+| Order | Order history/details | Supported | Login required |
+| Order | Cancel/return | Supported | Status constraints apply |
+| Shipping | Shipping fee calculation/destination specification | Supported | 800 yen/free for 10,000+ yen, address book selection |
+| Tax | Consumption tax calculation | Supported | 10% |
+| Notification | Email notification | Supported | Order confirmation email, reset email |
+| Admin | Product/category/inventory management | Supported | admin role |
+| Admin | Coupon management | Supported | admin role |
+| Admin | Order status update/refund | Supported | admin role |
 
-※ ゲストチェックアウト: 非対応（ログイン必須）。必要なら `/guestCheckout` を追加し、注文に `user_id NULL` を許容、ポイント/住所帳なし。
+※ Guest checkout: Not supported (login required). If needed, add `/guestCheckout`, allow `user_id NULL` in orders, no points/address book.

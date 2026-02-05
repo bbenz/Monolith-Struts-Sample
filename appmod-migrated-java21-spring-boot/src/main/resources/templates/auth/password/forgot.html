@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>パスワード再発行 - Ski Resort Shop</title>
+    <title>Password Reset - Ski Resort Shop</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
     <header class="app-header" th:insert="~{fragments/header :: header}"></header>
     
     <main class="site-container">
-        <h2 class="page-title">パスワード再発行</h2>
+        <h2 class="page-title">Password Reset</h2>
         
         <form th:action="@{/password/forgot}" method="post" class="card">
             <table>
                 <tr>
-                    <th>メールアドレス</th>
+                    <th>Email Address</th>
                     <td><input type="text" name="email" size="40"/></td>
                 </tr>
             </table>
             
-            <input type="submit" value="送信"/>
+            <input type="submit" value="Send"/>
         </form>
         
-        <p><a th:href="@{/login}">ログインへ戻る</a></p>
+        <p><a th:href="@{/login}">Back to Login</a></p>
     </main>
     
     <footer th:insert="~{fragments/footer :: footer}"></footer>

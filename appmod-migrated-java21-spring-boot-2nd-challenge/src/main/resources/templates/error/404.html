@@ -5,10 +5,10 @@
 </head>
 <body>
 <div th:fragment="content">
-        <h1 class="page-title">ページが見つかりません</h1>
+        <h1 class="page-title">Page Not Found</h1>
         <div class="card">
-            <p th:text="${error} ?: 'お探しのページは存在しません。'"></p>
-            <p><a th:href="@{/}">トップへ戻る</a></p>
+            <p th:text="${error} ?: 'The page you are looking for does not exist.'"></p>
+            <p><a th:href="@{/}">Back to Top</a></p>
         </div>
 </div>
 </body>

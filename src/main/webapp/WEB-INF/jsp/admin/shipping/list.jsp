@@ -1,20 +1,20 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
-<h2>配送方法管理</h2>
-<p><html:link page="/admin/shipping/edit.do">配送方法を追加</html:link></p>
+<h2>Shipping Method Management</h2>
+<p><html:link page="/admin/shipping/edit.do">Add Shipping Method</html:link></p>
 <logic:empty name="shippingMethods">
-  <p>配送方法がありません。</p>
+  <p>No shipping methods available.</p>
 </logic:empty>
 <logic:notEmpty name="shippingMethods">
   <table border="1">
     <tr>
-      <th>コード</th>
-      <th>名称</th>
-      <th>送料</th>
-      <th>有効</th>
-      <th>並び順</th>
-      <th>編集</th>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Shipping Fee</th>
+      <th>Active</th>
+      <th>Sort Order</th>
+      <th>Edit</th>
     </tr>
     <logic:iterate id="method" name="shippingMethods">
       <tr>
@@ -24,7 +24,7 @@
         <td><bean:write name="method" property="active" filter="true"/></td>
         <td><bean:write name="method" property="sortOrder" filter="true"/></td>
         <td>
-          <html:link page="/admin/shipping/edit.do" paramId="code" paramName="method" paramProperty="code">編集</html:link>
+          <html:link page="/admin/shipping/edit.do" paramId="code" paramName="method" paramProperty="code">Edit</html:link>
         </td>
       </tr>
     </logic:iterate>

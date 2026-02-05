@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
-<head><title>管理: 返品</title></head>
+<head><title>Admin: Returns</title></head>
 <body>
 <div th:fragment="content">
-  <h1 class="page-title">管理: 返品</h1>
+  <h1 class="page-title">Admin: Returns</h1>
   <div class="card table-responsive">
     <table>
-      <thead><tr><th>ID</th><th>注文</th><th>項目</th><th>ステータス</th><th>数量</th><th>返金額</th></tr></thead>
+      <thead><tr><th>ID</th><th>Order</th><th>Item</th><th>Status</th><th>Quantity</th><th>Refund Amount</th></tr></thead>
       <tbody>
         <tr th:each="r : ${returns}">
           <td th:text="${r.id}">id</td>

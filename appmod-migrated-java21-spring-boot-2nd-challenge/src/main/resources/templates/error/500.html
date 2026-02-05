@@ -5,10 +5,10 @@
 </head>
 <body>
 <div th:fragment="content">
-    <h1>エラーが発生しました</h1>
+    <h1>An Error Occurred</h1>
         <div class="card">
-            <p th:text="${error} ?: '予期しないエラーが発生しました。'" ></p>
-            <p><a th:href="@{/}">トップへ戻る</a></p>
+            <p th:text="${error} ?: 'An unexpected error has occurred.'" ></p>
+            <p><a th:href="@{/}">Back to Top</a></p>
         </div>
 </div>
 </body>

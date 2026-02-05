@@ -3,35 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品詳細 - Ski Resort Shop</title>
+    <title>Product Details - Ski Resort Shop</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
     <header class="app-header" th:insert="~{fragments/header :: header}"></header>
     
     <main class="site-container">
-        <h2 class="page-title">商品詳細</h2>
+        <h2 class="page-title">Product Details</h2>
         
         <div th:if="${product != null}" class="card">
-            <h3 th:text="${product.name}">商品名</h3>
-            <p>ブランド: <span th:text="${product.brand}">ブランド</span></p>
+            <h3 th:text="${product.name}">Product Name</h3>
+            <p>Brand: <span th:text="${product.brand}">Brand</span></p>
             <p>SKU: <span th:text="${product.sku}">SKU</span></p>
-            <p>カテゴリ: <span th:text="${product.categoryId}">カテゴリ</span></p>
-            <p>価格: <span class="price" th:text="${product.effectivePrice}">価格</span></p>
-            <p>説明: <span th:text="${product.description}">説明</span></p>
+            <p>Category: <span th:text="${product.categoryId}">Category</span></p>
+            <p>Price: <span class="price" th:text="${product.effectivePrice}">Price</span></p>
+            <p>Description: <span th:text="${product.description}">Description</span></p>
             
             <form th:action="@{/cart}" method="post">
                 <input type="hidden" name="productId" th:value="${product.id}"/>
-                <label>数量: <input type="text" name="quantity" value="1" size="3"/></label>
-                <input type="submit" value="カートへ追加"/>
+                <label>Quantity: <input type="text" name="quantity" value="1" size="3"/></label>
+                <input type="submit" value="Add to Cart"/>
             </form>
         </div>
         
         <div th:if="${product == null}" class="card">
-            <p>商品情報が取得できませんでした。</p>
+            <p>Product information could not be retrieved.</p>
         </div>
         
-        <p><a th:href="@{/products}">商品一覧に戻る</a></p>
+        <p><a th:href="@{/products}">Back to Product List</a></p>
     </main>
     
     <footer th:insert="~{fragments/footer :: footer}"></footer>

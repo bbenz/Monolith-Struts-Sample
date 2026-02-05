@@ -5,27 +5,27 @@
   <div class="inner">
     <div class="logo"><a th:href="@{/}">Ski Resort Shop</a></div>
     <ul class="app-nav">
-      <li><a th:href="@{/}">ホーム</a></li>
-      <li><a th:href="@{/ui/products}">商品</a></li>
-      <li th:if="${session.loginUser != null}"><a th:href="@{/ui/orders}">注文履歴</a></li>
-      <li th:if="${session.loginUser != null}"><a th:href="@{/ui/points}">ポイント</a></li>
-      <li th:if="${session.loginUser != null}"><a th:href="@{/ui/addresses}">住所</a></li>
-      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/products}">管理:商品</a></li>
-      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/orders}">管理:注文</a></li>
-      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/coupons}">管理:クーポン</a></li>
-      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/shipping-methods}">管理:配送方法</a></li>
-      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/users}">管理:ユーザー</a></li>
-      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/reports}">管理:レポート</a></li>
+      <li><a th:href="@{/}">Home</a></li>
+      <li><a th:href="@{/ui/products}">Products</a></li>
+      <li th:if="${session.loginUser != null}"><a th:href="@{/ui/orders}">Order History</a></li>
+      <li th:if="${session.loginUser != null}"><a th:href="@{/ui/points}">Points</a></li>
+      <li th:if="${session.loginUser != null}"><a th:href="@{/ui/addresses}">Addresses</a></li>
+      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/products}">Admin: Products</a></li>
+      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/orders}">Admin: Orders</a></li>
+      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/coupons}">Admin: Coupons</a></li>
+      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/shipping-methods}">Admin: Shipping Methods</a></li>
+      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/users}">Admin: Users</a></li>
+      <li th:if="${session.loginUser != null and session.loginUser.role == 'ADMIN'}"><a th:href="@{/ui/admin/reports}">Admin: Reports</a></li>
     </ul>
     <div class="actions">
       <form class="header-search" th:action="@{/ui/products}" method="get">
-        <input type="text" name="keyword" placeholder="商品名やブランドで検索" th:value="${keyword}" />
+        <input type="text" name="keyword" placeholder="Search by product name or brand" th:value="${keyword}" />
         <button type="submit">🔍</button>
       </form>
-      <a th:href="@{/ui/cart}" class="btn">🛒 カート</a>
-      <span th:if="${session.loginUser != null}" class="user-name">こんにちは、<span th:text="${session.loginUser.username}"></span></span>
-      <a th:if="${session.loginUser == null}" th:href="@{/ui/login}">ログイン</a>
-      <a th:if="${session.loginUser != null}" th:href="@{/ui/logout}">ログアウト</a>
+      <a th:href="@{/ui/cart}" class="btn">🛒 Cart</a>
+      <span th:if="${session.loginUser != null}" class="user-name">Hello, <span th:text="${session.loginUser.username}"></span></span>
+      <a th:if="${session.loginUser == null}" th:href="@{/ui/login}">Login</a>
+      <a th:if="${session.loginUser != null}" th:href="@{/ui/logout}">Logout</a>
     </div>
   </div>
 </div>

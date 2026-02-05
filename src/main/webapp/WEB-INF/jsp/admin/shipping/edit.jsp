@@ -1,7 +1,7 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
-<h2>配送方法編集</h2>
+<h2>Edit Shipping Method</h2>
 <html:form action="/admin/shipping/edit.do" method="post">
   <html:hidden property="id"/>
   <table>
@@ -27,5 +27,5 @@
     </tr>
   </table>
   <html:token/>
-  <html:submit value="更新"/>
+  <html:submit value="Update"/>
 </html:form>

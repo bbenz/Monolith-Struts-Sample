@@ -1,130 +1,130 @@
 # Spring Boot Migration Plan
 
-## Apache Struts 1.x から Spring Boot 3.x + Thymeleaf + Spring Data JPA への移行計画
+## Migration from Apache Struts 1.x to Spring Boot 3.x + Thymeleaf + Spring Data JPA
 
-## 概要
+## Overview
 
-このプロジェクトは Apache Struts 1.3.10 を使用した古いJavaアプリケーションで、Java 1.5 をターゲットにしています。このドキュメントは、**Java 21 + Spring Boot 3.2.x + Thymeleaf + Spring Data JPA** への完全移行計画を示します。
+This project uses Apache Struts 1.3.10, an old Java framework, targeting Java 1.5. This document outlines a complete migration plan to **Java 21 + Spring Boot 3.2.x + Thymeleaf + Spring Data JPA**.
 
-## 現在の状態
+## Current State
 
-### Javaバージョン
+### Java Version
 
-- **現在**: Java 1.5 (2004年リリース、サポート終了)
-- **移行先**: Java 21 LTS (2023年9月リリース、2031年9月までのLTSサポート)
+- **Current**: Java 1.5 (released 2004, end of support)
+- **Migration target**: Java 21 LTS (released September 2023, LTS support until September 2031)
 
-### フレームワーク
+### Framework
 
-- **現在**: Apache Struts 1.3.10 (2008年リリース、EOL、多数の既知の脆弱性)
-- **移行先**: Spring Boot 3.2.x (最新安定版、長期サポート)
+- **Current**: Apache Struts 1.3.10 (released 2008, EOL, numerous known vulnerabilities)
+- **Migration target**: Spring Boot 3.2.x (latest stable, long-term support)
 
-### 依存関係の現在のバージョン
+### Current Dependency Versions
 
-| カテゴリ | ライブラリ | 現在のバージョン | 最新LTSバージョン | 備考 |
+| Category | Library | Current Version | Latest LTS Version | Notes |
 | --- | --- | --- | --- | --- |
-| **フレームワーク** | | | | |
-| | Apache Struts Core | 1.3.10 | N/A | EOL、移行推奨 |
-| | Apache Struts Taglib | 1.3.10 | N/A | EOL、移行推奨 |
-| | Apache Struts Tiles | 1.3.10 | N/A | EOL、移行推奨 |
-| | Apache Struts Extras | 1.3.10 | N/A | EOL、移行推奨 |
-| **データベース接続** | | | | |
-| | commons-dbcp | 1.2.2 | 2.12.0 | DBCP2への移行推奨 |
-| | commons-pool | 1.2 | 2.12.0 | Pool2への移行推奨 |
-| | commons-dbutils | 1.1 | 1.8.1 | アップグレード可能 |
-| | PostgreSQL JDBC | 9.2-1004-jdbc3 | 42.7.4 | 大幅なアップグレード |
-| **ファイルアップロード** | | | | |
-| | commons-fileupload | 1.3.3 | 1.5 | セキュリティ修正あり |
-| **ロギング** | | | | |
-| | log4j | 1.2.17 | N/A | Log4j2 2.23.1へ移行推奨 |
-| **メール** | | | | |
-| | javax.mail | 1.4.7 | Jakarta Mail 2.1.3 | Jakarta EEへ移行 |
-| **ビューテンプレート/Web** | | | | |
-| | jsp-api | 2.1 | Thymeleaf 3.1.x | JSPからThymeleafへ移行 |
-| | servlet-api | 2.5 | Spring Boot組み込み（Tomcat 10.1.x） | Spring Boot Starterに含まれる |
-| | - | - | Spring Web MVC 6.1.x | RESTful Web Service対応 |
-| **テスト** | | | | |
-| | JUnit | 4.12 | JUnit 5.10.2 | JUnit Jupiterへ移行 |
-| | H2 Database | 1.3.176 | 2.2.224 | テスト用 |
-| | StrutsTestCase | 2.1.4-1.2-2.4 | N/A | Struts依存、削除検討 |
+| **Framework** | | | | |
+| | Apache Struts Core | 1.3.10 | N/A | EOL, migration recommended |
+| | Apache Struts Taglib | 1.3.10 | N/A | EOL, migration recommended |
+| | Apache Struts Tiles | 1.3.10 | N/A | EOL, migration recommended |
+| | Apache Struts Extras | 1.3.10 | N/A | EOL, migration recommended |
+| **Database Connection** | | | | |
+| | commons-dbcp | 1.2.2 | 2.12.0 | Migration to DBCP2 recommended |
+| | commons-pool | 1.2 | 2.12.0 | Migration to Pool2 recommended |
+| | commons-dbutils | 1.1 | 1.8.1 | Upgrade possible |
+| | PostgreSQL JDBC | 9.2-1004-jdbc3 | 42.7.4 | Major upgrade |
+| **File Upload** | | | | |
+| | commons-fileupload | 1.3.3 | 1.5 | Security fixes available |
+| **Logging** | | | | |
+| | log4j | 1.2.17 | N/A | Migration to Log4j2 2.23.1 recommended |
+| **Email** | | | | |
+| | javax.mail | 1.4.7 | Jakarta Mail 2.1.3 | Migration to Jakarta EE |
+| **View Template/Web** | | | | |
+| | jsp-api | 2.1 | Thymeleaf 3.1.x | Migration from JSP to Thymeleaf |
+| | servlet-api | 2.5 | Spring Boot embedded (Tomcat 10.1.x) | Included in Spring Boot Starter |
+| | - | - | Spring Web MVC 6.1.x | RESTful Web Service support |
+| **Testing** | | | | |
+| | JUnit | 4.12 | JUnit 5.10.2 | Migration to JUnit Jupiter |
+| | H2 Database | 1.3.176 | 2.2.224 | For testing |
+| | StrutsTestCase | 2.1.4-1.2-2.4 | N/A | Struts dependency, consider removal |
 
-## 移行戦略
+## Migration Strategy
 
-### Spring Bootを選択する理由
+### Why Choose Spring Boot
 
-**Apache Struts 1.x は2013年にEOLとなり、多数の既知の脆弱性があります。** 依存関係の部分的なアップグレードでは根本的な問題は解決しません。
+**Apache Struts 1.x reached EOL in 2013 and has numerous known vulnerabilities.** Partial dependency upgrades will not solve fundamental issues.
 
-#### Spring Boot 3.2.x への完全移行を推奨する理由
+#### Reasons to Recommend Complete Migration to Spring Boot 3.2.x
 
-1. **セキュリティ**: 継続的なセキュリティアップデートとサポート
-2. **コミュニティ**: 最大のJavaコミュニティと豊富なドキュメント
-3. **最新技術**: Java 21の全機能を活用可能
-4. **生産性**: 自動設定、組み込みサーバー、開発ツールによる高速開発
-5. **将来性**: マイクロサービス、クラウドネイティブへの移行パスが明確
-6. **エコシステム**: 豊富なSpring Bootスターター、統合サポート
+1. **Security**: Continuous security updates and support
+2. **Community**: Largest Java community with abundant documentation
+3. **Modern Technology**: Can leverage all Java 21 features
+4. **Productivity**: High-speed development with auto-configuration, embedded server, development tools
+5. **Future-proofing**: Clear migration path to microservices and cloud-native
+6. **Ecosystem**: Rich Spring Boot starters, integration support
 
-### 移行先の技術スタック
+### Target Technology Stack
 
-| コンポーネント | Struts 1.x | Spring Boot 3.2.x |
+| Component | Struts 1.x | Spring Boot 3.2.x |
 | --- | --- | --- |
-| **フレームワーク** | Apache Struts 1.3.10 | Spring Boot 3.2.x + Spring MVC 6.1.x |
-| **Javaバージョン** | Java 1.5 | Java 21 LTS |
-| **ビューテンプレート** | JSP + Struts Taglib | Thymeleaf 3.1.x |
-| **データアクセス** | JDBC + Commons DBUtils | Spring Data JPA 3.2.x + Hibernate 6.4.x |
-| **接続プール** | Commons DBCP 1.x | HikariCP (Spring Boot標準) |
-| **バリデーション** | Commons Validator | Bean Validation 3.0 (Hibernate Validator) |
-| **ロギング** | Log4j 1.2.17 | Logback (Spring Boot標準) + SLF4J |
-| **依存性注入** | なし | Spring IoC Container |
-| **テスト** | JUnit 4 + StrutsTestCase | JUnit 5 + Spring Boot Test |
-| **ビルドツール** | Maven 2.x系 | Maven 3.9.x |
-| **アプリケーションサーバー** | Tomcat 6/7 (外部) | 組み込みTomcat 10.1.x |
+| **Framework** | Apache Struts 1.3.10 | Spring Boot 3.2.x + Spring MVC 6.1.x |
+| **Java Version** | Java 1.5 | Java 21 LTS |
+| **View Template** | JSP + Struts Taglib | Thymeleaf 3.1.x |
+| **Data Access** | JDBC + Commons DBUtils | Spring Data JPA 3.2.x + Hibernate 6.4.x |
+| **Connection Pool** | Commons DBCP 1.x | HikariCP (Spring Boot standard) |
+| **Validation** | Commons Validator | Bean Validation 3.0 (Hibernate Validator) |
+| **Logging** | Log4j 1.2.17 | Logback (Spring Boot standard) + SLF4J |
+| **Dependency Injection** | None | Spring IoC Container |
+| **Testing** | JUnit 4 + StrutsTestCase | JUnit 5 + Spring Boot Test |
+| **Build Tool** | Maven 2.x series | Maven 3.9.x |
+| **Application Server** | Tomcat 6/7 (external) | Embedded Tomcat 10.1.x |
 
-## Struts 1.x と Spring Boot の対応関係
+## Struts 1.x to Spring Boot Correspondence
 
-### アーキテクチャの対応
+### Architecture Correspondence
 
-| Struts 1.x コンポーネント | Spring Boot 対応 | 説明 |
+| Struts 1.x Component | Spring Boot Correspondence | Description |
 | --- | --- | --- |
-| **Action** | `@Controller` + `@RequestMapping` | リクエスト処理 |
-| **ActionForm** | `@ModelAttribute` + Bean Validation | フォームデータバインディング |
-| **struts-config.xml** | Java Config (`@Configuration`) | アプリケーション設定 |
-| **ActionForward** | `ModelAndView` / `return "viewName"` | ビュー遷移 |
-| **ActionMapping** | `@RequestMapping` / `@GetMapping` / `@PostMapping` | URLマッピング |
-| **ActionServlet** | `DispatcherServlet` (自動設定) | フロントコントローラー |
-| **JSP + Struts Tags** | Thymeleaf テンプレート | ビューレンダリング |
-| **Validator Framework** | Bean Validation + `@Valid` | 入力検証 |
-| **MessageResources** | `MessageSource` + `messages.properties` | 国際化 |
-| **DAO (手動JDBC)** | Spring Data JPA Repository | データアクセス |
-| **DataSource (DBCP)** | HikariCP (自動設定) | コネクションプール |
+| **Action** | `@Controller` + `@RequestMapping` | Request processing |
+| **ActionForm** | `@ModelAttribute` + Bean Validation | Form data binding |
+| **struts-config.xml** | Java Config (`@Configuration`) | Application configuration |
+| **ActionForward** | `ModelAndView` / `return "viewName"` | View transition |
+| **ActionMapping** | `@RequestMapping` / `@GetMapping` / `@PostMapping` | URL mapping |
+| **ActionServlet** | `DispatcherServlet` (auto-configured) | Front controller |
+| **JSP + Struts Tags** | Thymeleaf templates | View rendering |
+| **Validator Framework** | Bean Validation + `@Valid` | Input validation |
+| **MessageResources** | `MessageSource` + `messages.properties` | Internationalization |
+| **DAO (manual JDBC)** | Spring Data JPA Repository | Data access |
+| **DataSource (DBCP)** | HikariCP (auto-configured) | Connection pool |
 
-## 段階的移行計画
+## Phased Migration Plan
 
-### フェーズ0: 準備フェーズ（1週間）
+### Phase 0: Preparation Phase (1 week)
 
-#### タスク内容
+#### Task Content
 
-1. **現状分析**
-   - 全Actionクラスのリスト作成
-   - 全JSPページのリスト作成
-   - データベースアクセスパターンの調査
-   - 外部ライブラリの依存関係確認
+1. **Current State Analysis**
+   - Create list of all Action classes
+   - Create list of all JSP pages
+   - Investigate database access patterns
+   - Confirm external library dependencies
 
-2. **環境構築**
-   - JDK 21のインストール
-   - IDE (IntelliJ IDEA / Eclipse) の準備
-   - Gitブランチ戦略の決定（例: `feature/spring-boot-migration`）
+2. **Environment Setup**
+   - Install JDK 21
+   - Prepare IDE (IntelliJ IDEA / Eclipse)
+   - Determine Git branch strategy (e.g., `feature/spring-boot-migration`)
 
-3. **Spring Boot プロジェクトの作成**
-   - Spring Initializr で基本プロジェクト生成
-   - 必要な依存関係の追加
+3. **Create Spring Boot Project**
+   - Generate basic project with Spring Initializr
+   - Add necessary dependencies
 
-#### Spring Initializr 設定
+#### Spring Initializr Configuration
 
 ```text
 Project: Maven
 Language: Java
-Spring Boot: 3.2.x (最新安定版)
+Spring Boot: 3.2.x (latest stable)
 Java: 21
-Packaging: War (既存のWARデプロイとの互換性のため、後でJarに変更可能)
+Packaging: War (for compatibility with existing WAR deployment, can change to Jar later)
 
 Dependencies:
 - Spring Web
@@ -133,11 +133,11 @@ Dependencies:
 - PostgreSQL Driver
 - Validation
 - Spring Boot DevTools
-- Lombok (オプション、ボイラープレートコード削減)
-- Spring Boot Actuator (オプション、監視用)
+- Lombok (optional, reduces boilerplate code)
+- Spring Boot Actuator (optional, for monitoring)
 ```
 
-#### 生成される pom.xml の例
+#### Generated pom.xml Example
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -165,13 +165,13 @@ Dependencies:
     </properties>
     
     <dependencies>
-        <!-- Spring Boot Web (Spring MVC含む) -->
+        <!-- Spring Boot Web (includes Spring MVC) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         
-        <!-- Thymeleaf テンプレートエンジン -->
+        <!-- Thymeleaf template engine -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -189,14 +189,14 @@ Dependencies:
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
         
-        <!-- PostgreSQL ドライバ -->
+        <!-- PostgreSQL driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
         
-        <!-- 開発ツール (ホットリロード等) -->
+        <!-- Development tools (hot reload, etc.) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -204,27 +204,27 @@ Dependencies:
             <optional>true</optional>
         </dependency>
         
-        <!-- Lombok (オプション) -->
+        <!-- Lombok (optional) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
         
-        <!-- メール送信 -->
+        <!-- Email sending -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
         
-        <!-- テスト -->
+        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
         
-        <!-- H2 Database (テスト用) -->
+        <!-- H2 Database (for testing) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -251,9 +251,9 @@ Dependencies:
 </project>
 ```
 
-### フェーズ1: プロジェクト構造とアプリケーションエントリポイントの作成（1週間）
+### Phase 1: Project Structure and Application Entry Point Creation (1 week)
 
-#### Spring Boot メインクラスの作成
+#### Create Spring Boot Main Class
 
 ```java
 package com.skishop;
@@ -271,14 +271,14 @@ public class SkiShopApplication extends SpringBootServletInitializer {
 }
 ```
 
-#### application.yml の設定
+#### application.yml Configuration
 
 ```yaml
 spring:
   application:
     name: skishop-app
   
-  # データソース設定
+  # Datasource configuration
   datasource:
     url: jdbc:postgresql://localhost:5432/skishop
     username: ${DB_USERNAME:postgres}
@@ -289,7 +289,7 @@ spring:
       minimum-idle: 5
       connection-timeout: 30000
   
-  # JPA設定
+  # JPA configuration
   jpa:
     hibernate:
       ddl-auto: validate
@@ -299,14 +299,14 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
   
-  # Thymeleaf設定
+  # Thymeleaf configuration
   thymeleaf:
-    cache: false  # 開発時はfalse
+    cache: false  # false for development
     prefix: classpath:/templates/
     suffix: .html
     mode: HTML
   
-  # メール設定
+  # Email configuration
   mail:
     host: ${MAIL_HOST:smtp.example.com}
     port: ${MAIL_PORT:587}
@@ -319,7 +319,7 @@ spring:
           starttls:
             enable: true
 
-# ログ設定
+# Logging configuration
 logging:
   level:
     com.skishop: DEBUG
@@ -327,39 +327,39 @@ logging:
     org.hibernate.SQL: DEBUG
 ```
 
-#### パッケージ構造の作成
+#### Create Package Structure
 
 ```text
 src/main/java/com/skishop/
 ├── SkiShopApplication.java
-├── config/              # 設定クラス
+├── config/              # Configuration classes
 │   ├── WebConfig.java
-│   └── SecurityConfig.java (必要に応じて)
+│   └── SecurityConfig.java (if needed)
 ├── controller/          # Struts Action → Controller
-├── model/              # エンティティクラス
+├── model/              # Entity classes
 │   └── entity/
-├── repository/         # Spring Data JPA リポジトリ
-├── service/            # ビジネスロジック
+├── repository/         # Spring Data JPA repositories
+├── service/            # Business logic
 │   └── impl/
-├── dto/                # データ転送オブジェクト
-└── exception/          # 例外処理
+├── dto/                # Data transfer objects
+└── exception/          # Exception handling
 
 src/main/resources/
 ├── application.yml
 ├── messages.properties
-├── templates/          # Thymeleaf テンプレート
-│   ├── fragments/      # 共通部品
-│   ├── layout/         # レイアウト
-│   └── pages/          # ページ
+├── templates/          # Thymeleaf templates
+│   ├── fragments/      # Common components
+│   ├── layout/         # Layouts
+│   └── pages/          # Pages
 └── static/
     ├── css/
     ├── js/
     └── images/
 ```
 
-### フェーズ2: データアクセス層の移行（2週間）
+### Phase 2: Data Access Layer Migration (2 weeks)
 
-#### JPA エンティティクラスの作成例
+#### JPA Entity Class Creation Example
 
 ```java
 package com.skishop.model.entity;
@@ -379,19 +379,19 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotBlank(message = "商品名は必須です")
+    @NotBlank(message = "Product name is required")
     @Column(nullable = false, length = 100)
     private String name;
     
     @Column(length = 500)
     private String description;
     
-    @NotNull(message = "価格は必須です")
-    @DecimalMin(value = "0.0", inclusive = false, message = "価格は0より大きい値を入力してください")
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
     
-    @Min(value = 0, message = "在庫数は0以上である必要があります")
+    @Min(value = 0, message = "Stock quantity must be 0 or greater")
     @Column(nullable = false)
     private Integer stockQuantity;
     
@@ -413,7 +413,7 @@ public class Product {
 }
 ```
 
-#### Spring Data JPA リポジトリの作成
+#### Create Spring Data JPA Repository
 
 ```java
 package com.skishop.repository;
@@ -431,14 +431,14 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     
-    // メソッド名からクエリ自動生成
+    // Auto-generate query from method name
     List<Product> findByNameContaining(String keyword);
     
     List<Product> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
     
     Optional<Product> findByName(String name);
     
-    // カスタムクエリ
+    // Custom query
     @Query("SELECT p FROM Product p WHERE p.stockQuantity > 0 ORDER BY p.createdAt DESC")
     List<Product> findAvailableProducts();
     
@@ -447,7 +447,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 }
 ```
 
-#### サービス層の作成
+#### Create Service Layer
 
 ```java
 package com.skishop.service.impl;
@@ -500,11 +500,11 @@ public class ProductServiceImpl implements ProductService {
 }
 ```
 
-### フェーズ3: コントローラー層の移行（3週間）
+### Phase 3: Controller Layer Migration (3 weeks)
 
-#### Struts Action から Spring MVC Controller への移行
+#### Migrating from Struts Action to Spring MVC Controller
 
-**Spring Boot の Controller例:**
+**Spring Boot Controller Example:**
 
 ```java
 package com.skishop.controller;
@@ -561,13 +561,13 @@ public class ProductController {
         
         productService.saveProduct(product);
         
-        redirectAttributes.addFlashAttribute("message", "商品を登録しました");
+        redirectAttributes.addFlashAttribute("message", "Product registered");
         return "redirect:/products";
     }
 }
 ```
 
-#### DTO の作成
+#### Create DTO
 
 ```java
 package com.skishop.dto;
@@ -582,132 +582,132 @@ public class ProductFormDTO {
     
     private Long id;
     
-    @NotBlank(message = "商品名は必須です")
-    @Size(max = 100, message = "商品名は100文字以内で入力してください")
+    @NotBlank(message = "Product name is required")
+    @Size(max = 100, message = "Product name must be within 100 characters")
     private String name;
     
-    @Size(max = 500, message = "説明は500文字以内で入力してください")
+    @Size(max = 500, message = "Description must be within 500 characters")
     private String description;
     
-    @NotNull(message = "価格は必須です")
-    @DecimalMin(value = "0.01", message = "価格は0より大きい値を入力してください")
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.01", message = "Price must be greater than 0")
     private BigDecimal price;
     
-    @NotNull(message = "在庫数は必須です")
-    @Min(value = 0, message = "在庫数は0以上である必要があります")
+    @NotNull(message = "Stock quantity is required")
+    @Min(value = 0, message = "Stock quantity must be 0 or greater")
     private Integer stockQuantity;
 }
 ```
 
-### フェーズ4: ビュー層の移行（JSP → Thymeleaf）（3週間）
+### Phase 4: View Layer Migration (JSP → Thymeleaf) (3 weeks)
 
-#### Thymeleaf テンプレート例（商品一覧）
+#### Thymeleaf Template Example (Product List)
 
 ```html
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
 <head>
-    <title th:text="#{products.list.title}">商品一覧</title>
+    <title th:text="#{products.list.title}">Product List</title>
 </head>
 <body>
     <div th:fragment="content">
-        <h1 th:text="#{products.list.header}">商品一覧</h1>
+        <h1 th:text="#{products.list.header}">Product List</h1>
         
         <div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
         
         <table class="table">
             <thead>
                 <tr>
-                    <th th:text="#{product.name}">商品名</th>
-                    <th th:text="#{product.price}">価格</th>
-                    <th th:text="#{product.stock}">在庫</th>
-                    <th>操作</th>
+                    <th th:text="#{product.name}">Product Name</th>
+                    <th th:text="#{product.price}">Price</th>
+                    <th th:text="#{product.stock}">Stock</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="product : ${products}">
-                    <td th:text="${product.name}">商品名</td>
+                    <td th:text="${product.name}">Product Name</td>
                     <td th:text="${#numbers.formatCurrency(product.price)}">¥1,000</td>
                     <td th:text="${product.stockQuantity}">10</td>
                     <td>
-                        <a th:href="@{/products/{id}/edit(id=${product.id})}" class="btn btn-sm btn-primary">編集</a>
+                        <a th:href="@{/products/{id}/edit(id=${product.id})}" class="btn btn-sm btn-primary">Edit</a>
                     </td>
                 </tr>
             </tbody>
         </table>
         
-        <a th:href="@{/products/new}" class="btn btn-primary">新規登録</a>
+        <a th:href="@{/products/new}" class="btn btn-primary">New Registration</a>
     </div>
 </body>
 </html>
 ```
 
-#### Struts Taglib と Thymeleaf の対応表
+#### Struts Taglib to Thymeleaf Correspondence Table
 
-| Struts 1.x Tag | Thymeleaf 相当 | 説明 |
+| Struts 1.x Tag | Thymeleaf Equivalent | Description |
 | --- | --- | --- |
-| `<bean:write name="var"/>` | `th:text="${var}"` | 変数出力 |
-| `<bean:message key="key"/>` | `th:text="#{key}"` | メッセージリソース |
-| `<html:link action="/path">` | `th:href="@{/path}"` | リンク |
-| `<html:form action="/submit">` | `th:action="@{/submit}" method="post"` | フォーム |
-| `<html:text property="name"/>` | `th:field="*{name}"` | テキスト入力 |
-| `<html:errors property="name"/>` | `th:errors="*{name}"` | バリデーションエラー |
-| `<logic:iterate id="item" name="list">` | `th:each="item : ${list}"` | ループ |
-| `<logic:present name="var">` | `th:if="${var != null}"` | 存在チェック |
-| `<logic:notPresent name="var">` | `th:if="${var == null}"` | 非存在チェック |
-| `<logic:equal name="var" value="val">` | `th:if="${var == 'val'}"` | 値比較 |
+| `<bean:write name="var"/>` | `th:text="${var}"` | Variable output |
+| `<bean:message key="key"/>` | `th:text="#{key}"` | Message resource |
+| `<html:link action="/path">` | `th:href="@{/path}"` | Link |
+| `<html:form action="/submit">` | `th:action="@{/submit}" method="post"` | Form |
+| `<html:text property="name"/>` | `th:field="*{name}"` | Text input |
+| `<html:errors property="name"/>` | `th:errors="*{name}"` | Validation errors |
+| `<logic:iterate id="item" name="list">` | `th:each="item : ${list}"` | Loop |
+| `<logic:present name="var">` | `th:if="${var != null}"` | Existence check |
+| `<logic:notPresent name="var">` | `th:if="${var == null}"` | Non-existence check |
+| `<logic:equal name="var" value="val">` | `th:if="${var == 'val'}"` | Value comparison |
 
-### フェーズ5: モダンJavaリファクタリング（1週間）
+### Phase 5: Modern Java Refactoring (1 week)
 
-#### 目的
+#### Objective
 
-- Java 5時代のコードスタイルやAPIを Java 21 のモダンな書き方へ刷新し、可読性・安全性・性能を向上させる。
+- Modernize Java 5-era code style and APIs to Java 21 modern writing style, improving readability, safety, and performance.
 
-#### チェックポイント
+#### Checkpoints
 
-| 項目 | Before 例 | After 例 | 備考 |
+| Item | Before Example | After Example | Notes |
 | --- | --- | --- | --- |
-| リソース解放 | `try { ... } finally { close(); }` | `try (var in = ...) { ... }` | try-with-resources |
-| 型推論 | `Map<String, List<String>> map = new HashMap<String, List<String>>();` | `var map = new HashMap<String, List<String>>();` | diamond + var |
+| Resource release | `try { ... } finally { close(); }` | `try (var in = ...) { ... }` | try-with-resources |
+| Type inference | `Map<String, List<String>> map = new HashMap<String, List<String>>();` | `var map = new HashMap<String, List<String>>();` | diamond + var |
 | instanceof | `if (obj instanceof Foo) { Foo f = (Foo) obj; }` | `if (obj instanceof Foo f) { ... }` | pattern matching |
-| 文字列 | `"line1\nline2"` | `"""line1\nline2"""` | text blocks |
-| 日付/時刻 | `Date/Calendar` | `LocalDateTime/Instant` | java.time |
-| コレクション | `new ArrayList<>()` then add | `List.of(...)` | 不変リスト |
-| コレクション工場 | `new HashSet<>(); add...` | `Set.of(...) / Map.of(...)` | 不変Set/Map |
-| Map初期化 | `if (!map.containsKey(k)) map.put(k, ...)` | `map.computeIfAbsent(k, ...)` | Java 8 |
-| ループ | `for (String s : list) { ... }` | `list.stream().map(...).toList()` | Streams（適材適所） |
-| DTO | `class Foo { ... }` | `record Foo(...) {}` | DTO/Value Objectのみ |
+| Strings | `"line1\nline2"` | `"""line1\nline2"""` | text blocks |
+| Date/time | `Date/Calendar` | `LocalDateTime/Instant` | java.time |
+| Collections | `new ArrayList<>()` then add | `List.of(...)` | Immutable list |
+| Collection factory | `new HashSet<>(); add...` | `Set.of(...) / Map.of(...)` | Immutable Set/Map |
+| Map initialization | `if (!map.containsKey(k)) map.put(k, ...)` | `map.computeIfAbsent(k, ...)` | Java 8 |
+| Loop | `for (String s : list) { ... }` | `list.stream().map(...).toList()` | Streams (appropriate use) |
+| DTO | `class Foo { ... }` | `record Foo(...) {}` | DTO/Value Object only |
 | HTTP | `HttpURLConnection` | `HttpClient` | Java 11 |
-| 並行処理 | `ExecutorService` | `virtual threads (Threads.ofVirtual().factory())` | 要検討 |
-| ラムダ/メソッド参照 | `new Runnable(){ public void run(){...}}` | `Runnable r = () -> {...}` / `System.out::println` | Java 8 |
-| 関数型IF | 独自IF多数 | `java.util.function.*` | 再利用と統一 |
-| switch構文 | `switch(x){case A: ... break;}` | `switch (x) { case A -> ...; default -> ...; }` | switch expressions |
-| switchパターン | `if/else`で型分岐 | `switch (obj) { case String s -> ... }` | Java 21 |
-| マルチキャッチ | 複数catch重複 | `catch (IOException\|SQLException e)` | Java 7 |
-| 数値リテラル | `1000000` | `1_000_000` | 可読性 |
-| Optional | `if (obj == null) ...` | `Optional.ofNullable(obj).ifPresent(...)` | null安全 |
-| Stream拡張 | `collect(Collectors.toList())` | `.toList()` | Java 16 |
-| Stream拡張2 | 手続きforループ | `stream().takeWhile(...).dropWhile(...)` | Java 9 |
-| Optional拡張 | `if (obj == null) ...` | `opt.ifPresentOrElse(...); opt.orElseThrow(); opt.stream()` | Java 9/10 |
+| Concurrency | `ExecutorService` | `virtual threads (Threads.ofVirtual().factory())` | Consider carefully |
+| Lambda/method reference | `new Runnable(){ public void run(){...}}` | `Runnable r = () -> {...}` / `System.out::println` | Java 8 |
+| Functional IF | Many custom IFs | `java.util.function.*` | Reuse and unification |
+| switch syntax | `switch(x){case A: ... break;}` | `switch (x) { case A -> ...; default -> ...; }` | switch expressions |
+| switch pattern | Type branching with `if/else` | `switch (obj) { case String s -> ... }` | Java 21 |
+| Multi-catch | Multiple duplicate catches | `catch (IOException\|SQLException e)` | Java 7 |
+| Numeric literals | `1000000` | `1_000_000` | Readability |
+| Optional | `if (obj == null) ...` | `Optional.ofNullable(obj).ifPresent(...)` | null safety |
+| Stream extension | `collect(Collectors.toList())` | `.toList()` | Java 16 |
+| Stream extension2 | Procedural for loop | `stream().takeWhile(...).dropWhile(...)` | Java 9 |
+| Optional extension | `if (obj == null) ...` | `opt.ifPresentOrElse(...); opt.orElseThrow(); opt.stream()` | Java 9/10 |
 | NIO.2 | `new File(...)` | `Path/Files.walk(...)` | Java 7 |
-| CompletableFuture | `Future` + `get()` | `CompletableFuture.supplyAsync(...)` | 非同期処理 |
-| Sealed | `abstract class`で制御 | `sealed interface Shape permits Circle, Square {}` | Java 17 |
-| Stringユーティリティ | `trim().isEmpty()` | `isBlank()/strip()/lines()/repeat()` | Java 11 |
-| Random | `new Random()` | `ThreadLocalRandom.current()` / `RandomGenerator` | 並列安全/再現性 |
-| finalize | `protected void finalize()` | `Cleaner` / try-with-resources | Java 9+非推奨 |
-| レコードパターン | `if (obj instanceof Point) { ... }` | `if (obj instanceof Point(int x, int y)) { ... }` | Java 21 |
-| 文字列テンプレート | `"Hello " + name` | `STR."Hello ${name}"` | Java 21 (Preview) |
+| CompletableFuture | `Future` + `get()` | `CompletableFuture.supplyAsync(...)` | Asynchronous processing |
+| Sealed | Control with `abstract class` | `sealed interface Shape permits Circle, Square {}` | Java 17 |
+| String utility | `trim().isEmpty()` | `isBlank()/strip()/lines()/repeat()` | Java 11 |
+| Random | `new Random()` | `ThreadLocalRandom.current()` / `RandomGenerator` | Thread-safe/reproducible |
+| finalize | `protected void finalize()` | `Cleaner` / try-with-resources | Java 9+ deprecated |
+| Record pattern | `if (obj instanceof Point) { ... }` | `if (obj instanceof Point(int x, int y)) { ... }` | Java 21 |
+| String template | `"Hello " + name` | `STR."Hello ${name}"` | Java 21 (Preview) |
 
-#### 実施ステップ
+#### Implementation Steps
 
-1. 静的解析（IDE inspections, SpotBugs, Checkstyle, SonarLint）で候補検出
-2. IDEリファクタリング + 自動修正適用（try-with-resources, diamond, var, pattern matching, text blocks）
-3. 手動レビュー（java.time/Streams/Optional/records適用箇所の設計判断）
-4. 全テスト実行・パフォーマンス確認
+1. Detect candidates with static analysis (IDE inspections, SpotBugs, Checkstyle, SonarLint)
+2. Apply IDE refactoring + auto-fixes (try-with-resources, diamond, var, pattern matching, text blocks)
+3. Manual review (design decisions for java.time/Streams/Optional/records application)
+4. Run all tests and verify performance
 
-### フェーズ6: 設定とその他の移行（1週間）
+### Phase 6: Configuration and Other Migrations (1 week)
 
-#### 例外処理
+#### Exception Handling
 
 ```java
 package com.skishop.exception;
@@ -735,15 +735,15 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleGeneralError(Exception ex, Model model) {
         log.error("Unexpected error occurred", ex);
-        model.addAttribute("error", "予期しないエラーが発生しました");
+        model.addAttribute("error", "An unexpected error occurred");
         return "error/500";
     }
 }
 ```
 
-### フェーズ7: テストの作成（2週間）
+### Phase 7: Test Creation (2 weeks)
 
-#### リポジトリテスト
+#### Repository Tests
 
 ```java
 package com.skishop.repository;
@@ -783,7 +783,7 @@ class ProductRepositoryTest {
 }
 ```
 
-#### サービステスト
+#### Service Tests
 
 ```java
 package com.skishop.service;
@@ -856,7 +856,7 @@ class ProductServiceImplTest {
 }
 ```
 
-#### コントローラーテスト
+#### Controller Tests
 
 ```java
 package com.skishop.controller;
@@ -905,7 +905,7 @@ class ProductControllerTest {
 }
 ```
 
-#### 統合テスト
+#### Integration Tests
 
 ```java
 package com.skishop;
@@ -960,14 +960,14 @@ class ProductIntegrationTest {
 }
 ```
 
-### フェーズ8: パフォーマンステストとチューニング（1週間）
+### Phase 8: Performance Testing and Tuning (1 week)
 
-#### パフォーマンステストの実施
+#### Performance Testing Implementation
 
-##### JMeterを使用した負荷テスト
+##### Load Testing Using JMeter
 
 ```xml
-<!-- pom.xmlに追加 -->
+<!-- Add to pom.xml -->
 <dependency>
     <groupId>org.apache.jmeter</groupId>
     <artifactId>ApacheJMeter_core</artifactId>
@@ -976,10 +976,10 @@ class ProductIntegrationTest {
 </dependency>
 ```
 
-##### アプリケーションメトリクスの監視
+##### Application Metrics Monitoring
 
 ```yaml
-# application.yml に追加
+# Add to application.yml
 management:
   endpoints:
     web:
@@ -991,19 +991,19 @@ management:
         enabled: true
 ```
 
-##### パフォーマンステストシナリオ
+##### Performance Test Scenarios
 
-1. **同時接続テスト**
-   - 100ユーザーの同時アクセス
-   - レスポンスタイム < 500ms
-   - エラー率 < 1%
+1. **Concurrent Connection Test**
+   - 100 users simultaneous access
+   - Response time < 500ms
+   - Error rate < 1%
 
-2. **データベースクエリ最適化**
-   - N+1問題の検出と修正
-   - インデックスの最適化
-   - クエリプランの分析
+2. **Database Query Optimization**
+   - Detect and fix N+1 problem
+   - Index optimization
+   - Query plan analysis
 
-3. **キャッシュ戦略**
+3. **Caching Strategy**
 
 ```java
 @Configuration
@@ -1038,34 +1038,34 @@ public class ProductServiceImpl implements ProductService {
 }
 ```
 
-#### パフォーマンスチューニングのチェックリスト
+#### Performance Tuning Checklist
 
-- [ ] データベース接続プールの設定最適化（HikariCP）
-- [ ] JPA/Hibernateのクエリ最適化（Lazy Loading、Eager Loading）
-- [ ] 適切なインデックスの作成
-- [ ] キャッシュ戦略の実装
-- [ ] 不要なログ出力の削減
-- [ ] 静的リソースの圧縮とキャッシュ
-- [ ] JVMヒープサイズの調整
-- [ ] ガベージコレクションの最適化
+- [ ] Optimize database connection pool configuration (HikariCP)
+- [ ] Optimize JPA/Hibernate queries (Lazy Loading, Eager Loading)
+- [ ] Create appropriate indexes
+- [ ] Implement caching strategy
+- [ ] Reduce unnecessary log output
+- [ ] Compress and cache static resources
+- [ ] Adjust JVM heap size
+- [ ] Optimize garbage collection
 
-### フェーズ9: ドキュメント化と運用準備（1週間）
+### Phase 9: Documentation and Operations Preparation (1 week)
 
-#### 作成すべきドキュメント
+#### Documents to Create
 
-##### 1. アーキテクチャドキュメント
+##### 1. Architecture Documentation
 
-**内容:**
+**Content:**
 
-- システム全体のアーキテクチャ図
-- コンポーネント間の依存関係
-- データフロー図
-- デプロイメントアーキテクチャ
+- System architecture diagram
+- Inter-component dependencies
+- Data flow diagram
+- Deployment architecture
 
-##### 2. API仕様書
+##### 2. API Specification
 
 ```java
-// SpringDocを使用したAPI自動ドキュメント化
+// Automated API documentation using SpringDoc
 @Configuration
 public class OpenApiConfig {
     
@@ -1075,13 +1075,13 @@ public class OpenApiConfig {
             .info(new Info()
                 .title("SkiShop API")
                 .version("2.0.0")
-                .description("Spring Boot移行後のSkiShopアプリケーションAPI"));
+                .description("SkiShop application API after Spring Boot migration"));
     }
 }
 ```
 
 ```xml
-<!-- pom.xmlに追加 -->
+<!-- Add to pom.xml -->
 <dependency>
     <groupId>org.springdoc</groupId>
     <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -1089,28 +1089,28 @@ public class OpenApiConfig {
 </dependency>
 ```
 
-##### 3. 運用手順書
+##### 3. Operations Manual
 
-**内容:**
+**Content:**
 
-- アプリケーションの起動/停止手順
-- ログの確認方法
-- トラブルシューティングガイド
-- バックアップ/リストア手順
-- デプロイ手順
+- Application start/stop procedure
+- How to check logs
+- Troubleshooting guide
+- Backup/restore procedure
+- Deployment procedure
 
-**起動コマンド例:**
+**Startup Command Examples:**
 
 ```bash
-# 開発環境
+# Development environment
 mvn spring-boot:run
 
-# 本番環境（JARファイル）
+# Production environment (JAR file)
 java -jar -Xmx2g -Xms1g \
   -Dspring.profiles.active=production \
   skishop-app-2.0.0.jar
 
-# 本番環境（Dockerコンテナ）
+# Production environment (Docker container)
 docker run -d \
   -p 8080:8080 \
   -e SPRING_PROFILES_ACTIVE=production \
@@ -1119,26 +1119,26 @@ docker run -d \
   skishop-app:2.0.0
 ```
 
-##### 4. 開発者ガイド
+##### 4. Developer Guide
 
-**内容:**
+**Content:**
 
-- プロジェクト構成の説明
-- コーディング規約
-- テストの書き方
-- ローカル開発環境のセットアップ
-- よくある問題と解決方法
+- Project structure explanation
+- Coding conventions
+- How to write tests
+- Local development environment setup
+- Common problems and solutions
 
-##### 5. 移行レポート
+##### 5. Migration Report
 
-**内容:**
+**Content:**
 
-- 移行前後の比較
-- 遭遇した問題と解決策
-- 残存する技術的負債
-- 今後の改善提案
+- Before/after comparison
+- Problems encountered and solutions
+- Remaining technical debt
+- Future improvement suggestions
 
-#### 運用監視の設定
+#### Operations Monitoring Configuration
 
 ```yaml
 # application-production.yml
@@ -1166,7 +1166,7 @@ logging:
     file: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 ```
 
-#### デプロイメント用Dockerfile
+#### Deployment Dockerfile
 
 ```dockerfile
 FROM eclipse-temurin:21-jre-alpine
@@ -1176,7 +1176,7 @@ EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
-#### CI/CDパイプライン（GitHub Actions例）
+#### CI/CD Pipeline (GitHub Actions Example)
 
 ```yaml
 name: Build and Deploy
@@ -1215,18 +1215,18 @@ jobs:
         docker push skishop-app:${{ github.sha }}
 ```
 
-### フェーズ10: レガシーコードのクリーンアップと最終検証（1週間）
+### Phase 10: Legacy Code Cleanup and Final Validation (1 week)
 
-#### クリーンアップの目的
+#### Cleanup Objective
 
-フェーズ8までの移行が完了し、Spring Bootアプリケーションが正常に動作することを確認した後、使用されなくなった古いStruts関連のコード、設定ファイル、JSP関連のコードを削除します。これにより、コードベースを整理し、保守性を向上させます。
+After completing migration through Phase 8 and confirming that the Spring Boot application is working properly, remove old Struts-related code, configuration files, and JSP-related code that are no longer used. This organizes the codebase and improves maintainability.
 
-#### 削除対象のファイルとコード
+#### Files and Code to Remove
 
-##### 1. Struts関連の設定ファイル
+##### 1. Struts-related Configuration Files
 
 ```text
-削除対象:
+Files to remove:
 - WEB-INF/struts-config.xml
 - WEB-INF/validation.xml
 - WEB-INF/validator-rules.xml
@@ -1235,105 +1235,105 @@ jobs:
 - src/main/resources/validation.properties
 ```
 
-##### 2. Struts Actionクラス
+##### 2. Struts Action Classes
 
 ```text
-削除対象ディレクトリ:
+Directories to remove:
 - src/main/java/com/*/action/
 - src/main/java/com/*/struts/
 
-確認事項:
-- 全てのActionクラスがSpring MVCのControllerに移行済みであること
-- ビジネスロジックがServiceレイヤーに抽出されていること
+Confirmation items:
+- All Action classes have been migrated to Spring MVC Controllers
+- Business logic has been extracted to Service layer
 ```
 
-##### 3. ActionFormクラス
+##### 3. ActionForm Classes
 
 ```text
-削除対象:
+Files to remove:
 - src/main/java/com/*/form/
 - *ActionForm.java
 
-確認事項:
-- 全てのフォームクラスがDTOに移行済みであること
-- Bean Validationアノテーションが適用されていること
+Confirmation items:
+- All form classes have been migrated to DTOs
+- Bean Validation annotations have been applied
 ```
 
-##### 4. JSPファイルとStruts Taglib
+##### 4. JSP Files and Struts Taglibs
 
 ```text
-削除対象:
+Files to remove:
 - src/main/webapp/**/*.jsp
 - src/main/webapp/WEB-INF/tags/
-- WEB-INF/tld/*.tld (Struts Tag Library定義)
+- WEB-INF/tld/*.tld (Struts Tag Library definitions)
 
-確認事項:
-- 全てのJSPがThymeleafテンプレートに移行済みであること
-- 画面表示の動作確認が完了していること
+Confirmation items:
+- All JSPs have been migrated to Thymeleaf templates
+- Screen display operation verification has been completed
 ```
 
-##### 5. Struts関連の依存関係（pom.xml）
+##### 5. Struts-related Dependencies (pom.xml)
 
 ```xml
-削除対象の依存関係:
+Dependencies to remove:
 <dependencies>
-    <!-- 削除: Apache Struts -->
+    <!-- Remove: Apache Struts -->
     <dependency>
         <groupId>struts</groupId>
         <artifactId>struts</artifactId>
         <version>1.3.10</version>
     </dependency>
     
-    <!-- 削除: Commons Validator -->
+    <!-- Remove: Commons Validator -->
     <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
         <version>1.3.1</version>
     </dependency>
     
-    <!-- 削除: Commons Digester -->
+    <!-- Remove: Commons Digester -->
     <dependency>
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
         <version>1.8</version>
     </dependency>
     
-    <!-- 削除: Commons BeanUtils -->
+    <!-- Remove: Commons BeanUtils -->
     <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>1.8.0</version>
     </dependency>
     
-    <!-- 削除: Commons Chain -->
+    <!-- Remove: Commons Chain -->
     <dependency>
         <groupId>commons-chain</groupId>
         <artifactId>commons-chain</artifactId>
         <version>1.2</version>
     </dependency>
     
-    <!-- 削除: Servlet API (Spring Bootに含まれる) -->
+    <!-- Remove: Servlet API (included in Spring Boot) -->
     <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.5</version>
     </dependency>
     
-    <!-- 削除: JSP API (Thymeleafに移行) -->
+    <!-- Remove: JSP API (migrated to Thymeleaf) -->
     <dependency>
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
         <version>2.1</version>
     </dependency>
     
-    <!-- 削除: JSTL (Thymeleafに移行) -->
+    <!-- Remove: JSTL (migrated to Thymeleaf) -->
     <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>1.2</version>
     </dependency>
     
-    <!-- 削除: StrutsTestCase -->
+    <!-- Remove: StrutsTestCase -->
     <dependency>
         <groupId>strutstestcase</groupId>
         <artifactId>strutstestcase</artifactId>
@@ -1342,11 +1342,11 @@ jobs:
 </dependencies>
 ```
 
-##### 6. web.xmlの更新
+##### 6. web.xml Updates
 
 ```xml
-削除対象のweb.xml内容:
-<!-- 削除: Struts ActionServlet設定 -->
+Remove the following web.xml content:
+<!-- Remove: Struts ActionServlet configuration -->
 <servlet>
     <servlet-name>action</servlet-name>
     <servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
@@ -1362,197 +1362,197 @@ jobs:
     <url-pattern>*.do</url-pattern>
 </servlet-mapping>
 
-<!-- 削除: Struts TagLibの設定 -->
+<!-- Remove: Struts TagLib configuration -->
 <jsp-config>
     <taglib>
         <taglib-uri>/tags/struts-bean</taglib-uri>
         <taglib-location>/WEB-INF/struts-bean.tld</taglib-location>
     </taglib>
-    <!-- その他のStrutsタグライブラリ定義 -->
+    <!-- Other Struts taglib definitions -->
 </jsp-config>
 
-注意: Spring Bootでは通常web.xmlは不要ですが、
-      既存の設定を残す必要がある場合は、
-      Struts関連の設定のみを削除してください。
+Note: web.xml is usually not needed in Spring Boot, but
+      if you need to keep existing configuration,
+      remove only Struts-related configuration.
 ```
 
-##### 7. その他の設定ファイル
+##### 7. Other Configuration Files
 
 ```text
-削除対象:
-- src/main/resources/ApplicationResources.properties (messages.propertiesに移行済み)
-- src/main/webapp/WEB-INF/classes/ (不要なクラスファイル)
+Files to remove:
+- src/main/resources/ApplicationResources.properties (already migrated to messages.properties)
+- src/main/webapp/WEB-INF/classes/ (unnecessary class files)
 ```
 
-#### クリーンアップの手順
+#### Cleanup Procedure
 
-##### ステップ1: 事前準備（1日）
+##### Step 1: Preparation (1 day)
 
 ```bash
-# 1. 完全なバックアップの作成
+# 1. Create complete backup
 git checkout -b backup/before-cleanup
 git add .
 git commit -m "Backup before legacy code cleanup"
 git push origin backup/before-cleanup
 
-# 2. クリーンアップ用ブランチの作成
+# 2. Create cleanup branch
 git checkout main
 git checkout -b feature/cleanup-legacy-code
 
-# 3. 現在の動作確認
+# 3. Verify current operation
 mvn clean test
 mvn spring-boot:run
-# 全機能の動作確認を実施
+# Verify all functionality works
 ```
 
-##### ステップ2: Struts関連ファイルの削除（2日）
+##### Step 2: Remove Struts-related Files (2 days)
 
 ```bash
-# Struts設定ファイルの削除
+# Remove Struts configuration files
 rm -f src/main/webapp/WEB-INF/struts-config.xml
 rm -f src/main/webapp/WEB-INF/validation.xml
 rm -f src/main/webapp/WEB-INF/validator-rules.xml
 rm -f src/main/webapp/WEB-INF/tiles-defs.xml
 rm -rf src/main/webapp/WEB-INF/tld/
 
-# Struts Javaコードの削除
+# Remove Struts Java code
 find src/main/java -type d -name "action" -exec rm -rf {} +
 find src/main/java -type d -name "form" -exec rm -rf {} +
 find src/main/java -name "*Action.java" -delete
 find src/main/java -name "*ActionForm.java" -delete
 
-# 各削除後に必ずビルドとテストを実行
+# After each removal, always run build and tests
 mvn clean compile
 mvn test
 ```
 
-##### ステップ3: JSP関連ファイルの削除（2日）
+##### Step 3: Remove JSP-related Files (2 days)
 
 ```bash
-# 全JSPファイルの削除前にThymeleafテンプレートの存在確認
+# Verify Thymeleaf templates exist before removing all JSP files
 find src/main/resources/templates -name "*.html" | wc -l
 
-# JSPファイルの削除
+# Remove JSP files
 rm -rf src/main/webapp/*.jsp
 rm -rf src/main/webapp/WEB-INF/jsp/
 rm -rf src/main/webapp/WEB-INF/pages/
 
-# タグファイルの削除
+# Remove tag files
 rm -rf src/main/webapp/WEB-INF/tags/
 
-# 各削除後に動作確認
+# Verify operation after each removal
 mvn spring-boot:run
-# ブラウザで全画面を確認
+# Verify all screens in browser
 ```
 
-##### ステップ4: pom.xmlのクリーンアップ（1日）
+##### Step 4: Clean up pom.xml (1 day)
 
 ```bash
-# pom.xmlから不要な依存関係を削除
-# 手動で編集、または以下のコマンドで確認
+# Remove unnecessary dependencies from pom.xml
+# Edit manually, or verify with the following command
 
-# 未使用の依存関係を検出
+# Detect unused dependencies
 mvn dependency:analyze
 
-# ビルドとテストで問題がないことを確認
+# Verify build and tests have no issues
 mvn clean install
 mvn test
 
-# 依存関係ツリーの確認
+# Verify dependency tree
 mvn dependency:tree
 ```
 
-##### ステップ5: web.xmlの更新または削除（1日）
+##### Step 5: Update or Remove web.xml (1 day)
 
 ```bash
-# Spring Bootではweb.xmlは基本的に不要
-# Struts設定を削除後、web.xmlが空になった場合は削除
+# web.xml is basically unnecessary in Spring Boot
+# If web.xml is empty after removing Struts configuration, remove it
 rm -f src/main/webapp/WEB-INF/web.xml
 
-# または必要な設定のみを残して更新
-# (Filter設定など、Spring Boot移行後も必要な設定がある場合)
+# Or update to keep only necessary configuration
+# (if there are configurations needed after Spring Boot migration, like Filter settings)
 ```
 
-#### クリーンアップ後の検証チェックリスト
+#### Post-Cleanup Validation Checklist
 
-##### 1. ビルドとテストの検証
+##### 1. Build and Test Validation
 
-- [ ] `mvn clean compile` が成功すること
-- [ ] `mvn test` で全テストがパスすること
-- [ ] `mvn package` でWAR/JARファイルが正常に生成されること
-- [ ] コンパイルエラーが一切ないこと
-- [ ] 警告メッセージの確認と対処
+- [ ] `mvn clean compile` succeeds
+- [ ] All tests pass with `mvn test`
+- [ ] WAR/JAR file is generated normally with `mvn package`
+- [ ] No compilation errors at all
+- [ ] Check and address warning messages
 
-##### 2. アプリケーション起動の検証
+##### 2. Application Startup Validation
 
-- [ ] `mvn spring-boot:run` でアプリケーションが正常に起動すること
-- [ ] 起動ログにエラーがないこと
-- [ ] Spring Bootのバナーが表示されること
-- [ ] 全てのBeanが正常にロードされること
-- [ ] データベース接続が確立されること
+- [ ] Application starts normally with `mvn spring-boot:run`
+- [ ] No errors in startup logs
+- [ ] Spring Boot banner is displayed
+- [ ] All Beans are loaded normally
+- [ ] Database connection is established
 
-##### 3. 機能テストの検証
+##### 3. Functional Test Validation
 
-- [ ] 全画面が正常に表示されること（Thymeleafテンプレート）
-- [ ] 全フォームの送信が正常に動作すること
-- [ ] データベースの登録・更新・削除が正常に動作すること
-- [ ] ファイルアップロード機能が動作すること（該当する場合）
-- [ ] メール送信機能が動作すること（該当する場合）
-- [ ] セッション管理が正常に機能すること
-- [ ] エラーハンドリングが正常に動作すること
+- [ ] All screens display normally (Thymeleaf templates)
+- [ ] All form submissions work normally
+- [ ] Database registration/update/deletion works normally
+- [ ] File upload functionality works (if applicable)
+- [ ] Email sending functionality works (if applicable)
+- [ ] Session management functions normally
+- [ ] Error handling works normally
 
-##### 4. パフォーマンステストの検証
+##### 4. Performance Test Validation
 
-- [ ] レスポンスタイムが劣化していないこと
-- [ ] メモリ使用量が適切であること
-- [ ] CPU使用率が正常範囲内であること
-- [ ] データベース接続プールが正常に動作すること
+- [ ] Response time has not degraded
+- [ ] Memory usage is appropriate
+- [ ] CPU usage is within normal range
+- [ ] Database connection pool works normally
 
-##### 5. セキュリティテストの検証
+##### 5. Security Test Validation
 
-- [ ] 認証・認可が正常に動作すること
-- [ ] XSS対策が機能していること（Thymeleafの自動エスケープ）
-- [ ] CSRF対策が機能していること（必要な場合）
-- [ ] SQLインジェクション対策が機能していること（JPA使用）
+- [ ] Authentication/authorization works normally
+- [ ] XSS countermeasures function (Thymeleaf auto-escaping)
+- [ ] CSRF countermeasures function (if needed)
+- [ ] SQL injection countermeasures function (using JPA)
 
-##### 6. コードベースの検証
+##### 6. Codebase Validation
 
-- [ ] Struts関連のimport文が残っていないこと
-- [ ] 使用されていないクラスがないこと
-- [ ] TODO/FIXMEコメントの確認と対処
-- [ ] コードの静的解析（SonarQubeなど）
+- [ ] No Struts-related import statements remain
+- [ ] No unused classes exist
+- [ ] Check and address TODO/FIXME comments
+- [ ] Code static analysis (SonarQube, etc.)
 
 ```bash
-# Strutsへの参照がないことを確認
+# Verify no references to Struts
 grep -r "import org.apache.struts" src/
 grep -r "struts" pom.xml
 
-# JSP関連の参照がないことを確認
+# Verify no JSP-related references
 grep -r "import javax.servlet.jsp" src/
 grep -r "jsp-api" pom.xml
 
-# 検索結果が空であることを確認
+# Verify search results are empty
 ```
 
-#### クリーンアップ後の最終処理
+#### Final Processing After Cleanup
 
-##### 1. ドキュメントの更新
+##### 1. Update Documentation
 
 ```markdown
-更新対象ドキュメント:
-- README.md（起動方法、技術スタックの更新）
-- CHANGELOG.md（移行履歴の記録）
-- API仕様書（OpenAPI/Swagger）
-- 運用手順書（デプロイ手順の更新）
+Documents to update:
+- README.md (update startup method, technology stack)
+- CHANGELOG.md (record migration history)
+- API specification (OpenAPI/Swagger)
+- Operations manual (update deployment procedure)
 ```
 
-##### 2. 変更のコミットとプルリクエスト
+##### 2. Commit Changes and Pull Request
 
 ```bash
-# 変更をステージング
+# Stage changes
 git add .
 
-# コミット
+# Commit
 git commit -m "chore: Remove legacy Struts and JSP code after Spring Boot migration
 
 - Remove all Struts Action classes and ActionForm classes
@@ -1563,91 +1563,91 @@ git commit -m "chore: Remove legacy Struts and JSP code after Spring Boot migrat
 
 Closes #XXX"
 
-# リモートにプッシュ
+# Push to remote
 git push origin feature/cleanup-legacy-code
 
-# プルリクエストを作成してレビュー依頼
+# Create pull request and request review
 ```
 
-##### 3. 本番デプロイ前の最終確認
+##### 3. Final Check Before Production Deployment
 
-- [ ] ステージング環境でのフルテスト実施
-- [ ] 負荷テストの実施
-- [ ] セキュリティスキャンの実施
-- [ ] ステークホルダーへのデモ実施
-- [ ] デプロイ計画の最終確認
-- [ ] ロールバック手順の準備
+- [ ] Full testing in staging environment
+- [ ] Execute load testing
+- [ ] Execute security scanning
+- [ ] Demo to stakeholders
+- [ ] Final confirmation of deployment plan
+- [ ] Prepare rollback procedure
 
-##### 4. 本番環境デプロイ
+##### 4. Production Environment Deployment
 
 ```bash
-# タグの作成
+# Create tag
 git tag -a v2.0.0 -m "Spring Boot migration completed - Legacy code removed"
 git push origin v2.0.0
 
-# 本番デプロイ（CI/CDパイプライン経由）
-# または手動デプロイ
+# Production deployment (via CI/CD pipeline)
+# or manual deployment
 ```
 
-#### クリーンアップによる効果
+#### Effects of Cleanup
 
-##### 定量的効果
+##### Quantitative Effects
 
-| 項目 | 削減量（推定） | 備考 |
+| Item | Reduction Amount (Estimated) | Notes |
 | --- | --- | --- |
-| コード行数 | 30-50%削減 | Action、ActionForm、JSPの削除 |
-| 依存ライブラリ数 | 10-15個削減 | Struts関連ライブラリの削除 |
-| WARファイルサイズ | 20-30%削減 | 不要なライブラリとJSPの削除 |
-| ビルド時間 | 10-20%短縮 | 依存関係の削減 |
-| 起動時間 | 改善 | Spring Bootの最適化 |
+| Lines of code | 30-50% reduction | Removal of Action, ActionForm, JSP |
+| Number of dependency libraries | 10-15 reduction | Removal of Struts-related libraries |
+| WAR file size | 20-30% reduction | Removal of unnecessary libraries and JSP |
+| Build time | 10-20% shorter | Dependency reduction |
+| Startup time | Improved | Spring Boot optimization |
 
-##### 定性的効果
+##### Qualitative Effects
 
-1. **保守性の向上**
-   - 二重管理の解消
-   - コードベースの一貫性
-   - 新規開発者の理解容易化
+1. **Improved Maintainability**
+   - Elimination of dual management
+   - Codebase consistency
+   - Easier understanding for new developers
 
-2. **セキュリティの向上**
-   - 脆弱性のあるライブラリの削除
-   - 攻撃対象の削減
+2. **Improved Security**
+   - Removal of vulnerable libraries
+   - Reduced attack surface
 
-3. **開発効率の向上**
-   - 明確なアーキテクチャ
-   - モダンな開発環境
-   - テスト容易性の向上
+3. **Improved Development Efficiency**
+   - Clear architecture
+   - Modern development environment
+   - Improved testability
 
-4. **技術的負債の解消**
-   - EOLフレームワークの削除
-   - レガシーコードの削除
-   - 将来への投資
+4. **Resolution of Technical Debt**
+   - Removal of EOL framework
+   - Removal of legacy code
+   - Investment in the future
 
-#### トラブルシューティング
+#### Troubleshooting
 
-##### 問題1: 削除後にビルドエラーが発生
+##### Problem 1: Build Errors After Removal
 
-**原因**: 一部のコードが削除したクラスに依存している
+**Cause**: Some code depends on removed classes
 
-**対処**:
+**Solution**:
 
 ```bash
-# エラーログから依存しているクラスを特定
+# Identify dependent classes from error log
 mvn clean compile 2>&1 | grep "cannot find symbol"
 
-# 該当箇所を修正
-# - Spring Bootの同等機能に置き換え
-# - 不要なコードの場合は削除
+# Fix the location
+# - Replace with Spring Boot equivalent functionality
+# - Remove if unnecessary code
 ```
 
-##### 問題2: テストが失敗する
+##### Problem 2: Tests Fail
 
-**原因**: テストコードがStrutsTestCaseに依存している
+**Cause**: Test code depends on StrutsTestCase
 
-**対処**:
+**Solution**:
 
 ```java
-// 削除: StrutsTestCaseベースのテスト
-// 追加: Spring Boot Testベースのテスト
+// Remove: StrutsTestCase-based tests
+// Add: Spring Boot Test-based tests
 @SpringBootTest
 @AutoConfigureMockMvc
 class MyControllerTest {
@@ -1662,352 +1662,341 @@ class MyControllerTest {
 }
 ```
 
-##### 問題3: 画面が表示されない
+##### Problem 3: Screen Not Displayed
 
-**原因**: JSP削除後、Thymeleafテンプレートのパスが正しくない
+**Cause**: After JSP removal, Thymeleaf template path is incorrect
 
-**対処**:
+**Solution**:
 
 ```yaml
-# application.yml で確認
+# Verify in application.yml
 spring:
   thymeleaf:
-    prefix: classpath:/templates/  # 正しいパス
+    prefix: classpath:/templates/  # Correct path
     suffix: .html
 ```
 
 ```java
-// Controllerで正しいビュー名を返す
+// Return correct view name in Controller
 @GetMapping("/products")
 public String listProducts() {
     return "products/list";  // templates/products/list.html
 }
 ```
 
-## 主要な移行課題と対策
+## Main Migration Challenges and Countermeasures
 
-### 1. ビジネスロジックの抽出
+### 1. Business Logic Extraction
 
-**課題**: Struts Actionにビジネスロジックが直接記述されている場合が多い
+**Challenge**: Business logic is often written directly in Struts Actions
 
-**対策**:
+**Countermeasures**:
 
-- Actionから段階的にServiceレイヤーへロジックを抽出
-- トランザクション境界を適切に設定（`@Transactional`）
-- 依存性注入を活用してテスタビリティを向上
+- Gradually extract logic from Actions to Service layer
+- Set appropriate transaction boundaries (`@Transactional`)
+- Improve testability using dependency injection
 
-### 2. セッション管理
+### 2. Session Management
 
-**課題**: Struts 1.xでは直接HttpSessionを操作
+**Challenge**: Struts 1.x directly manipulates HttpSession
 
-**対策**:
+**Countermeasures**:
 
-- Spring Sessionを利用（オプション）
-- セッションスコープBeanの活用
-- ステートレスな設計を推奨（RESTful）
+- Use Spring Session (optional)
+- Utilize session scope Beans
+- Recommend stateless design (RESTful)
 
-### 3. データベーススキーマ
+### 3. Database Schema
 
-**課題**: 既存のデータベーススキーマとの整合性
+**Challenge**: Consistency with existing database schema
 
-**対策**:
+**Countermeasures**:
 
-- JPA エンティティを既存テーブル構造に合わせる
-- `@Table(name="existing_table")` で既存テーブル名を指定
-- 必要に応じてFlywayやLiquibaseでマイグレーション管理
+- Align JPA entities with existing table structure
+- Specify existing table name with `@Table(name="existing_table")`
+- Use Flyway or Liquibase for migration management if needed
 
-## リスク評価と緩和策
+## Risk Assessment and Mitigation
 
-| リスク | 深刻度 | 確率 | 影響 | 緩和策 |
+| Risk | Severity | Probability | Impact | Mitigation |
 | --- | --- | --- | --- | --- |
-| ビジネスロジックの理解不足 | 高 | 中 | 機能の誤実装 | ドキュメント化、元の開発者へのヒアリング |
-| データベーススキーマの不整合 | 高 | 低 | データ破損 | 移行前の完全バックアップ、段階的リリース |
-| パフォーマンス劣化 | 中 | 低 | ユーザー体験低下 | 性能テスト実施、プロファイリング |
-| 未検出のバグ | 中 | 中 | 本番障害 | 十分なテストカバレッジ、段階的リリース |
-| 学習コスト | 中 | 高 | スケジュール遅延 | トレーニング実施、ペアプログラミング |
-| 外部ライブラリの互換性 | 低 | 低 | ビルドエラー | 事前調査、代替ライブラリ検討 |
+| Insufficient understanding of business logic | High | Medium | Incorrect functionality implementation | Documentation, interviews with original developers |
+| Database schema inconsistency | High | Low | Data corruption | Complete backup before migration, phased release |
+| Performance degradation | Medium | Low | Degraded user experience | Conduct performance tests, profiling |
+| Undetected bugs | Medium | Medium | Production failures | Sufficient test coverage, phased release |
+| Learning costs | Medium | High | Schedule delays | Conduct training, pair programming |
+| External library compatibility | Low | Low | Build errors | Preliminary research, consider alternative libraries |
 
-## タイムラインと工数見積もり
+## Timeline and Work Estimation
 
-| フェーズ | 期間 | 必要リソース | 成果物 |
+| Phase | Duration | Required Resources | Deliverables |
 | --- | --- | --- | --- |
-| フェーズ0: 準備 | 1週間 | 1-2名 | 環境構築、現状分析ドキュメント |
-| フェーズ1: プロジェクト構造 | 1週間 | 2名 | Spring Bootプロジェクト、基本設定 |
-| フェーズ2: データアクセス層 | 2週間 | 2-3名 | エンティティ、リポジトリ、サービス |
-| フェーズ3: コントローラー層 | 3週間 | 3-4名 | 全Controller、DTO、バリデーション |
-| フェーズ4: ビュー層 | 3週間 | 2-3名 | 全Thymeleafテンプレート |
-| フェーズ5: モダンJavaリファクタリング | 1週間 | 2名 | Java 21モダンコード適用 |
-| フェーズ6: 設定・その他 | 1週間 | 2名 | 例外処理、ファイルアップロード等 |
-| フェーズ7: テスト | 2週間 | 3-4名 | 単体・統合テスト |
-| フェーズ8: パフォーマンステスト | 1週間 | 2名 | 性能測定、チューニング |
-| フェーズ9: ドキュメント化 | 1週間 | 1-2名 | 技術ドキュメント、運用手順書 |
-| フェーズ10: レガシーコードクリーンアップ | 1週間 | 2-3名 | クリーンなコードベース、最終検証 |
-| **合計** | **約17週間（4.25ヶ月）** | **2-4名** | |
+| Phase 0: Preparation | 1 week | 1-2 people | Environment setup, current state analysis document |
+| Phase 1: Project structure | 1 week | 2 people | Spring Boot project, basic configuration |
+| Phase 2: Data access layer | 2 weeks | 2-3 people | Entities, repositories, services |
+| Phase 3: Controller layer | 3 weeks | 3-4 people | All Controllers, DTOs, validation |
+| Phase 4: View layer | 3 weeks | 2-3 people | All Thymeleaf templates |
+| Phase 5: Modern Java refactoring | 1 week | 2 people | Apply Java 21 modern code |
+| Phase 6: Configuration/other | 1 week | 2 people | Exception handling, file upload, etc. |
+| Phase 7: Testing | 2 weeks | 3-4 people | Unit/integration tests |
+| Phase 8: Performance testing | 1 week | 2 people | Performance measurement, tuning |
+| Phase 9: Documentation | 1 week | 1-2 people | Technical documentation, operations manual |
+| Phase 10: Legacy code cleanup | 1 week | 2-3 people | Clean codebase, final validation |
+| **Total** | **~17 weeks (4.25 months)** | **2-4 people** | |
 
-### 並行作業の可能性
+### Possibility of Parallel Work
 
-- フェーズ3とフェーズ4は一部並行実施可能
-- テストは各フェーズで並行して作成
-- フェーズ10は全機能移行完了後に実施（並行作業不可）
+- Phases 3 and 4 can be partially executed in parallel
+- Tests can be created in parallel with each phase
+- Phase 10 is executed after all functionality migration is complete (no parallel work)
 
-## 段階的リリース戦略
+## Phased Release Strategy
 
-### ストラングラーパターン（推奨）
+### Strangler Pattern (Recommended)
 
-既存のStruts 1.xアプリケーションとSpring Bootアプリケーションを並行稼働:
+Run existing Struts 1.x application and Spring Boot application in parallel:
 
-1. **フェーズ1**: 新機能はSpring Bootで開発
-2. **フェーズ2**: 使用頻度の低い画面から移行
-3. **フェーズ3**: 主要機能の移行
-4. **フェーズ4**: 全機能移行完了後、Struts 1.x版を廃止
+1. **Phase 1**: Develop new features with Spring Boot
+2. **Phase 2**: Migrate from low-frequency screens
+3. **Phase 3**: Migrate main features
+4. **Phase 4**: After all functionality migration is complete, discontinue Struts 1.x version
 
-**メリット**:
+**Benefits**:
 
-- リスク分散
-- 段階的な検証
-- ロールバックが容易
+- Risk distribution
+- Gradual verification
+- Easy rollback
 
-**実装方法**:
+**Implementation Method**:
 
-- リバースプロキシ（Nginx等）でURLパスベースでルーティング
+- Route based on URL path using reverse proxy (Nginx, etc.)
 - `/api/*` → Spring Boot
-- その他 → Struts 1.x
+- Other → Struts 1.x
 
-### ビッグバン移行
+### Big Bang Migration
 
-全機能を一度に移行:
+Migrate all functionality at once:
 
-**メリット**:
+**Benefits**:
 
-- 二重管理不要
-- 移行期間が短い
+- No dual management needed
+- Short migration period
 
-**デメリット**:
+**Disadvantages**:
 
-- リスクが高い
-- ロールバックが困難
+- High risk
+- Difficult rollback
 
-**推奨**: 小規模アプリケーションの場合のみ
+**Recommendation**: Small applications only
 
-## 移行チェックリスト
+## Migration Checklist
 
-### 準備フェーズ
+### Preparation Phase
 
-- [ ] プロジェクトチームの編成
-- [ ] ステークホルダーの承認取得
-- [ ] JDK 21のインストールと環境設定
-- [ ] Spring Initializrでプロジェクト生成
-- [ ] Git リポジトリのブランチ戦略決定
-- [ ] CI/CD パイプラインの準備
+- [ ] Form project team
+- [ ] Obtain stakeholder approval
+- [ ] Install and configure JDK 21 environment
+- [ ] Generate project with Spring Initializr
+- [ ] Determine Git repository branch strategy
+- [ ] Prepare CI/CD pipeline
 
-### データアクセス層
+### Data Access Layer
 
-- [ ] データベーススキーマの分析
-- [ ] JPA エンティティクラスの作成
-- [ ] Spring Data JPA リポジトリの作成
-- [ ] サービスレイヤーの作成
-- [ ] トランザクション境界の設定
-- [ ] リポジトリとサービスの単体テスト
+- [ ] Analyze database schema
+- [ ] Create JPA entity classes
+- [ ] Create Spring Data JPA repositories
+- [ ] Create service layer
+- [ ] Set transaction boundaries
+- [ ] Unit tests for repositories and services
 
-### コントローラー層
+### Controller Layer
 
-- [ ] Struts Actionの棚卸し
-- [ ] Spring MVC Controllerへの変換
-- [ ] DTOクラスの作成
-- [ ] Bean Validationの実装
-- [ ] 例外ハンドリングの実装
-- [ ] Controller の単体テスト
+- [ ] Inventory Struts Actions
+- [ ] Convert to Spring MVC Controllers
+- [ ] Create DTO classes
+- [ ] Implement Bean Validation
+- [ ] Implement exception handling
+- [ ] Unit tests for Controllers
 
-### ビュー層
+### View Layer
 
-- [ ] JSPページの棚卸し
-- [ ] Thymeleafテンプレートへの変換
-- [ ] レイアウトテンプレートの作成
-- [ ] CSS/JavaScriptの移行
-- [ ] メッセージリソースの確認
-- [ ] 画面表示の動作確認
+- [ ] Inventory JSP pages
+- [ ] Convert to Thymeleaf templates
+- [ ] Create layout templates
+- [ ] Migrate CSS/JavaScript
+- [ ] Verify message resources
+- [ ] Verify screen display operation
 
-### その他機能
+### Other Features
 
-- [ ] ファイルアップロード機能の移行
-- [ ] メール送信機能の移行
-- [ ] セッション管理の実装
-- [ ] セキュリティ設定（必要に応じて）
-- [ ] ログ設定の確認
+- [ ] Migrate file upload functionality
+- [ ] Migrate email sending functionality
+- [ ] Implement session management
+- [ ] Security configuration (if needed)
+- [ ] Verify logging configuration
 
-### モダンJavaリファクタリング
+### Modern Java Refactoring
 
-- [ ] try-with-resourcesの適用
-- [ ] diamond演算子・`var`の適用
-- [ ] `instanceof`/`switch`のパターンマッチ適用
-- [ ] text blocks適用（SQL/JSON/HTML）
-- [ ] `java.time`への移行
-- [ ] Stream/Optionalへの移行（適材適所）
-- [ ] `record`/DTOの適用（JPAエンティティは除外）
-- [ ] `HttpClient`/virtual threadsの検討
+- [ ] Apply try-with-resources
+- [ ] Apply diamond operator/`var`
+- [ ] Apply `instanceof`/`switch` pattern matching
+- [ ] Apply text blocks (SQL/JSON/HTML)
+- [ ] Migrate to `java.time`
+- [ ] Migrate to Stream/Optional (appropriate use)
+- [ ] Apply `record`/DTO (exclude JPA entities)
+- [ ] Consider `HttpClient`/virtual threads
 
-### テストとデプロイ
+### Testing and Deployment
 
-- [ ] 単体テストの完了
-- [ ] 統合テストの完了
-- [ ] パフォーマンステスト
-- [ ] セキュリティテスト
-- [ ] ステージング環境へのデプロイ
-- [ ] 本番環境へのデプロイ
+- [ ] Complete unit testing
+- [ ] Complete integration testing
+- [ ] Performance testing
+- [ ] Security testing
+- [ ] Deploy to staging environment
+- [ ] Deploy to production environment
 
-### レガシーコードのクリーンアップ
+### Legacy Code Cleanup
 
-- [ ] 全機能のSpring Boot移行完了確認
-- [ ] Struts関連設定ファイルの削除
-- [ ] Struts ActionクラスとActionFormクラスの削除
-- [ ] 全JSPファイルの削除
-- [ ] pom.xmlから不要な依存関係の削除
-- [ ] web.xmlのクリーンアップ
-- [ ] クリーンアップ後のビルド確認
-- [ ] クリーンアップ後の全機能テスト
-- [ ] クリーンアップ後のパフォーマンステスト
-- [ ] 最終的なコードレビュー
+- [ ] Confirm all functionality Spring Boot migration complete
+- [ ] Remove Struts-related configuration files
+- [ ] Remove Struts Action and ActionForm classes
+- [ ] Remove all JSP files
+- [ ] Remove unnecessary dependencies from pom.xml
+- [ ] Clean up web.xml
+- [ ] Verify build after cleanup
+- [ ] Test all functionality after cleanup
+- [ ] Performance test after cleanup
+- [ ] Final code review
 
-## 次のステップ
+## Next Steps
 
-### 即座に実施すべきこと
+### Actions to Take Immediately
 
-1. **ステークホルダーミーティング**
-   - 移行計画の説明と承認
-   - リソース配分の決定
-   - リリーススケジュールの合意
+1. **Stakeholder Meeting**
+   - Explain and approve migration plan
+   - Decide resource allocation
+   - Agree on release schedule
 
-2. **技術評価**
-   - POC（概念実証）の実施
-   - 主要機能の1つをSpring Bootで実装してみる
-   - パフォーマンスとの検証
+2. **Technical Assessment**
+   - Execute POC (Proof of Concept)
+   - Implement one main feature with Spring Boot
+   - Verify performance
 
-3. **チーム準備**
-   - Spring Boot研修の実施
-   - Thymeleaf、Spring Data JPAの学習
-   - ペアプログラミング体制の構築
+3. **Team Preparation**
+   - Conduct Spring Boot training
+   - Learn Thymeleaf and Spring Data JPA
+   - Establish pair programming system
 
-### 1ヶ月以内
+### Within 1 Month
 
-1. **環境構築**
-   - 開発環境の整備
-   - CI/CDパイプラインの構築
-   - テスト環境の準備
+1. **Environment Setup**
+   - Prepare development environment
+   - Build CI/CD pipeline
+   - Prepare test environment
 
-2. **フェーズ0-1の完了**
-   - 現状分析ドキュメント作成
-   - Spring Bootプロジェクトの作成
-   - 基本設定の完了
+2. **Complete Phases 0-1**
+   - Create current state analysis document
+   - Create Spring Boot project
+   - Complete basic configuration
 
-### 3ヶ月以内
+### Within 3 Months
 
-1. **コア機能の移行**
-   - データアクセス層の完全移行
-   - 主要画面のコントローラーとビューの移行
-   - 基本テストの完了
+1. **Core Feature Migration**
+   - Complete data access layer migration
+   - Migrate main screen controllers and views
+   - Complete basic testing
 
-2. **ステージング環境デプロイ**
-   - 移行済み機能のステージング環境テスト
-   - フィードバックの収集と改善
+2. **Staging Environment Deployment**
+   - Test migrated features in staging environment
+   - Collect and improve feedback
 
-### 6ヶ月以内
+### Within 6 Months
 
-1. **全機能の移行完了**
-   - すべてのStruts機能のSpring Boot化
-   - 総合テスト完了
-   - ドキュメント整備
+1. **Complete All Feature Migration**
+   - Spring Boot-ify all Struts features
+   - Complete comprehensive testing
+   - Organize documentation
 
-2. **本番環境デプロイ**
-   - 段階的リリースまたは一括切り替え
-   - 監視体制の確立
-   - 旧システムの段階的廃止
+2. **Production Environment Deployment**
+   - Phased release or complete switchover
+   - Establish monitoring system
+   - Gradually discontinue old system
 
-## 成功の鍵
+## Keys to Success
 
-### 技術面
+### Technical Aspects
 
-1. **段階的な移行**: 一度にすべてを変更しない
-2. **十分なテスト**: 各フェーズで徹底的にテスト
-3. **継続的インテグレーション**: 自動テストとビルド
-4. **パフォーマンス監視**: 移行前後での性能測定
-5. **モダンJavaの適用**: try-with-resources, `java.time`, Streams, pattern matching, records
+1. **Phased Migration**: Don't change everything at once
+2. **Sufficient Testing**: Thoroughly test each phase
+3. **Continuous Integration**: Automated testing and building
+4. **Performance Monitoring**: Measure performance before and after migration
+5. **Apply Modern Java**: try-with-resources, `java.time`, Streams, pattern matching, records
 
-### 組織面
+### Organizational Aspects
 
-1. **経営陣のコミットメント**: リソースとスケジュールの確保
-2. **チームのスキルアップ**: 継続的な学習と研修
-3. **明確なコミュニケーション**: 進捗の透明性
-4. **適切なリスク管理**: 問題の早期発見と対応
+1. **Management Commitment**: Secure resources and schedule
+2. **Team Skill Development**: Continuous learning and training
+3. **Clear Communication**: Transparency of progress
+4. **Appropriate Risk Management**: Early detection and response to problems
 
-## 期待される効果
+## Expected Benefits
 
-### 短期的効果（6ヶ月以内）
+### Short-term Benefits (Within 6 months)
 
-- セキュリティリスクの大幅な低減
-- 開発生産性の向上（自動設定、ホットリロード等）
-- メンテナンス性の向上
+- Significant reduction in security risks
+- Improved development productivity (auto-configuration, hot reload, etc.)
+- Improved maintainability
 
-### 中長期的効果（6ヶ月以降）
+### Medium to Long-term Benefits (After 6 months)
 
-- Java 21の最新機能活用によるコード品質向上
-- マイクロサービス化への道筋
-- クラウドネイティブアーキテクチャへの移行可能性
-- 新規開発者のオンボーディング容易化
-- コミュニティサポートの充実
+- Improved code quality by leveraging latest Java 21 features
+- Path to microservices
+- Possibility of migrating to cloud-native architecture
+- Easier onboarding of new developers
+- Rich community support
 
-## まとめ
+## Summary
 
-このプロジェクトはApache Struts 1.3.10という2008年のフレームワークを使用しており、セキュリティリスクが極めて高い状態です。本移行計画では、**Java 21 + Spring Boot 3.2.x + Thymeleaf + Spring Data JPA** への完全移行を提案します。
+This project uses Apache Struts 1.3.10, a 2008 framework, and has extremely high security risks. This migration plan proposes complete migration to **Java 21 + Spring Boot 3.2.x + Thymeleaf + Spring Data JPA**.
 
-### 移行のメリット
+### Migration Benefits
 
-1. **セキュリティ**: EOLのStruts 1.xから、継続的にサポートされるSpring Bootへ
-2. **生産性**: 自動設定、開発ツール、豊富なエコシステム
-3. **保守性**: モダンなアーキテクチャ、明確な責務分離
-4. **将来性**: マイクロサービス、クラウドネイティブへの移行パス
-5. **人材**: Spring開発者の豊富さ、学習リソースの充実
+1. **Security**: From EOL Struts 1.x to continuously supported Spring Boot
+2. **Productivity**: Auto-configuration, development tools, rich ecosystem
+3. **Maintainability**: Modern architecture, clear separation of responsibilities
+4. **Future-proofing**: Migration path to microservices and cloud-native
+5. **Human Resources**: Abundance of Spring developers, rich learning resources
 
-### 推奨実装アプローチ
+### Recommended Implementation Approach
 
-**期間**: 約6ヶ月（17週間の開発 + テスト・デプロイ・クリーンアップ）
+**Period**: About 6 months (17 weeks development + testing/deployment/cleanup)
 
-**リソース**: 2-4名の開発者
+**Resources**: 2-4 developers
 
-**リリース戦略**: ストラングラーパターンによる段階的移行（推奨）
+**Release Strategy**: Phased migration using Strangler Pattern (recommended)
 
-**最終フェーズ**: フェーズ5でモダンJava適用、フェーズ10でレガシーコードを完全削除
+**Final Phase**: Apply modern Java in Phase 5, completely remove legacy code in Phase 10
 
-### 投資対効果
+### Return on Investment
 
-| 項目 | 短期（6ヶ月） | 中期（1-2年） | 長期（2年以上） |
+| Item | Short-term (6 months) | Medium-term (1-2 years) | Long-term (2+ years) |
 | --- | --- | --- | --- |
-| 開発コスト | 高（移行作業） | 低（生産性向上） | 低（保守容易） |
-| セキュリティリスク | 大幅低減 | 最小化 | 最小化 |
-| 開発速度 | 一時的低下 | 向上 | 大幅向上 |
-| システム品質 | 向上 | 大幅向上 | 大幅向上 |
+| Development cost | High (migration work) | Low (improved productivity) | Low (easy maintenance) |
+| Security risk | Significant reduction | Minimization | Minimization |
+| Development speed | Temporary decrease | Improvement | Significant improvement |
+| System quality | Improvement | Significant improvement | Significant improvement |
 
-### 最終的な推奨事項
+### Final Recommendation
 
-このApache Struts 1.xアプリケーションは**今すぐに移行を開始すべき**状態です。セキュリティリスクと技術的負債を考慮すると、**Spring Boot 3.2.x への完全移行が最適な選択**です。
+This Apache Struts 1.x application **should start migration immediately**. Considering security risks and technical debt, **complete migration to Spring Boot 3.2.x is the optimal choice**.
 
-- ✅ **Java 21**: 2031年までのLTSサポート
-- ✅ **Spring Boot 3.2.x**: 業界標準、豊富なエコシステム
-- ✅ **Thymeleaf**: モダンで保守しやすいテンプレートエンジン
-- ✅ **Spring Data JPA**: 宣言的で生産性の高いデータアクセス
+- ✅ **Java 21**: LTS support until 2031
+- ✅ **Spring Boot 3.2.x**: Industry standard, rich ecosystem
+- ✅ **Thymeleaf**: Modern, maintainable template engine
+- ✅ **Spring Data JPA**: Declarative, highly productive data access
 
-**今すぐ始めるべき3つのアクション:**
+**3 Actions to Start Immediately:**
 
-1. ステークホルダーへの説明と承認取得
-2. 技術POCの実施（1-2週間）
-3. 移行チームの編成と研修の開始
-
-### 移行完了後の最終作業
-
-移行が完了し、Spring Bootアプリケーションが正常に動作することを確認した後、**フェーズ10でレガシーコードのクリーンアップ**を実施します。これにより：
-
-- 古いStrutsコードとJSPファイルを完全に削除
-- 不要な依存関係を削除してアプリケーションサイズを削減
-- コードベースをクリーンに保ち、保守性を大幅に向上
-- 技術的負債を完全に解消
-
-この移行により、セキュアで保守しやすく、将来にわたって拡張可能なアプリケーションを構築できます。
+1. Explain to and obtain approval from stakeholders
+2. Execute POC (Proof of Concept) with Spring Boot
+3. Organize team and start training

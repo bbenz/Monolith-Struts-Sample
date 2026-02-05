@@ -25,10 +25,10 @@ public class AuthController {
             var user = userService.findByEmail(email).orElse(null);
             if (user != null) {
                 session.setAttribute("loginUser", user);
-                ra.addFlashAttribute("message", "ログインしました: " + user.getUsername());
+                ra.addFlashAttribute("message", "Logged in: " + user.getUsername());
                 return "redirect:/";
             }
-            ra.addFlashAttribute("error", "ユーザーが見つかりません");
+            ra.addFlashAttribute("error", "User not found");
         }
         model.addAttribute("users", userService.findAll());
         return "auth/login";
@@ -38,18 +38,18 @@ public class AuthController {
     public String doLogin(@RequestParam String email, HttpSession session, RedirectAttributes ra) {
         var user = userService.findByEmail(email).orElse(null);
         if (user == null) {
-            ra.addFlashAttribute("error", "ユーザーが見つかりません");
+            ra.addFlashAttribute("error", "User not found");
             return "redirect:/ui/login";
         }
         session.setAttribute("loginUser", user);
-        ra.addFlashAttribute("message", "ログインしました: " + user.getUsername());
+        ra.addFlashAttribute("message", "Logged in: " + user.getUsername());
         return "redirect:/";
     }
 
     @GetMapping("/ui/logout")
     public String logout(HttpSession session, RedirectAttributes ra) {
         session.removeAttribute("loginUser");
-        ra.addFlashAttribute("message", "ログアウトしました");
+        ra.addFlashAttribute("message", "Logged out");
         return "redirect:/";
     }
 }

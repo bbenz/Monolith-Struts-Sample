@@ -3,42 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>注文詳細 - Ski Resort Shop</title>
+    <title>Order Details - Ski Resort Shop</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
     <header class="app-header" th:insert="~{fragments/header :: header}"></header>
     
     <main class="site-container">
-        <h2 class="page-title">注文詳細</h2>
+        <h2 class="page-title">Order Details</h2>
         
         <div th:if="${order != null}" class="card">
-            <p>注文番号: <strong th:text="${order.orderNumber}">注文番号</strong></p>
-            <p>状態: <span th:text="${order.status}">状態</span></p>
-            <p>支払状態: <span th:text="${order.paymentStatus}">支払状態</span></p>
-            <p>合計金額: <strong th:text="${order.totalAmount}">合計金額</strong></p>
+            <p>Order Number: <strong th:text="${order.orderNumber}">Order Number</strong></p>
+            <p>Status: <span th:text="${order.status}">Status</span></p>
+            <p>Payment Status: <span th:text="${order.paymentStatus}">Payment Status</span></p>
+            <p>Total Amount: <strong th:text="${order.totalAmount}">Total Amount</strong></p>
         </div>
         
         <div th:if="${order == null}" class="card">
-            <p>注文情報がありません。</p>
+            <p>No order information found.</p>
         </div>
         
         <div th:if="${orderItems != null and not #lists.isEmpty(orderItems)}">
-            <h3>商品明細</h3>
+            <h3>Product Details</h3>
             <div class="card table-responsive">
                 <table>
                     <thead>
                         <tr>
-                            <th>商品名</th>
-                            <th>数量</th>
-                            <th>小計</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="item : ${orderItems}">
-                            <td th:text="${item.productName}">商品名</td>
-                            <td th:text="${item.quantity}">数量</td>
-                            <td th:text="${item.subtotal}">小計</td>
+                            <td th:text="${item.productName}">Product Name</td>
+                            <td th:text="${item.quantity}">Quantity</td>
+                            <td th:text="${item.subtotal}">Subtotal</td>
                         </tr>
                     </tbody>
                 </table>

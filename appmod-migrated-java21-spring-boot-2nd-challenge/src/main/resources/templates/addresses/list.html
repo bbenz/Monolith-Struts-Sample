@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
-<head><title>住所</title></head>
+<head><title>Addresses</title></head>
 <body>
 <div th:fragment="content">
-  <h1 class="page-title">住所</h1>
+  <h1 class="page-title">Addresses</h1>
   <div class="card table-responsive" th:if="${#lists.isEmpty(addresses)}">
-    <p>住所情報はありません。</p>
+    <p>No addresses found.</p>
   </div>
   <div class="card table-responsive" th:if="${!#lists.isEmpty(addresses)}">
     <table>
-      <thead><tr><th>ラベル</th><th>宛先</th><th>郵便番号</th><th>都道府県</th><th>住所1</th><th>電話番号</th><th>デフォルト</th></tr></thead>
+      <thead><tr><th>Label</th><th>Recipient</th><th>Postal Code</th><th>Prefecture</th><th>Address 1</th><th>Phone</th><th>Default</th></tr></thead>
       <tbody>
         <tr th:each="a : ${addresses}">
           <td th:text="${a.label}">label</td>

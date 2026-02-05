@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
 <head>
-    <title>ホーム</title>
+    <title>Home</title>
 </head>
 <body>
 <div th:fragment="content">
     <div class="hero">
-        <h1>Azure SkiShop へようこそ</h1>
-        <p>最高品質のスキー・スノーボード用品で、あなたの冬のアドベンチャーを始めよう。</p>
+        <h1>Welcome to Azure SkiShop</h1>
+        <p>Start your winter adventure with the highest quality ski and snowboard equipment.</p>
         <div class="hero-actions">
-            <a th:href="@{/ui/products}" class="btn">商品を見る</a>
+            <a th:href="@{/ui/products}" class="btn">View Products</a>
         </div>
     </div>
 
-    <h2 class="page-title">おすすめスキー用品</h2>
+    <h2 class="page-title">Recommended Ski Equipment</h2>
     <div class="products-grid" th:if="${products}">
         <div class="product-card" th:each="p : ${products}">
             <div class="name"><a th:href="@{|/ui/products/${p.id}|}" th:text="${p.name}">name</a></div>
@@ -22,11 +22,11 @@
                 <span class="tag" th:text="${p.status}">ACTIVE</span>
             </div>
             <div>
-                <a th:href="@{|/ui/products/${p.id}|}" class="btn btn-secondary">詳細を見る</a>
+                <a th:href="@{|/ui/products/${p.id}|}" class="btn btn-secondary">View Details</a>
             </div>
         </div>
     </div>
-    <p th:if="${#lists.isEmpty(products)}">おすすめ商品を準備中です。</p>
+    <p th:if="${#lists.isEmpty(products)}">Recommended products are being prepared.</p>
 </div>
 </body>
 </html>

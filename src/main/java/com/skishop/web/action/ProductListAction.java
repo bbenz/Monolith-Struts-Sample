@@ -37,7 +37,7 @@ public class ProductListAction extends Action {
     List<Product> products = productService.search(keyword, categoryId, sort, offset, size);
     List<Category> categories = categoryService.listAll();
     List<LabelValueBean> categoryOptions = new java.util.ArrayList<LabelValueBean>();
-    categoryOptions.add(new LabelValueBean("指定なし", ""));
+    categoryOptions.add(new LabelValueBean("None", ""));
     if (categories != null) {
       for (Category c : categories) {
         categoryOptions.add(new LabelValueBean(c.getName(), c.getId()));

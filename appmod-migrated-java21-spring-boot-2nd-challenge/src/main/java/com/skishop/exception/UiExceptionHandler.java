@@ -22,7 +22,7 @@ public class UiExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ModelAndView handleGeneric(Exception ex, Model model) {
-        model.addAttribute("error", "予期しないエラーが発生しました");
+        model.addAttribute("error", "An unexpected error has occurred");
         return new ModelAndView("error/500", model.asMap());
     }
 }

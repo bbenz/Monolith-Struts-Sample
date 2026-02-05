@@ -1,223 +1,223 @@
-# 実装計画書 (SkiShop Monolith - Struts 1.2.9 / Java 5)
+# Implementation Plan (SkiShop Monolith - Struts 1.2.9 / Java 5)
 
 <!-- markdownlint-disable MD013 MD029 -->
 
-## フェーズ構成
+## Phase Structure
 
-0. 環境・骨組み
-1. ドメイン/DAO/DDL
-2. サービス/ビジネスロジック
-3. Web層(Action/Form/Validation)
-4. View(JSP/Tiles)
-5. セキュリティ/RequestProcessor
-6. 管理機能(Admin)
-7. 通知/メール
-8. 非機能/運用/Docker
-9. テスト/QA
-10. リリース
-
----
-
-## Phase 0: 環境・骨組み
-
-**内容**
-
-- Ant 1.8 プロジェクト雛形作成（`source/target=1.5`、Maven 2 も可）。
-- `build.xml` / `build.properties` / `lib/`（依存JAR配置 or Ivy）用意。
-- パッケージ構造/フォルダ構成作成（`src/main/java`, `src/main/resources`, `src/main/webapp`）。
-- `web.xml` / `struts-config.xml` スケルトン、`context.xml`（Tomcat DataSource）、`log4j.properties` 雛形。
-- 依存JAR配置（Struts 1.2.9, log4j, dbcp, dbutils, javax.mail, servlet/jsp-api, junit/strutstestcase）。
-- `.editorconfig` / コーディング規約メモ。
-
-**Exit Criteria**
-
-- `ant war` / `ant test` が成功し、空の WAR が生成される（Maven 使用時は `mvn -B -DskipTests package`）。
-- Tomcat (6 or 8) で ActionServlet が起動し 404 以外のエラーなく起動ログが出る。
-- `lib/` 必要依存が揃い、コンパイル時に未解決クラスがない。
+0. Environment & Framework
+1. Domain/DAO/DDL
+2. Service/Business Logic
+3. Web Layer (Action/Form/Validation)
+4. View (JSP/Tiles)
+5. Security/RequestProcessor
+6. Admin Features
+7. Notification/Email
+8. Non-functional/Operations/Docker
+9. Testing/QA
+10. Release
 
 ---
 
-## Phase 1: ドメイン/DAO/DDL
+## Phase 0: Environment & Framework
 
-**内容**
+**Content**
 
-- ドメイン/DTO 定義：User, Role, UserSession, Product, ProductImage, Category, Price, Inventory, Cart, Order, OrderItem, OrderShipping, Shipment, Return, Payment, PointAccount, PointTransaction, Coupon, CouponUsage, Campaign, Address, PasswordResetToken, ShippingMethod, SecurityLog, EmailQueue, OAuthAccount(任意)。
-- `AbstractDao`, `DaoException`, `DataSourceLocator` 実装。
-- DAO インタフェースと実装作成：UserDao, RoleDao, UserSessionDao, ProductDao, ProductImageDao, InventoryDao, CouponDao, CouponUsageDao, CartDao, OrderDao, OrderShippingDao, ShipmentDao, ReturnDao, PaymentDao, PointAccountDao, PointTransactionDao, UserAddressDao, PasswordResetTokenDao, ShippingMethodDao, SecurityLogDao, EmailQueueDao, OAuthAccountDao(任意)。
-- DDL スクリプト作成（全テーブル・インデックス・制約、外部キー・ユニーク制約、`coupon_usage`/`security_logs`/`payments` 含む）。
-- 初期データ投入 SQL（サンプル商品・ユーザ・住所・在庫）。
+- Create Ant 1.8 project template (`source/target=1.5`, Maven 2 also acceptable).
+- Prepare `build.xml` / `build.properties` / `lib/` (dependency JAR placement or Ivy).
+- Create package structure/folder structure (`src/main/java`, `src/main/resources`, `src/main/webapp`).
+- `web.xml` / `struts-config.xml` skeleton, `context.xml` (Tomcat DataSource), `log4j.properties` template.
+- Place dependency JARs (Struts 1.2.9, log4j, dbcp, dbutils, javax.mail, servlet/jsp-api, junit/strutstestcase).
+- `.editorconfig` / coding convention memo.
 
 **Exit Criteria**
 
-- H2/PG で DDL 実行成功、DAO CRUD テストが JUnit + H2/DBUnit でグリーン。
-- 主要 DAO のメソッドが期待データを返す（findByEmail, findPaged, reserve, findActiveCouponUsage, lockInventory, recordPayment など）。
-- DDL に必須インデックスが存在し、外部キー制約違反が検出される。
+- `ant war` / `ant test` succeeds and generates empty WAR (if using Maven: `mvn -B -DskipTests package`).
+- ActionServlet starts on Tomcat (6 or 8) with startup logs showing no errors other than 404.
+- `lib/` has necessary dependencies, no unresolved classes at compile time.
 
 ---
 
-## Phase 2: サービス/ビジネスロジック
+## Phase 1: Domain/DAO/DDL
 
-**内容**
+**Content**
 
-- サービス実装：AuthService, UserService, ProductService, InventoryService, CouponService, CartService, PaymentService(擬似), OrderService, PointService, ShippingService, TaxService, MailService, SecurityLogService, SessionService。
-- `OrderFacade` 実装（placeOrder, cancelOrder, returnOrder）。
-- ビジネスルール：
-  - クーポン検証（usage_limit, minimum_amount,期間,is_active）。
-  - ポイント付与/利用（1%・365日）。
-  - 税計算10%、送料800円/1万円以上無料。
-  - 在庫悲観ロック `SELECT ... FOR UPDATE`、不足時例外。
-  - 決済オーソリ成功/失敗ハンドリング、キャンセル/返品時ポイント・クーポン調整。
-  - Idempotency（`order_number` 一意、二重請求防止、メール送信重複防止）。
-  - トランザクション境界定義（サービスメソッド単位、例外時ロールバック）。
+- Domain/DTO definition: User, Role, UserSession, Product, ProductImage, Category, Price, Inventory, Cart, Order, OrderItem, OrderShipping, Shipment, Return, Payment, PointAccount, PointTransaction, Coupon, CouponUsage, Campaign, Address, PasswordResetToken, ShippingMethod, SecurityLog, EmailQueue, OAuthAccount (optional).
+- Implement `AbstractDao`, `DaoException`, `DataSourceLocator`.
+- Create DAO interfaces and implementations: UserDao, RoleDao, UserSessionDao, ProductDao, ProductImageDao, InventoryDao, CouponDao, CouponUsageDao, CartDao, OrderDao, OrderShippingDao, ShipmentDao, ReturnDao, PaymentDao, PointAccountDao, PointTransactionDao, UserAddressDao, PasswordResetTokenDao, ShippingMethodDao, SecurityLogDao, EmailQueueDao, OAuthAccountDao (optional).
+- Create DDL scripts (all tables/indexes/constraints, foreign keys/unique constraints, including `coupon_usage`/`security_logs`/`payments`).
+- Initial data insertion SQL (sample products/users/addresses/inventory).
 
 **Exit Criteria**
 
-- JUnit サービステスト（H2 + DBUnit）がグリーン：
-  - 成功: checkout (coupon+points) → order/point/coupon_usage/stock/payments 更新。
-  - キャンセル: 在庫戻し・ポイント減算・クーポン使用数減算。
-  - 返品: 返金レコード・ポイント調整。
-- 競合テスト: 同時チェックアウトで悲観ロックが有効、ダブルチャージなし。
-- ロールバックテスト: 途中失敗時 DB 一貫性維持。
+- DDL execution succeeds on H2/PG, DAO CRUD tests are green with JUnit + H2/DBUnit.
+- Main DAO methods return expected data (findByEmail, findPaged, reserve, findActiveCouponUsage, lockInventory, recordPayment, etc.).
+- DDL includes required indexes, foreign key constraint violations are detected.
 
 ---
 
-## Phase 3: Web層 (Action/Form/Validation)
+## Phase 2: Service/Business Logic
 
-**内容**
+**Content**
 
-- Action 実装：Login, Register, PasswordForgot, PasswordReset, ProductList, ProductDetail, Cart, Checkout, CouponApply, OrderHistory, OrderCancel, OrderReturn, PointBalance, AddressList, AddressSave, Logout。
-- ActionForm 実装：LoginForm, RegisterForm, PasswordResetRequestForm, PasswordResetForm, ProductSearchForm, AddCartForm, CheckoutForm, CouponForm, AddressForm, AdminProductForm。
-- `validation.xml` ルール整備（メール、パスワード、数量、郵便番号、電話、カード情報）。
-- `messages.properties` キー整備。
+- Service implementation: AuthService, UserService, ProductService, InventoryService, CouponService, CartService, PaymentService (mock), OrderService, PointService, ShippingService, TaxService, MailService, SecurityLogService, SessionService.
+- Implement `OrderFacade` (placeOrder, cancelOrder, returnOrder).
+- Business rules:
+  - Coupon validation (usage_limit, minimum_amount, period, is_active).
+  - Point award/use (1%・365 days).
+  - Tax calculation 10%, shipping 800 yen/free for 10,000+ yen.
+  - Inventory pessimistic locking `SELECT ... FOR UPDATE`, exception if insufficient.
+  - Payment authorization success/failure handling, point/coupon adjustment on cancel/return.
+  - Idempotency (`order_number` unique, prevent double charge, prevent duplicate email sending).
+  - Define transaction boundaries (per service method, rollback on exception).
 
 **Exit Criteria**
 
-- StrutsTestCase で主要 Action のフォワード/バリデーションが期待通り（success/failure）。
-- `validation.xml` に基づき入力エラー表示が JSP で確認できる。
-- CSRF トークンを含むフォームでトークン検証が通る/通らないテストが存在。
+- JUnit service tests (H2 + DBUnit) are green:
+  - Success: checkout (coupon+points) → update order/point/coupon_usage/stock/payments.
+  - Cancel: return inventory, deduct points, decrement coupon usage count.
+  - Return: refund record, point adjustment.
+- Concurrency test: pessimistic locking is effective for simultaneous checkouts, no double charge.
+- Rollback test: DB consistency maintained on mid-process failure.
+
+---
+
+## Phase 3: Web Layer (Action/Form/Validation)
+
+**Content**
+
+- Action implementation: Login, Register, PasswordForgot, PasswordReset, ProductList, ProductDetail, Cart, Checkout, CouponApply, OrderHistory, OrderCancel, OrderReturn, PointBalance, AddressList, AddressSave, Logout.
+- ActionForm implementation: LoginForm, RegisterForm, PasswordResetRequestForm, PasswordResetForm, ProductSearchForm, AddCartForm, CheckoutForm, CouponForm, AddressForm, AdminProductForm.
+- Organize `validation.xml` rules (email, password, quantity, postal code, phone, card info).
+- Organize `messages.properties` keys.
+
+**Exit Criteria**
+
+- StrutsTestCase shows expected forwards/validations for main Actions (success/failure).
+- Input error display based on `validation.xml` can be confirmed in JSP.
+- Tests exist for token validation passing/failing with forms containing CSRF tokens.
 
 ---
 
 ## Phase 4: View (JSP/Tiles)
 
-**内容**
+**Content**
 
-- Tiles レイアウト `base.jsp`、共通 `header.jsp`, `footer.jsp`, `messages.jsp`。
-- JSP 作成：auth/login, auth/register, auth/password/forgot/reset, products/list/detail, cart/view/checkout/confirmation, orders/history/detail, points/balance, account/addresses/address_edit, admin/products/list/edit, admin/orders/list/detail。
-- Strutsタグ（html/bean/logic）適用、`<bean:write filter="true"/>` デフォルト。
-- CSRF トークン埋め込み（`<html:hidden property="org.apache.struts.taglib.html.TOKEN"/>`）。
-
-**Exit Criteria**
-
-- 手動動作確認: Tomcat 上でページがレンダリングされ、タグ解決エラーなし。
-- カート追加～チェックアウトまで UI 経路が完走。
-- XSS 対策: `<bean:write filter="true"/>` デフォルト、エスケープ漏れがないことを目視確認。
-
----
-
-## Phase 5: セキュリティ / RequestProcessor
-
-**内容**
-
-- `AuthRequestProcessor` 拡張：認可（roles）、未認証リダイレクト、CSRF 検証、セッション固定化対策（ログイン時 invalidate→新規）。
-- ログイン試行制限（5回、`security_logs` 記録、`users.status=LOCKED`）。
-- パスワードハッシュ（SHA-256 + salt + 1000 iterations）。
-- Cookie 設定 `CART_ID` HttpOnly/Secure。
+- Tiles layout `base.jsp`, common `header.jsp`, `footer.jsp`, `messages.jsp`.
+- Create JSPs: auth/login, auth/register, auth/password/forgot/reset, products/list/detail, cart/view/checkout/confirmation, orders/history/detail, points/balance, account/addresses/address_edit, admin/products/list/edit, admin/orders/list/detail.
+- Apply Struts tags (html/bean/logic), `<bean:write filter="true"/>` by default.
+- Embed CSRF token (`<html:hidden property="org.apache.struts.taglib.html.TOKEN"/>`).
 
 **Exit Criteria**
 
-- 未ログインで保護リソースアクセス→`/login.do` リダイレクト。
-- CSRF 不正時 403 相当レスポンス。
-- 5回誤りでロック、`security_logs` 記録確認、解除手順確認。
+- Manual operation check: Pages render on Tomcat with no tag resolution errors.
+- UI path from add to cart to checkout completes.
+- XSS countermeasure: `<bean:write filter="true"/>` default, no escaping leaks confirmed by visual inspection.
 
 ---
 
-## Phase 6: 管理機能 (Admin)
+## Phase 5: Security / RequestProcessor
 
-**内容**
+**Content**
 
-- Admin Actions/Forms/JSP: 商品 CRUD, 在庫更新, 注文ステータス更新・返金, クーポン管理(任意), 配送方法管理(任意)。
-- 管理者ロール判定。
+- `AuthRequestProcessor` extension: authorization (roles), unauthenticated redirect, CSRF verification, session fixation countermeasure (invalidate→new on login).
+- Login attempt limit (5 times, record in `security_logs`, `users.status=LOCKED`).
+- Password hash (SHA-256 + salt + 1000 iterations).
+- Cookie setting `CART_ID` HttpOnly/Secure.
 
 **Exit Criteria**
 
-- 管理者ユーザでログインし、商品一覧/編集・在庫更新・注文更新が可能。
-- 非管理者は `/admin/*` へアクセス不可。
+- Access to protected resources when not logged in→redirect to `/login.do`.
+- CSRF invalid time 403 equivalent response.
+- Lock after 5 wrong attempts, confirm `security_logs` record, confirm unlock procedure.
 
 ---
 
-## Phase 7: 通知 / メール
+## Phase 6: Admin Features
 
-**内容**
+**Content**
 
-- `MailService` 実装（JavaMail 1.4.7）、SMTP 設定読込。
-- `email_queue` DAO と送信ジョブ（シンプルスレッド or Timer）。
-- テンプレート（注文確定・パスワードリセット）を JSP/Velocity なしのシンプル文字列で用意。
+- Admin Actions/Forms/JSP: product CRUD, inventory update, order status update/refund, coupon management (optional), shipping method management (optional).
+- Admin role determination.
 
 **Exit Criteria**
 
-- ローカル SMTP（MailHog 等）でメール送信確認。
-- 失敗時リトライ・`status/retry_count/last_error` 更新。
-- 重複送信防止（同一 `email_queue` レコードは一度のみ送信）。
+- Login as admin user, can list/edit products, update inventory, update orders.
+- Non-admin cannot access `/admin/*`.
 
 ---
 
-## Phase 8: 非機能 / 運用 / Docker
+## Phase 7: Notification / Email
 
-**内容**
+**Content**
 
-- log4j MDC (`reqId`)、RollingFileAppender 設定。
-- `app.properties` ロードと ServiceLocator/Factory 連携。
-- DBCP チューニング（maxActive/maxIdle/maxWait）。
-- `Dockerfile`(Tomcat8/JDK8)・`Dockerfile.tomcat6`・`docker-compose.yml`(PG) 設定。
-- `.dockerignore` 整備。
+- Implement `MailService` (JavaMail 1.4.7), load SMTP configuration.
+- `email_queue` DAO and sending job (simple thread or Timer).
+- Prepare templates (order confirmation, password reset) as simple strings without JSP/Velocity.
 
 **Exit Criteria**
 
-- `docker-compose up` でアプリ+DB 起動、基本フロー成功。
-- WAR サイズとログローテーションが期待通り。
-- Docker 内から `ant war` が成功する（ビルド再現性）。
+- Confirm email sending with local SMTP (MailHog, etc.).
+- Retry on failure, update `status/retry_count/last_error`.
+- Prevent duplicate sending (same `email_queue` record sent only once).
 
 ---
 
-## Phase 9: テスト / QA
+## Phase 8: Non-functional / Operations / Docker
 
-**内容**
+**Content**
 
-- StrutsTestCase: Actions カバレッジ。
-- JUnit + DBUnit: DAO/Service カバレッジ。
-- シナリオテスト: 登録→ログイン→検索→カート→チェックアウト→キャンセル→返品。
-- 負荷テスト (任意) JMeter/Locust で簡易チェック。
+- log4j MDC (`reqId`), RollingFileAppender configuration.
+- Load `app.properties` and integrate with ServiceLocator/Factory.
+- DBCP tuning (maxActive/maxIdle/maxWait).
+- `Dockerfile` (Tomcat8/JDK8), `Dockerfile.tomcat6`, `docker-compose.yml` (PG) configuration.
+- Organize `.dockerignore`.
 
 **Exit Criteria**
 
-- テストスイート緑、カバレッジ (Actions/Services/DAO) 80% 目標。
-- 回帰テストチェックリスト完了。
-- SQLインジェクション/入力検証の負ケーステストが存在。
+- `docker-compose up` starts app+DB, basic flow succeeds.
+- WAR size and log rotation as expected.
+- `ant war` succeeds from within Docker (build reproducibility).
 
 ---
 
-## Phase 10: リリース
+## Phase 9: Testing / QA
 
-**内容**
+**Content**
 
-- WAR バージョニング、リリースノート作成。
-- デプロイ手順書 (Tomcat 6/8)、環境変数とコンテキスト設定整理。
-- バックアップ/リストア手順 (DB) メモ。
+- StrutsTestCase: Actions coverage.
+- JUnit + DBUnit: DAO/Service coverage.
+- Scenario test: registration→login→search→cart→checkout→cancel→return.
+- Load test (optional) simple check with JMeter/Locust.
 
 **Exit Criteria**
 
-- Tomcat6/Tomcat8 へのデプロイ実施・動作確認。
-- ドキュメント更新（README/実装計画/運用手順）。
+- Test suite green, coverage (Actions/Services/DAO) target 80%.
+- Regression test checklist completed.
+- SQL injection/input validation negative case tests exist.
 
 ---
 
-## 補足 (クロスカット)
+## Phase 10: Release
 
-- コーディング規約準拠（Java 1.5 構文、ジェネリクス任意、注釈なし）。
-- レビュー観点チェックリスト（SQLインジェクション、Nullチェック、ロギング、例外変換、トランザクション境界、Idempotency）。
-- Lint/Checkstyle (Java 5 設定) 任意導入。
-- i18n: `messages.properties` / `messages_ja.properties`。
-- Runbook: スレッドダンプ取得、ログローテーション確認手順。
-- トランザクション方針: サービス層で開始/コミット、DAO層はトランザクション非関知。
-- Idempotency: `order_number` と `email_queue` の送信フラグ/ユニーク制約で重複防止。
+**Content**
+
+- WAR versioning, create release notes.
+- Deployment procedure document (Tomcat 6/8), organize environment variables and context configuration.
+- Backup/restore procedure (DB) memo.
+
+**Exit Criteria**
+
+- Deployment to Tomcat6/Tomcat8 performed and operation confirmed.
+- Documentation updated (README/implementation plan/operation procedure).
+
+---
+
+## Supplement (Cross-cutting)
+
+- Comply with coding conventions (Java 1.5 syntax, generics optional, no annotations).
+- Review checkpoint list (SQL injection, null check, logging, exception conversion, transaction boundaries, Idempotency).
+- Lint/Checkstyle (Java 5 configuration) optional introduction.
+- i18n: `messages.properties` / `messages_ja.properties`.
+- Runbook: Thread dump acquisition, log rotation check procedure.
+- Transaction policy: Start/commit at service layer, DAO layer is transaction-agnostic.
+- Idempotency: Prevent duplication with `order_number` and `email_queue` send flag/unique constraint.

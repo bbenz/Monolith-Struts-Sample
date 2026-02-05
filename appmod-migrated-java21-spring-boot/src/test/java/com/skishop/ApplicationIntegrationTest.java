@@ -12,8 +12,8 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Spring Boot アプリケーションの統合テスト
- * 実際にサーバーを起動してエンドポイントをテスト
+ * Spring Boot Application Integration Test
+ * Tests endpoints by actually starting the server
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")

@@ -3,39 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>利用可能なクーポン - Ski Resort Shop</title>
+    <title>Available Coupons - Ski Resort Shop</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
     <header class="app-header" th:insert="~{fragments/header :: header}"></header>
     
     <main class="site-container">
-        <h2 class="page-title">利用可能なクーポン</h2>
+        <h2 class="page-title">Available Coupons</h2>
         
         <div th:if="${coupons == null or #lists.isEmpty(coupons)}" class="card">
-            <p>利用可能なクーポンはありません。</p>
+            <p>No available coupons at this time.</p>
         </div>
         
         <div th:if="${coupons != null and not #lists.isEmpty(coupons)}" class="card table-responsive">
             <table>
                 <thead>
                     <tr>
-                        <th>コード</th>
-                        <th>タイプ</th>
-                        <th>割引値</th>
-                        <th>最低金額</th>
-                        <th>最大割引</th>
-                        <th>期限</th>
+                        <th>Code</th>
+                        <th>Type</th>
+                        <th>Discount Value</th>
+                        <th>Minimum Amount</th>
+                        <th>Maximum Discount</th>
+                        <th>Expiration</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="coupon : ${coupons}">
-                        <td th:text="${coupon.code}">コード</td>
-                        <td th:text="${coupon.couponType}">タイプ</td>
-                        <td th:text="${coupon.discountValue}">割引値</td>
-                        <td th:text="${coupon.minimumAmount}">最低金額</td>
-                        <td th:text="${coupon.maximumDiscount}">最大割引</td>
-                        <td th:text="${coupon.expiresAt}">期限</td>
+                        <td th:text="${coupon.code}">Code</td>
+                        <td th:text="${coupon.couponType}">Type</td>
+                        <td th:text="${coupon.discountValue}">Discount Value</td>
+                        <td th:text="${coupon.minimumAmount}">Minimum Amount</td>
+                        <td th:text="${coupon.maximumDiscount}">Maximum Discount</td>
+                        <td th:text="${coupon.expiresAt}">Expiration</td>
                     </tr>
                 </tbody>
             </table>

@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品一覧 - Ski Resort Shop</title>
+    <title>Product List - Ski Resort Shop</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
     <header class="app-header" th:insert="~{fragments/header :: header}"></header>
     
     <main class="site-container">
-        <h2 class="page-title">商品一覧</h2>
+        <h2 class="page-title">Product List</h2>
         
         <div class="card">
             <form th:action="@{/products}" method="get" class="form-inline">
                 <table>
                     <tr>
-                        <th>キーワード</th>
+                        <th>Keyword</th>
                         <td><input type="text" name="keyword" th:value="${param.keyword}" size="20"/></td>
-                        <th>カテゴリ</th>
+                        <th>Category</th>
                         <td>
                             <select name="categoryId">
                                 <option th:each="cat : ${categories}" 
@@ -27,32 +27,32 @@
                                         th:selected="${param.categoryId == cat.id}">Category</option>
                             </select>
                         </td>
-                        <th>並び替え</th>
+                        <th>Sort</th>
                         <td>
                             <select name="sort">
-                                <option value="">指定なし</option>
-                                <option value="priceAsc" th:selected="${param.sort == 'priceAsc'}">価格(昇順)</option>
-                                <option value="priceDesc" th:selected="${param.sort == 'priceDesc'}">価格(降順)</option>
-                                <option value="newest" th:selected="${param.sort == 'newest'}">新着</option>
+                                <option value="">None</option>
+                                <option value="priceAsc" th:selected="${param.sort == 'priceAsc'}">Price (Ascending)</option>
+                                <option value="priceDesc" th:selected="${param.sort == 'priceDesc'}">Price (Descending)</option>
+                                <option value="newest" th:selected="${param.sort == 'newest'}">Newest</option>
                             </select>
                         </td>
                     </tr>
                 </table>
-                <input type="submit" value="検索"/>
+                <input type="submit" value="Search"/>
             </form>
         </div>
         
         <div th:if="${products == null or products.isEmpty()}" class="card">
-            商品が見つかりませんでした。
+            No products found.
         </div>
         
         <div th:if="${products != null and !products.isEmpty()}" class="card table-responsive">
             <table>
                 <tr>
-                    <th>商品名</th>
-                    <th>ブランド</th>
-                    <th>価格</th>
-                    <th>カート</th>
+                    <th>Product Name</th>
+                    <th>Brand</th>
+                    <th>Price</th>
+                    <th>Cart</th>
                 </tr>
                 <tr th:each="product : ${products}">
                     <td>
@@ -64,7 +64,7 @@
                         <form th:action="@{/cart}" method="post">
                             <input type="hidden" name="productId" th:value="${product.id}"/>
                             <input type="text" name="quantity" value="1" size="3"/>
-                            <input type="submit" value="追加"/>
+                            <input type="submit" value="Add"/>
                         </form>
                     </td>
                 </tr>

@@ -3,39 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>会員登録 - Ski Resort Shop</title>
+    <title>User Registration - Ski Resort Shop</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
     <header class="app-header" th:insert="~{fragments/header :: header}"></header>
     
     <main class="site-container">
-        <h2 class="page-title">会員登録</h2>
+        <h2 class="page-title">User Registration</h2>
         
         <form th:action="@{/register}" method="post" class="card">
             <table>
                 <tr>
-                    <th>メールアドレス</th>
+                    <th>Email Address</th>
                     <td><input type="text" name="email" size="30"/></td>
                 </tr>
                 <tr>
-                    <th>ユーザー名</th>
+                    <th>Username</th>
                     <td><input type="text" name="username" size="30"/></td>
                 </tr>
                 <tr>
-                    <th>パスワード</th>
+                    <th>Password</th>
                     <td><input type="password" name="password" size="30"/></td>
                 </tr>
                 <tr>
-                    <th>パスワード（確認）</th>
+                    <th>Password (Confirm)</th>
                     <td><input type="password" name="passwordConfirm" size="30"/></td>
                 </tr>
             </table>
             
-            <input type="submit" value="登録"/>
+            <input type="submit" value="Register"/>
         </form>
         
-        <p><a th:href="@{/login}">ログインへ戻る</a></p>
+        <p><a th:href="@{/login}">Back to Login</a></p>
     </main>
     
     <footer th:insert="~{fragments/footer :: footer}"></footer>

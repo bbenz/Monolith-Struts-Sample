@@ -108,7 +108,7 @@ public class ViewController {
         item.setQuantity(quantity);
         item.setUnitPrice(price);
         cartItemService.save(item);
-        ra.addFlashAttribute("message", "カートに追加しました");
+        ra.addFlashAttribute("message", "Added to cart");
         return "redirect:/ui/cart";
     }
 

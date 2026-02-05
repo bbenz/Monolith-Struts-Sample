@@ -23,12 +23,12 @@ public class UserAddressDaoTest extends DaoTestBase {
     Address address = new Address();
     address.setId("addr-2");
     address.setUserId("u-1");
-    address.setLabel("会社");
-    address.setRecipientName("山田 太郎");
+    address.setLabel("Office");
+    address.setRecipientName("Taro Yamada");
     address.setPostalCode("150-0001");
-    address.setPrefecture("東京都");
-    address.setAddress1("渋谷区");
-    address.setAddress2("ビル2F");
+    address.setPrefecture("Tokyo");
+    address.setAddress1("Shibuya-ku");
+    address.setAddress2("Building 2F");
     address.setPhone("0311111111");
     address.setDefault(false);
     address.setCreatedAt(new Date());

@@ -1,114 +1,114 @@
-# JSP から Thymeleaf への完全移行レポート
+# JSP to Thymeleaf Complete Migration Report
 
-## 実施日時
-2026年（移行完了）
+## Implementation Date
+2026 (Migration Complete)
 
-## 移行概要
-Apache Struts（JSP）から Spring Boot + Thymeleaf への完全移行を実施しました。
+## Migration Overview
+Completed full migration from Apache Struts (JSP) to Spring Boot + Thymeleaf.
 
-## 移行した主要コンポーネント
+## Migrated Major Components
 
-### 1. 静的リソース
-- **CSSファイル**: `/webapp/assets/css/app.css` → `/resources/static/css/app.css`
-- モダンなデザインシステムを採用（CSS変数、グリッドレイアウト、レスポンシブデザイン）
+### 1. Static Resources
+- **CSS Files**: `/webapp/assets/css/app.css` → `/resources/static/css/app.css`
+- Adopted modern design system (CSS variables, grid layout, responsive design)
 
-### 2. 共通コンポーネント（フラグメント）
-- `fragments/header.html` - アプリケーションヘッダー（ナビゲーション、検索、カート）
-- `fragments/footer.html` - フッター
+### 2. Common Components (Fragments)
+- `fragments/header.html` - Application header (navigation, search, cart)
+- `fragments/footer.html` - Footer
 
-### 3. 顧客向けページ
-#### ホーム・商品
-- ✅ `home.html` - ホームページ（おすすめ商品表示）
-- ✅ `products/list.html` - 商品一覧（検索、フィルタ、ソート機能）
-- ✅ `products/detail.html` - 商品詳細
-- ✅ `products/notfound.html` - 商品未検出ページ
+### 3. Customer-Facing Pages
+#### Home & Products
+- ✅ `home.html` - Home page (featured products display)
+- ✅ `products/list.html` - Product list (search, filter, sort functionality)
+- ✅ `products/detail.html` - Product detail
+- ✅ `products/notfound.html` - Product not found page
 
-#### カート・注文
-- ✅ `cart/view.html` - カート表示
-- ✅ `cart/checkout.html` - チェックアウト
-- ✅ `cart/confirmation.html` - 注文確認
-- ✅ `orders/history.html` - 注文履歴
-- ✅ `orders/detail.html` - 注文詳細
+#### Cart & Orders
+- ✅ `cart/view.html` - Cart display
+- ✅ `cart/checkout.html` - Checkout
+- ✅ `cart/confirmation.html` - Order confirmation
+- ✅ `orders/history.html` - Order history
+- ✅ `orders/detail.html` - Order detail
 
-#### 認証
-- ✅ `auth/login.html` - ログイン
-- ✅ `auth/register.html` - 会員登録
-- ✅ `auth/password/forgot.html` - パスワード再発行
+#### Authentication
+- ✅ `auth/login.html` - Login
+- ✅ `auth/register.html` - Member registration
+- ✅ `auth/password/forgot.html` - Password reset
 
-#### アカウント管理
-- ✅ `account/addresses.html` - 住所帳一覧
-- ✅ `account/address_edit.html` - 住所編集
-- ✅ `points/balance.html` - ポイント残高
+#### Account Management
+- ✅ `account/addresses.html` - Address book list
+- ✅ `account/address_edit.html` - Address edit
+- ✅ `points/balance.html` - Points balance
 
-#### クーポン
-- ✅ `coupons/available.html` - 利用可能クーポン一覧
+#### Coupons
+- ✅ `coupons/available.html` - Available coupons list
 
-### 4. 管理者向けページ
-- ✅ `admin/products/list.html` - 商品管理
-- ✅ `admin/orders/list.html` - 注文管理
-- ✅ `admin/orders/detail.html` - 注文詳細（管理）
-- ✅ `admin/coupons/list.html` - クーポン管理
+### 4. Admin Pages
+- ✅ `admin/products/list.html` - Product management
+- ✅ `admin/orders/list.html` - Order management
+- ✅ `admin/orders/detail.html` - Order detail (admin)
+- ✅ `admin/coupons/list.html` - Coupon management
 
-## 技術的変更点
+## Technical Changes
 
-### JSP → Thymeleaf 変換パターン
+### JSP → Thymeleaf Conversion Patterns
 
-#### 1. タグライブラリ
-**変更前（JSP）**:
+#### 1. Tag Libraries
+**Before (JSP)**:
 ```jsp
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:out value="${product.name}"/>
 <c:forEach items="${products}" var="product">
 ```
 
-**変更後（Thymeleaf）**:
+**After (Thymeleaf)**:
 ```html
-<span th:text="${product.name}">商品名</span>
+<span th:text="${product.name}">Product Name</span>
 <div th:each="product : ${products}">
 ```
 
-#### 2. URL生成
-**変更前（JSP）**:
+#### 2. URL Generation
+**Before (JSP)**:
 ```jsp
-<a href="${pageContext.request.contextPath}/products">商品</a>
+<a href="${pageContext.request.contextPath}/products">Products</a>
 ```
 
-**変更後（Thymeleaf）**:
+**After (Thymeleaf)**:
 ```html
-<a th:href="@{/products}">商品</a>
+<a th:href="@{/products}">Products</a>
 ```
 
-#### 3. 条件分岐
-**変更前（JSP）**:
+#### 3. Conditional Branching
+**Before (JSP)**:
 ```jsp
 <c:if test="${not empty products}">
-  <!-- コンテンツ -->
+  <!-- Content -->
 </c:if>
 ```
 
-**変更後（Thymeleaf）**:
+**After (Thymeleaf)**:
 ```html
 <div th:if="${products != null and not #lists.isEmpty(products)}">
-  <!-- コンテンツ -->
+  <!-- Content -->
 </div>
 ```
 
-#### 4. フォーム
-**変更前（JSP）**:
+#### 4. Forms
+**Before (JSP)**:
 ```jsp
 <form action="${pageContext.request.contextPath}/cart" method="post">
   <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 ```
 
-**変更後（Thymeleaf）**:
+**After (Thymeleaf)**:
 ```html
 <form th:action="@{/cart}" method="post">
-  <!-- CSRFトークンは自動的に挿入される -->
+  <!-- CSRF token automatically inserted -->
 ```
 
-### デザインシステム
+### Design System
 
-#### CSS変数
+#### CSS Variables
 ```css
 --color-bg: #f6f7fb;
 --color-surface: #ffffff;
@@ -116,63 +116,63 @@ Apache Struts（JSP）から Spring Boot + Thymeleaf への完全移行を実施
 --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
 ```
 
-#### 主要CSSクラス
-- `.app-header` - スティッキーヘッダー
-- `.site-container` - メインコンテナ（max-width: 1200px）
-- `.hero` - ヒーローセクション（グラデーション背景）
-- `.products-grid` - 商品グリッドレイアウト（レスポンシブ）
-- `.product-card` - 商品カード
-- `.card` - 汎用カード
-- `.btn` - ボタンスタイル
-- `.form-inline` - インラインフォーム
-- `.table-responsive` - レスポンシブテーブル
+#### Main CSS Classes
+- `.app-header` - Sticky header
+- `.site-container` - Main container (max-width: 1200px)
+- `.hero` - Hero section (gradient background)
+- `.products-grid` - Product grid layout (responsive)
+- `.product-card` - Product card
+- `.card` - General card
+- `.btn` - Button style
+- `.form-inline` - Inline form
+- `.table-responsive` - Responsive table
 
-## 動作確認
+## Operation Verification
 
-### 確認済みエンドポイント
-1. ✅ `GET /` - ホームページ（HTTP 200、app.css読み込み成功）
-2. ✅ `GET /products` - 商品一覧
-3. ✅ `GET /login` - ログインページ
-4. ✅ `GET /css/app.css` - CSS配信
+### Verified Endpoints
+1. ✅ `GET /` - Home page (HTTP 200, app.css loaded successfully)
+2. ✅ `GET /products` - Product list
+3. ✅ `GET /login` - Login page
+4. ✅ `GET /css/app.css` - CSS delivery
 
-### 画面デザイン確認
-- ✅ ヘッダー: ロゴ、ナビゲーション、検索フォーム、カートボタン表示
-- ✅ フッター: コピーライト表示
-- ✅ レスポンシブデザイン: @media (max-width: 768px) 対応
-- ✅ カラースキーム: 青系プライマリカラー、シャドウ効果
-- ✅ タイポグラフィ: 日本語フォント対応（Hiragino Sans, Noto Sans JP）
+### Screen Design Verification
+- ✅ Header: Logo, navigation, search form, cart button displayed
+- ✅ Footer: Copyright displayed
+- ✅ Responsive design: @media (max-width: 768px) compatible
+- ✅ Color scheme: Blue primary color, shadow effects
+- ✅ Typography: Japanese font compatible (Hiragino Sans, Noto Sans JP)
 
-## 削除対象（移行後不要なファイル）
+## Files to Delete (not needed after migration)
 
-以下のJSPファイルは移行完了後、削除可能です：
+The following JSP files can be deleted after migration completion:
 - `/webapp/index.jsp`
 - `/webapp/error.jsp`
-- `/webapp/WEB-INF/jsp/**/*.jsp` （全32ファイル）
+- `/webapp/WEB-INF/jsp/**/*.jsp` (all 32 files)
 
-## 移行の利点
+## Migration Benefits
 
-1. **パフォーマンス向上**
-   - テンプレートキャッシュ有効
-   - 静的リソースの最適化
+1. **Performance Improvement**
+   - Template cache enabled
+   - Static resource optimization
 
-2. **保守性向上**
-   - Thymeleaf自然なテンプレート（HTMLとして有効）
-   - IDEでのコード補完サポート
-   - Spring Bootとのシームレスな統合
+2. **Maintainability Improvement**
+   - Thymeleaf natural templates (valid as HTML)
+   - Code completion support in IDE
+   - Seamless integration with Spring Boot
 
-3. **セキュリティ向上**
-   - XSS対策（自動エスケープ）
-   - CSRFトークン自動挿入
+3. **Security Improvement**
+   - XSS countermeasures (auto-escape)
+   - CSRF token auto-insertion
 
-4. **開発効率向上**
-   - ライブリロード対応
-   - テンプレートの再利用（fragments）
-   - 統一されたデザインシステム
+4. **Development Efficiency Improvement**
+   - Live reload support
+   - Template reuse (fragments)
+   - Unified design system
 
-## まとめ
+## Summary
 
-全32個のJSPファイルをThymeleafテンプレートに変換し、モダンなCSSデザインシステムを適用しました。
-アプリケーションは正常に動作し、元のJSPデザインよりも洗練されたUIを実現しています。
+Converted all 32 JSP files to Thymeleaf templates and applied a modern CSS design system.
+The application operates normally and achieves a more refined UI than the original JSP design.
 
-移行完了日: 2026年
-移行ステータス: ✅ 完了
+Migration Completion Date: 2026
+Migration Status: ✅ Complete

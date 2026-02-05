@@ -1,30 +1,30 @@
-# Struts 1.x → Spring Boot 3.2.12 移行完了報告書
+# Struts 1.x → Spring Boot 3.2.12 Migration Completion Report
 
-## 実施日時
+## Implementation Date
 
-2026年1月19日
+January 19, 2026
 
-## 移行概要
+## Migration Overview
 
-### 完了した作業
+### Completed Tasks
 
-#### 1. JSPビューの更新
+#### 1. JSP View Updates
 
-***Status: ✅ 完了***
+***Status: ✅ Complete***
 
-すべてのJSPファイル（32ファイル）をStrutsタグライブラリからSpring MVC/JSTLタグに移行しました。
+Migrated all JSP files (32 files) from Struts tag libraries to Spring MVC/JSTL tags.
 
-- ✅ 共通ヘッダー・フッター (header.jsp, footer.jsp)
-- ✅ メッセージ・レイアウト (messages.jsp, base.jsp)
-- ✅ 認証関連 (login.jsp, register.jsp, パスワードリセット系)
-- ✅ 商品関連 (list.jsp, detail.jsp, notfound.jsp)
-- ✅ カート・注文関連 (view.jsp, checkout.jsp, confirmation.jsp, history.jsp, detail.jsp)
-- ✅ 管理画面 (products, orders, coupons, shipping)
-- ✅ その他 (home.jsp, points/balance.jsp, account系)
+- ✅ Common header/footer (header.jsp, footer.jsp)
+- ✅ Messages/layout (messages.jsp, base.jsp)
+- ✅ Authentication-related (login.jsp, register.jsp, password reset series)
+- ✅ Product-related (list.jsp, detail.jsp, notfound.jsp)
+- ✅ Cart/order-related (view.jsp, checkout.jsp, confirmation.jsp, history.jsp, detail.jsp)
+- ✅ Admin screens (products, orders, coupons, shipping)
+- ✅ Others (home.jsp, points/balance.jsp, account series)
 
-**変換ルール:**
+**Conversion Rules:**
 
-- `<%@ taglib uri="/WEB-INF/struts-*.tld" %>` → `<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>`および`<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>`
+- `<%@ taglib uri="/WEB-INF/struts-*.tld" %>` → `<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>` and `<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>`
 - `<html:link page="/xxx.do">` → `<a href="${pageContext.request.contextPath}/xxx">`
 - `<bean:write name="xxx" property="yyy"/>` → `<c:out value="${xxx.yyy}"/>`
 - `<bean:message key="xxx"/>` → `<spring:message code="xxx"/>`
@@ -33,75 +33,75 @@
 - `<html:form>` → `<form>` with CSRF token
 - `<html:text>`, `<html:password>` → `<input type="...">`
 
-**自動化ツール:**
-シェルスクリプト (convert-jsps.sh) を作成し、全JSPファイルを一括変換しました。
+**Automation Tools:**
+Created shell script (convert-jsps.sh) to batch convert all JSP files.
 
-#### 2. アプリケーション起動テスト
+#### 2. Application Startup Test
 
-***Status: ✅ 完了***
+***Status: ✅ Complete***
 
-Spring Bootアプリケーションが正常に起動することを確認しました。
+Confirmed that the Spring Boot application starts normally.
 
-**起動確認:**
+**Startup Confirmation:**
 
-- ポート: 8080
-- プロファイル: dev (H2インメモリデータベース)
-- 登録エンドポイント: 41個
-- コントローラー: 29個
-- 起動時間: 約1.3秒
+- Port: 8080
+- Profile: dev (H2 in-memory database)
+- Registered endpoints: 41
+- Controllers: 29
+- Startup time: approximately 1.3 seconds
 
-**アクセス確認済みエンドポイント:**
+**Verified Endpoints:**
 
-- `/` - ウェルカムページ (HTTP 200 OK)
-- `/login` - ログインページ (HTTP 200 OK、JSP正常レンダリング)
-- `/products` - 商品一覧ページ (動作確認済み)
+- `/` - Welcome page (HTTP 200 OK)
+- `/login` - Login page (HTTP 200 OK, JSP rendering normally)
+- `/products` - Product list page (operation confirmed)
 
-#### 3. 設定の最終調整
+#### 3. Configuration Final Adjustments
 
-***Status: ✅ 完了***
+***Status: ✅ Complete***
 
 **application.properties (base):**
 
-- サーバー設定 (ポート8080)
-- JSPサポート設定
-- 静的リソース配信設定
-- データソース設定 (PostgreSQL用)
-- JPA/Hibernate設定
+- Server configuration (port 8080)
+- JSP support configuration
+- Static resource distribution configuration
+- Data source configuration (for PostgreSQL)
+- JPA/Hibernate configuration
 
 **application-dev.properties:**
 
-- H2インメモリデータベース設定
-- スキーマ自動初期化 (schema.sql, data.sql)
-- H2コンソール有効化 (/h2-console)
-- デバッグログレベル設定
-- JPA open-in-view無効化
+- H2 in-memory database configuration
+- Schema auto-initialization (schema.sql, data.sql)
+- H2 console enabled (/h2-console)
+- Debug log level configuration
+- JPA open-in-view disabled
 
-#### 4. Spring Boot Testフレームワークを使用したテストの作成
+#### 4. Test Creation Using Spring Boot Test Framework
 
-***Status: ✅ 完了***
+***Status: ✅ Complete***
 
-以下のテストクラスを作成しました:
+Created the following test classes:
 
-**単体テスト (WebMvcTest):**
+**Unit Tests (WebMvcTest):**
 
 1. `LoginControllerTest.java`
-   - ログインフォーム表示のテスト
-   - MockMvcを使用したコントローラーの単体テスト
+   - Login form display test
+   - Controller unit test using MockMvc
 
 1. `ProductControllerTest.java`
-   - 商品一覧表示のテスト
-   - 商品詳細(未検出)のテスト
-   - ProductServiceのモック化
+   - Product list display test
+   - Product detail (not found) test
+   - ProductService mocking
 
-**統合テスト (SpringBootTest):**
+**Integration Tests (SpringBootTest):**
 
 1. `ApplicationIntegrationTest.java`
-   - ホームページ読み込みテスト
-   - ログインページ読み込みテスト
-   - 商品ページ読み込みテスト
-   - 実際のサーバー起動による統合テスト
+   - Home page load test
+   - Login page load test
+   - Product page load test
+   - Integration test with actual server startup
 
-**テストフレームワーク:**
+**Test Frameworks:**
 
 - JUnit 5
 - Spring Boot Test
@@ -109,9 +109,9 @@ Spring Bootアプリケーションが正常に起動することを確認しま
 - Mockito
 - AssertJ
 
-## 移行されたコンポーネント一覧
+## List of Migrated Components
 
-### コントローラー (29個)
+### Controllers (29)
 
 1. HomeController
 2. LoginController
@@ -144,7 +144,7 @@ Spring Bootアプリケーションが正常に起動することを確認しま
 29. AdminShippingMethodListController
 30. AdminShippingMethodEditController
 
-### サービス層 (13個)
+### Service Layer (13)
 
 1. AuthService
 2. ProductService
@@ -160,7 +160,7 @@ Spring Bootアプリケーションが正常に起動することを確認しま
 12. MailService
 13. InventoryService
 
-### DAO層 (19個)
+### DAO Layer (19)
 
 - UserDAO
 - ProductDAO
@@ -182,7 +182,7 @@ Spring Bootアプリケーションが正常に起動することを確認しま
 - OrderReturnDAO
 - CampaignDAO
 
-### DTO (12個)
+### DTOs (12)
 
 - LoginRequest
 - RegisterRequest
@@ -194,9 +194,9 @@ Spring Bootアプリケーションが正常に起動することを確認しま
 - AdminProductRequest
 - AdminCouponRequest
 - AdminShippingMethodRequest
-- その他
+- Others
 
-## 技術スタック
+## Technology Stack
 
 ### Before (Struts 1.x)
 
@@ -221,118 +221,118 @@ Spring Bootアプリケーションが正常に起動することを確認しま
 - PostgreSQL (prod)
 - HikariCP
 
-## 既知の課題と今後の対応
+## Known Issues and Future Actions
 
-### 1. Spring Securityの統合
+### 1. Spring Security Integration
 
-***Status: 未実装***
+***Status: Not Implemented***
 
-現在、CSRFトークンが正しく機能していません。Spring Securityを追加して以下を実装する必要があります:
+Currently, CSRF tokens are not functioning correctly. Spring Security needs to be added to implement:
 
-- 認証・認可機能
-- CSRF保護
-- セッション管理
-- パスワードエンコーディング
+- Authentication/authorization functionality
+- CSRF protection
+- Session management
+- Password encoding
 
-### 2. テストの拡充
+### 2. Test Expansion
 
-***Status: 部分的に完了***
+***Status: Partially Complete***
 
-基本的なテストは作成しましたが、以下が必要です:
+Basic tests have been created, but the following are needed:
 
-- サービス層のテスト
-- DAO層のテスト
-- エンドツーエンドテスト
-- パフォーマンステスト
+- Service layer tests
+- DAO layer tests
+- End-to-end tests
+- Performance tests
 
-### 3. データベーススキーマの初期化確認
+### 3. Database Schema Initialization Verification
 
-***Status: 未確認***
+***Status: Not Verified***
 
-H2データベースでschema.sqlとdata.sqlが正しく実行されているか確認が必要です。
+Need to confirm that schema.sql and data.sql are executing correctly in H2 database.
 
-### 4. エラーハンドリングの強化
+### 4. Error Handling Enhancement
 
-***Status: 要改善***
+***Status: Needs Improvement***
 
-グローバルエラーハンドラー (@ControllerAdvice) の実装が必要です。
+Implementation of global error handler (@ControllerAdvice) is required.
 
-## アプリケーション起動方法
+## Application Startup Instructions
 
-### 開発環境 (H2インメモリDB使用)
+### Development Environment (Using H2 In-Memory DB)
 
 ```bash
 SPRING_PROFILES_ACTIVE=dev mvn spring-boot:run
 ```
 
-### 本番環境 (PostgreSQL使用)
+### Production Environment (Using PostgreSQL)
 
 ```bash
 mvn spring-boot:run
 ```
 
-### アクセスURL
+### Access URLs
 
-- アプリケーション: <http://localhost:8080/>
-- H2コンソール (dev): <http://localhost:8080/h2-console>
+- Application: <http://localhost:8080/>
+- H2 Console (dev): <http://localhost:8080/h2-console>
   - JDBC URL: jdbc:h2:mem:skishop
   - Username: sa
-  - Password: (空)
+  - Password: (empty)
 
-## テスト実行方法
+## Test Execution Instructions
 
-### すべてのテストを実行
+### Run All Tests
 
 ```bash
 mvn test
 ```
 
-### 特定のテストクラスのみ実行
+### Run Specific Test Class Only
 
 ```bash
 mvn test -Dtest=LoginControllerTest
 mvn test -Dtest=ApplicationIntegrationTest
 ```
 
-## まとめ
+## Summary
 
-Struts 1.xからSpring Boot 3.2.12への移行作業は、以下の観点で成功しました:
+The migration work from Struts 1.x to Spring Boot 3.2.12 was successful from the following perspectives:
 
-✅ **コード移行**: 29コントローラー、13サービス、19DAO、12DTOをすべて移行  
-✅ **JSP更新**: 32JSPファイルをStrutsタグからJSTL/Springタグに変換  
-✅ **アプリケーション起動**: devプロファイルでの正常起動を確認  
-✅ **テスト作成**: Spring Boot Testフレームワークを使用したテストを作成  
-✅ **設定最適化**: application.propertiesの適切な設定  
-✅ **Docker対応**: Docker + Docker Composeで本番環境を構築
+✅ **Code Migration**: Migrated all 29 controllers, 13 services, 19 DAOs, 12 DTOs  
+✅ **JSP Updates**: Converted 32 JSP files from Struts tags to JSTL/Spring tags  
+✅ **Application Startup**: Confirmed normal startup with dev profile  
+✅ **Test Creation**: Created tests using Spring Boot Test framework  
+✅ **Configuration Optimization**: Appropriate application.properties settings  
+✅ **Docker Support**: Built production environment with Docker + Docker Compose
 
-今後は、Spring Securityの統合、テストの拡充、本番環境への展開準備を進める必要があります。
+Moving forward, we need to proceed with Spring Security integration, test expansion, and production environment deployment preparation.
 
-## Docker環境での実行
+## Docker Environment Execution
 
-### Docker Composeでの起動
+### Startup with Docker Compose
 
 ```bash
-# ビルドと起動
+# Build and start
 docker-compose up -d --build
 
-# ログ確認
+# Check logs
 docker-compose logs -f
 
-# 停止
+# Stop
 docker-compose down
 ```
 
-### アクセス方法
+### Access Methods
 
-- アプリケーション: http://localhost:8080
-- ヘルスチェック: http://localhost:8080/actuator/health
-- データベース: localhost:5432
+- Application: http://localhost:8080
+- Health check: http://localhost:8080/actuator/health
+- Database: localhost:5432
 
-詳細は[DOCKER_GUIDE.md](DOCKER_GUIDE.md)および[DOCKER_TEST.md](DOCKER_TEST.md)を参照してください。
+For details, refer to [DOCKER_GUIDE.md](DOCKER_GUIDE.md) and [DOCKER_TEST.md](DOCKER_TEST.md).
 
 ---
 
-**移行担当**: GitHub Copilot  
-**移行完了日**: 2026年1月19日  
-**Docker対応完了日**: 2026年1月19日  
-**セッションID**: 39519f1f-3f55-4c68-9ced-2dd7cbc80eb8
+**Migration Lead**: GitHub Copilot  
+**Migration Completion Date**: January 19, 2026  
+**Docker Support Completion Date**: January 19, 2026  
+**Session ID**: 39519f1f-3f55-4c68-9ced-2dd7cbc80eb8

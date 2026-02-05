@@ -8,38 +8,38 @@
   <div class="inner">
     <div class="logo"><a th:href="@{/home}">Ski Resort Shop</a></div>
     <ul class="app-nav">
-      <li><a th:href="@{/home}">ホーム</a></li>
-      <li><a th:href="@{/products}">商品</a></li>
-      <li><a th:href="@{/coupons/available}">クーポン</a></li>
+      <li><a th:href="@{/home}">Home</a></li>
+      <li><a th:href="@{/products}">Products</a></li>
+      <li><a th:href="@{/coupons/available}">Coupons</a></li>
       <th:block th:if="${session.loginUser != null}">
-        <li><a th:href="@{/orders}">注文履歴</a></li>
-        <li><a th:href="@{/points}">ポイント</a></li>
-        <li><a th:href="@{/addresses}">住所帳</a></li>
+        <li><a th:href="@{/orders}">Order History</a></li>
+        <li><a th:href="@{/points}">Points</a></li>
+        <li><a th:href="@{/addresses}">Address Book</a></li>
         <th:block th:if="${session.loginUser.role == 'ADMIN'}">
-          <li><a th:href="@{/admin/products}">管理:商品</a></li>
-          <li><a th:href="@{/admin/orders}">管理:注文</a></li>
-          <li><a th:href="@{/admin/coupons}">管理:クーポン</a></li>
-          <li><a th:href="@{/admin/shipping}">管理:配送方法</a></li>
+          <li><a th:href="@{/admin/products}">Admin: Products</a></li>
+          <li><a th:href="@{/admin/orders}">Admin: Orders</a></li>
+          <li><a th:href="@{/admin/coupons}">Admin: Coupons</a></li>
+          <li><a th:href="@{/admin/shipping}">Admin: Shipping Methods</a></li>
         </th:block>
       </th:block>
       <th:block th:if="${session.loginUser == null}">
-        <li><a th:href="@{/login}">ログイン</a></li>
-        <li><a th:href="@{/register}">会員登録</a></li>
+        <li><a th:href="@{/login}">Login</a></li>
+        <li><a th:href="@{/register}">Register</a></li>
       </th:block>
     </ul>
     <div class="actions">
       <form th:action="@{/products}" method="get" class="header-search">
-        <input type="text" name="keyword" value="" placeholder="商品名やブランドで検索" />
+        <input type="text" name="keyword" value="" placeholder="Search by product name or brand" />
         <button type="submit">🔍</button>
       </form>
-      <a th:href="@{/cart}" class="btn">🛒 カート</a>
+      <a th:href="@{/cart}" class="btn">🛒 Cart</a>
       <th:block th:if="${session.loginUser != null}">
-        <span class="user-name">こんにちは、<span th:text="${session.loginUser.username}"></span></span>
-        <a th:href="@{/logout}">ログアウト</a>
+        <span class="user-name">Hello, <span th:text="${session.loginUser.username}"></span></span>
+        <a th:href="@{/logout}">Logout</a>
       </th:block>
       <th:block th:if="${session.loginUser == null}">
-        <a th:href="@{/login}">ログイン</a>
-        <a th:href="@{/register}" class="btn">会員登録</a>
+        <a th:href="@{/login}">Login</a>
+        <a th:href="@{/register}" class="btn">Register</a>
       </th:block>
     </div>
   </div>

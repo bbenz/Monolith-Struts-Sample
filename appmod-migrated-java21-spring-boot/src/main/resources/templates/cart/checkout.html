@@ -3,42 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>チェックアウト - Ski Resort Shop</title>
+    <title>Checkout - Ski Resort Shop</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
     <header class="app-header" th:insert="~{fragments/header :: header}"></header>
     
     <main class="site-container">
-        <h2 class="page-title">チェックアウト</h2>
+        <h2 class="page-title">Checkout</h2>
         
         <form th:action="@{/checkout}" method="post" class="card" th:object="${checkoutRequest}">
             <input type="hidden" th:field="*{cartId}"/>
             
             <table>
                 <tr>
-                    <th>クーポンコード</th>
+                    <th>Coupon Code</th>
                     <td><input type="text" th:field="*{couponCode}" size="20"/></td>
                 </tr>
                 <tr>
-                    <th>支払い方法</th>
+                    <th>Payment Method</th>
                     <td>
                         <select th:field="*{paymentMethod}">
-                            <option value="CARD">カード</option>
-                            <option value="COD">代金引換</option>
+                            <option value="CARD">Card</option>
+                            <option value="COD">Cash on Delivery</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <th>カード番号</th>
+                    <th>Card Number</th>
                     <td><input type="text" th:field="*{cardNumber}" size="20"/></td>
                 </tr>
                 <tr>
-                    <th>有効期限（月）</th>
+                    <th>Expiry Month</th>
                     <td><input type="text" th:field="*{cardExpMonth}" size="4"/></td>
                 </tr>
                 <tr>
-                    <th>有効期限（年）</th>
+                    <th>Expiry Year</th>
                     <td><input type="text" th:field="*{cardExpYear}" size="6"/></td>
                 </tr>
                 <tr>
@@ -46,11 +46,11 @@
                     <td><input type="password" th:field="*{cardCvv}" size="6"/></td>
                 </tr>
                 <tr>
-                    <th>郵便番号</th>
+                    <th>Postal Code</th>
                     <td><input type="text" th:field="*{billingZip}" size="10"/></td>
                 </tr>
                 <tr>
-                    <th>ポイント使用</th>
+                    <th>Use Points</th>
                     <td><input type="number" th:field="*{usePoints}" size="6" min="0" value="0"/></td>
                 </tr>
             </table>
@@ -65,7 +65,7 @@
                 <p th:text="${error}"></p>
             </div>
             
-            <input type="submit" value="注文確定"/>
+            <input type="submit" value="Place Order"/>
         </form>
     </main>
     

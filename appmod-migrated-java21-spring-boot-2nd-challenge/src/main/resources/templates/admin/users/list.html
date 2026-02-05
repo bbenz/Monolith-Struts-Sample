@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
-<head><title>管理: ユーザー</title></head>
+<head><title>Admin: Users</title></head>
 <body>
 <div th:fragment="content">
-  <h1 class="page-title">管理: ユーザー</h1>
+  <h1 class="page-title">Admin: Users</h1>
   <div class="card table-responsive">
     <table>
-      <thead><tr><th>ID</th><th>ユーザー名</th><th>Email</th><th>ステータス</th></tr></thead>
+      <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Status</th></tr></thead>
       <tbody>
         <tr th:each="u : ${users}">
           <td th:text="${u.id}">id</td>

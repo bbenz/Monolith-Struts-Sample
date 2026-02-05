@@ -1,7 +1,7 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic" %>
-<h2>会員登録</h2>
+<h2>User Registration</h2>
 <html:form action="/register.do" method="post">
   <table>
     <tr>
@@ -22,6 +22,6 @@
     </tr>
   </table>
   <html:token/>
-  <html:submit value="登録"/>
+  <html:submit value="Register"/>
 </html:form>
-<p><html:link page="/login.do">ログインへ戻る</html:link></p>
+<p><html:link page="/login.do">Back to Login</html:link></p>

@@ -1,18 +1,18 @@
-# プロジェクトクリーンアップレポート
+# Project Cleanup Report
 
-## 実施日時
-2026年1月19日
+## Implementation Date
+January 19, 2026
 
-## 目的
-Java 1.5 + Struts 1.3 から Java 21 + Spring Boot への移行完了に伴い、レガシーなStrutsファイルと不要なファイルを削除し、プロジェクトをクリーンな状態に整理する。
+## Purpose
+Following the completion of migration from Java 1.5 + Struts 1.3 to Java 21 + Spring Boot, delete legacy Struts files and unnecessary files to organize the project into a clean state.
 
-## 削除したファイル・ディレクトリ
+## Deleted Files and Directories
 
-### 1. JSP関連（32ファイル + ディレクトリ）
+### 1. JSP Related (32 files + directories)
 ```
 ✅ src/main/webapp/index.jsp
 ✅ src/main/webapp/error.jsp
-✅ src/main/webapp/WEB-INF/jsp/ （ディレクトリ全体）
+✅ src/main/webapp/WEB-INF/jsp/ (entire directory)
    ├── home.jsp
    ├── products/
    │   ├── list.jsp
@@ -42,9 +42,9 @@ Java 1.5 + Struts 1.3 から Java 21 + Spring Boot への移行完了に伴い�
    └── layouts/
        └── base.jsp
 ```
-**理由**: Thymeleafテンプレートに完全移行済み
+**Reason**: Completely migrated to Thymeleaf templates
 
-### 2. Struts設定ファイル
+### 2. Struts Configuration Files
 ```
 ✅ src/main/webapp/WEB-INF/struts-config.xml
 ✅ src/main/webapp/WEB-INF/struts-bean.tld
@@ -57,27 +57,27 @@ Java 1.5 + Struts 1.3 から Java 21 + Spring Boot への移行完了に伴い�
 ✅ src/main/webapp/WEB-INF/validator-rules.xml
 ✅ src/main/webapp/WEB-INF/web.xml
 ```
-**理由**: Spring Bootでは不要（アノテーションベース設定）
+**Reason**: Not needed in Spring Boot (annotation-based configuration)
 
-### 3. 静的リソース（重複）
+### 3. Static Resources (duplicates)
 ```
 ✅ src/main/webapp/assets/css/app.css
-✅ src/main/webapp/assets/ （ディレクトリ全体）
+✅ src/main/webapp/assets/ (entire directory)
 ```
-**理由**: src/main/resources/static/css/app.css に移行済み
+**Reason**: Migrated to src/main/resources/static/css/app.css
 
-### 4. ディレクトリ
+### 4. Directories
 ```
-✅ src/main/webapp/WEB-INF/ （ディレクトリ全体）
-✅ src/main/webapp/META-INF/ （ディレクトリ全体）
-✅ src/main/webapp/ （ディレクトリ全体 - 空になったため）
-✅ src/test.old/ （古いテストディレクトリ）
-✅ binaries/ （Mavenローカルリポジトリキャッシュ）
-✅ logs/ （古いログファイル）
+✅ src/main/webapp/WEB-INF/ (entire directory)
+✅ src/main/webapp/META-INF/ (entire directory)
+✅ src/main/webapp/ (entire directory - became empty)
+✅ src/test.old/ (old test directory)
+✅ binaries/ (Maven local repository cache)
+✅ logs/ (old log files)
 ```
-**理由**: Spring Bootではwebappディレクトリ不要
+**Reason**: webapp directory not needed in Spring Boot
 
-### 5. レガシードキュメント・スクリプト
+### 5. Legacy Documents & Scripts
 ```
 ✅ Dockerfile.tomcat6
 ✅ monolith-struts.md
@@ -88,40 +88,40 @@ Java 1.5 + Struts 1.3 から Java 21 + Spring Boot への移行完了に伴い�
 ✅ token
 ✅ token1
 ```
-**理由**: Struts開発用の古いドキュメント・スクリプト
+**Reason**: Old documents and scripts for Struts development
 
-### 6. ビルド成果物
+### 6. Build Artifacts
 ```
-✅ target/ （mvn clean実行）
+✅ target/ (mvn clean executed)
 ```
-**理由**: ビルド時に再生成されるため不要
+**Reason**: Regenerated during build, not needed
 
-## 残存ファイル（必要なもの）
+## Remaining Files (necessary)
 
-### プロジェクト設定
-- `pom.xml` - Maven設定（Spring Boot用）
-- `docker-compose.yml` - Docker Compose設定
-- `Dockerfile` - アプリケーションコンテナ設定
-- `.dockerignore` - Dockerビルド除外設定
-- `.gitignore` - Git除外設定
-- `.editorconfig` - エディタ設定
+### Project Configuration
+- `pom.xml` - Maven configuration (for Spring Boot)
+- `docker-compose.yml` - Docker Compose configuration
+- `Dockerfile` - Application container configuration
+- `.dockerignore` - Docker build exclusion configuration
+- `.gitignore` - Git exclusion configuration
+- `.editorconfig` - Editor configuration
 
-### ソースコード
+### Source Code
 ```
 src/
 ├── main/
 │   ├── java/com/skishop/
-│   │   ├── domain/          # ドメインモデル
-│   │   ├── dao/             # データアクセス層
-│   │   ├── service/         # ビジネスロジック
+│   │   ├── domain/          # Domain models
+│   │   ├── dao/             # Data access layer
+│   │   ├── service/         # Business logic
 │   │   ├── web/
-│   │   │   ├── controller/  # Spring MVCコントローラー
-│   │   │   └── dto/         # データ転送オブジェクト
-│   │   ├── common/          # 共通ユーティリティ
+│   │   │   ├── controller/  # Spring MVC controllers
+│   │   │   └── dto/         # Data transfer objects
+│   │   ├── common/          # Common utilities
 │   │   └── SkiShopApplication.java
 │   └── resources/
-│       ├── templates/       # Thymeleafテンプレート
-│       │   ├── fragments/   # 共通フラグメント
+│       ├── templates/       # Thymeleaf templates
+│       │   ├── fragments/   # Common fragments
 │       │   ├── products/
 │       │   ├── cart/
 │       │   ├── orders/
@@ -132,11 +132,11 @@ src/
 │       │   └── admin/
 │       ├── static/
 │       │   └── css/
-│       │       └── app.css  # メインスタイルシート
+│       │       └── app.css  # Main stylesheet
 │       ├── db/
-│       │   ├── schema.sql   # データベーススキーマ
-│       │   └── data.sql     # 初期データ
-│       ├── mail/            # メールテンプレート
+│       │   ├── schema.sql   # Database schema
+│       │   └── data.sql     # Initial data
+│       ├── mail/            # Email templates
 │       ├── application.properties
 │       ├── application-dev.properties
 │       ├── application-prod.properties
@@ -144,40 +144,40 @@ src/
 │       ├── log4j.properties
 │       └── messages.properties
 └── test/
-    └── java/                # テストコード
+    └── java/                # Test code
 ```
 
-### ドキュメント
-- `README.md` - プロジェクト概要（更新済み）
-- `MIGRATION_REPORT.md` - 移行レポート
-- `THYMELEAF_MIGRATION_COMPLETE.md` - Thymeleaf移行完了レポート
-- `CONTROLLER_TEMPLATE_FIX.md` - コントローラー修正レポート
-- `JSP_TO_THYMELEAF_MIGRATION.md` - JSP移行手順
-- `DOCKER_GUIDE.md` - Docker利用ガイド
-- `DOCKER_TEST.md` - Dockerテスト結果
+### Documentation
+- `README.md` - Project overview (updated)
+- `MIGRATION_REPORT.md` - Migration report
+- `THYMELEAF_MIGRATION_COMPLETE.md` - Thymeleaf migration completion report
+- `CONTROLLER_TEMPLATE_FIX.md` - Controller fix report
+- `JSP_TO_THYMELEAF_MIGRATION.md` - JSP migration procedure
+- `DOCKER_GUIDE.md` - Docker usage guide
+- `DOCKER_TEST.md` - Docker test results
 
-### Docker関連
-- `docker/entrypoint.sh` - コンテナエントリーポイント
+### Docker Related
+- `docker/entrypoint.sh` - Container entry point
 
-## 削除結果統計
+## Deletion Statistics
 
-| カテゴリ | 削除数 |
+| Category | Count Deleted |
 |---------|--------|
-| JSPファイル | 32 |
-| Struts設定ファイル | 10 |
-| ディレクトリ | 7 |
-| ドキュメント・スクリプト | 8 |
-| **合計** | **57** |
+| JSP files | 32 |
+| Struts configuration files | 10 |
+| Directories | 7 |
+| Documents & scripts | 8 |
+| **Total** | **57** |
 
-## 動作確認
+## Operation Verification
 
-### ビルド確認
+### Build Verification
 ```bash
-✅ mvn clean - 成功
-✅ docker-compose up -d --build - 成功
+✅ mvn clean - Success
+✅ docker-compose up -d --build - Success
 ```
 
-### エンドポイント確認
+### Endpoint Verification
 ```bash
 ✅ GET / - HTTP 200
 ✅ GET /products - HTTP 200
@@ -186,70 +186,70 @@ src/
 ✅ GET /login - HTTP 200
 ```
 
-### アプリケーション状態
-- ✅ Dockerコンテナ: 2つ起動（app, db）
-- ✅ データベース: 初期化成功
-- ✅ 静的リソース: CSS正常読み込み
-- ✅ テンプレート: Thymeleaf正常レンダリング
+### Application Status
+- ✅ Docker containers: 2 running (app, db)
+- ✅ Database: Initialization successful
+- ✅ Static resources: CSS loaded normally
+- ✅ Templates: Thymeleaf rendering normally
 
-## プロジェクト構成（最終版）
+## Project Structure (Final Version)
 
 ```
 skishop/
-├── README.md                    # プロジェクト概要
-├── pom.xml                      # Maven設定
-├── docker-compose.yml           # Docker Compose設定
-├── Dockerfile                   # アプリケーションコンテナ
+├── README.md                    # Project overview
+├── pom.xml                      # Maven configuration
+├── docker-compose.yml           # Docker Compose configuration
+├── Dockerfile                   # Application container
 ├── src/
 │   ├── main/
-│   │   ├── java/               # Javaソースコード
-│   │   └── resources/          # リソースファイル
-│   │       ├── templates/      # Thymeleafテンプレート
-│   │       ├── static/         # 静的リソース（CSS, JS）
-│   │       └── db/             # データベーススクリプト
-│   └── test/                   # テストコード
-└── docker/                     # Docker関連スクリプト
+│   │   ├── java/               # Java source code
+│   │   └── resources/          # Resource files
+│   │       ├── templates/      # Thymeleaf templates
+│   │       ├── static/         # Static resources (CSS, JS)
+│   │       └── db/             # Database scripts
+│   └── test/                   # Test code
+└── docker/                     # Docker related scripts
 ```
 
-## README.md 更新内容
+## README.md Updates
 
-以下の内容を最新化：
-- ✅ タイトル: "Struts 1.2.9" → "Spring Boot Application"
-- ✅ 技術スタック: Java 21, Spring Boot 3.2, Thymeleaf
-- ✅ 起動方法: Docker Compose優先
-- ✅ プロジェクト構造: 最新のディレクトリ構成
-- ✅ APIエンドポイント一覧
-- ✅ 移行履歴の追加
+Updated the following content:
+- ✅ Title: "Struts 1.2.9" → "Spring Boot Application"
+- ✅ Technology stack: Java 21, Spring Boot 3.2, Thymeleaf
+- ✅ Startup method: Docker Compose priority
+- ✅ Project structure: Latest directory structure
+- ✅ API endpoint list
+- ✅ Migration history addition
 
-## まとめ
+## Summary
 
-### 達成事項
-1. ✅ 32個のJSPファイルを完全削除
-2. ✅ Struts設定ファイル（10個）を完全削除
-3. ✅ webapp/WEB-INFディレクトリを完全削除
-4. ✅ レガシードキュメント・スクリプトを削除
-5. ✅ 重複する静的リソースを削除
-6. ✅ プロジェクト構造をSpring Boot標準に整理
-7. ✅ README.mdを完全更新
-8. ✅ アプリケーション動作確認完了
+### Achievements
+1. ✅ Completely deleted 32 JSP files
+2. ✅ Completely deleted Struts configuration files (10)
+3. ✅ Completely deleted webapp/WEB-INF directory
+4. ✅ Deleted legacy documents and scripts
+5. ✅ Deleted duplicate static resources
+6. ✅ Organized project structure to Spring Boot standard
+7. ✅ Completely updated README.md
+8. ✅ Application operation verification complete
 
-### プロジェクト状態
-- **ビルドツール**: Maven（Spring Boot用）
-- **パッケージング**: JAR（WAR不要）
-- **テンプレートエンジン**: Thymeleaf（JSP完全削除）
-- **設定方式**: アノテーション + application.properties（XML削除）
-- **デプロイ**: Docker Compose（Tomcat不要）
+### Project Status
+- **Build Tool**: Maven (for Spring Boot)
+- **Packaging**: JAR (WAR not needed)
+- **Template Engine**: Thymeleaf (JSP completely deleted)
+- **Configuration Method**: Annotation + application.properties (XML deleted)
+- **Deployment**: Docker Compose (Tomcat not needed)
 
-### 次のステップ
-プロジェクトはクリーンな状態で、以下が可能：
-1. 継続的な機能開発
-2. Spring Boot機能の活用
-3. モダンなCI/CD構築
-4. マイクロサービス化の検討
+### Next Steps
+Project is in a clean state, enabling:
+1. Continuous feature development
+2. Utilizing Spring Boot features
+3. Building modern CI/CD
+4. Consideration of microservices
 
 ---
 
-**クリーンアップ実施日**: 2026年1月19日  
-**ステータス**: ✅ 完了  
-**削除ファイル数**: 57  
-**プロジェクトサイズ削減**: 大幅削減（webapp/WEB-INF全削除）
+**Cleanup Implementation Date**: January 19, 2026  
+**Status**: ✅ Complete  
+**Files Deleted**: 57  
+**Project Size Reduction**: Significant reduction (complete deletion of webapp/WEB-INF)
