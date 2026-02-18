@@ -12,7 +12,7 @@ public class OpenApiConfig {
     public OpenAPI api() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Duke's Ski Shop API")
+                        .title("Duke's Ski Chalet API")
                         .version("2.0.0")
                         .description("Duke's Ski Chalet - Spring Boot API"));
     }

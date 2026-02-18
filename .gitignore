@@ -57,5 +57,9 @@ logs/
 *.sqlite
 *.h2.db
 
+# Properties files
+*.properties
+application.yml
 # Docker overrides
 /docker-compose.override.yml
+appmod-migrated-java21-spring-boot-2nd-challenge/src/main/resources/application.yml

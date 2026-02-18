@@ -97,6 +97,8 @@ a:hover { color: var(--color-accent); }
   border: 1px solid rgba(255,255,255,0.3);
   background: rgba(255,255,255,0.15);
   color: #fff;
+  width: 260px;
+  font-size: 0.9rem;
 }
 .header-search input[type="text"]::placeholder { color: rgba(255,255,255,0.6); }
 .header-search button { position: absolute; right: 4px; top: 4px; border: none; background: none; cursor: pointer; color: rgba(255,255,255,0.7); }
