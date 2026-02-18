@@ -6,14 +6,22 @@
 <body>
 <div th:fragment="content">
     <div class="hero">
-        <h1>Welcome to Azure SkiShop</h1>
-        <p>Start your winter adventure with the highest quality ski and snowboard equipment.</p>
-        <div class="hero-actions">
-            <a th:href="@{/ui/products}" class="btn">View Products</a>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Welcome to Duke's Ski Chalet</h1>
+                <p>Your mountain retreat for premium ski and snowboard gear. From the slopes to the lodge, we've got everything you need for the perfect ski adventure.</p>
+                <div class="hero-actions">
+                    <a th:href="@{/ui/products}" class="btn">Browse the Chalet</a>
+                    <a th:href="@{/ui/products?keyword=snowboard}" class="btn btn-secondary">Snowboards</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img th:src="@{/images/duke-ski.png}" alt="Duke hits the slopes" />
+            </div>
         </div>
     </div>
 
-    <h2 class="page-title">Recommended Ski Equipment</h2>
+    <h2 class="page-title">Chalet Picks &mdash; Featured Gear</h2>
     <div class="products-grid" th:if="${products}">
         <div class="product-card" th:each="p : ${products}">
             <div class="name"><a th:href="@{|/ui/products/${p.id}|}" th:text="${p.name}">name</a></div>
@@ -26,7 +34,7 @@
             </div>
         </div>
     </div>
-    <p th:if="${#lists.isEmpty(products)}">Recommended products are being prepared.</p>
+    <p th:if="${#lists.isEmpty(products)}">Our chalet team is curating the best gear for you. Check back soon!</p>
 </div>
 </body>
 </html>

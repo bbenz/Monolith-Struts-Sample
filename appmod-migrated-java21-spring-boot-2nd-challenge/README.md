@@ -2,7 +2,7 @@
 
 # SkiShop Monolith (Struts 1.x → Spring Boot) — Docker Compose Quickstart
 
-> Spring Boot 3.2 + PostgreSQL 15 (Java 21). Legacy Struts 1.x roots kept for reference (see `answer.md`).
+> Spring Boot 3.2 + PostgreSQL 15 (Java 21). Legacy Struts 1.x roots kept for reference (see `UPGRADE_PLAN.md`).
 
 ## ✅ Prerequisites
 
@@ -52,11 +52,11 @@ docker compose down -v
 
 ```bash
 docker compose up -d db
-docker run --rm --name skishop-app-tomcat6-alt \
-  --network struts-with-issue-test_default -p 18080:8080 \
+docker run --rm --name skishop-app-boot2-alt \
+  --network appmod-migrated-java21-spring-boot-2nd-challenge_default -p 18080:8080 \
   -e DB_HOST=db -e DB_PORT=5432 -e DB_NAME=skishop \
-  -e DB_USERNAME=skishop -e DB_PASSWORD=skishop \
-  struts-with-issue-test-app
+  -e DB_USER=skishop -e DB_PASSWORD=skishop \
+  appmod-migrated-java21-spring-boot-2nd-challenge-app
 ```
 
 - **Apple Silicon**: `export DOCKER_DEFAULT_PLATFORM=linux/amd64` or `docker compose build --platform linux/amd64`.
@@ -68,12 +68,12 @@ docker run --rm --name skishop-app-tomcat6-alt \
 .
 ├── docker-compose.yml       # docker compose configuration
 ├── Dockerfile               # multi-stage (build + runtime)
-├── src/main/java            # Legacy Struts 1.x Java sources
-├── src/main/webapp          # Legacy JSP/WEB-INF/struts-config.xml
+├── pom.xml                  # Maven build (Spring Boot 3.2)
+├── src/main/java            # Spring Boot Java sources
 ├── src/main/resources/db    # Postgres init SQL (01-schema.sql, 02-data.sql)
-├── spring-boot-app/         # Spring Boot app (jar)
-├── answer.md                # Embedded challenge list and ideal solutions
-└── docs/operations.md       # Spring Boot ops notes
+├── src/main/resources/templates  # Thymeleaf templates
+├── docs/                    # operations.md, architecture.md, legacy.md
+└── UPGRADE_PLAN.md          # Migration plan notes
 ```
 
 ## 🧪 Local Maven Build (optional)
@@ -84,7 +84,7 @@ docker run --rm --name skishop-app-tomcat6-alt \
 ./mvnw -B package -DskipTests
 ```
 
-WAR: `target/skishop-monolith.war`
+JAR: `target/*.jar`
 
 ## 📌 Notes
 
@@ -96,7 +96,7 @@ WAR: `target/skishop-monolith.war`
 Experimentally added Spring Boot 3.2.x (Java 21) project to `spring-boot-app/`:
 
 ```bash
-./mvnw -f spring-boot-app/pom.xml spring-boot:run
+./mvnw spring-boot:run
 ```
 
 Template: `src/main/resources/templates/index.html`
@@ -114,7 +114,7 @@ Template: `src/main/resources/templates/index.html`
 
 - **All tables** entity/repository/service implementation complete
 - No Lombok (explicit getter/setter, public no-arg ctor)
-- Tests: `./mvnw -f spring-boot-app/pom.xml -B test` ✅ (2026-01-22 02:28 JST)
+- Tests: `./mvnw -B test` ✅ (2026-01-22 02:28 JST)
 - Note: JPA entities do not adopt Record (due to lifecycle/mutable fields)
 
 ### Phase 3 (REST API & DTO & Thymeleaf Framework)
@@ -122,12 +122,12 @@ Template: `src/main/resources/templates/index.html`
 - REST controller/DTO/exception handler implementation (product/cart/order/point/user/address/coupon/return/Admin systems)
 - WebMvcTest: Green configuration with mocked repositories and injected service implementation
 - Thymeleaf: Added framework for `layout/main`, `fragments/header|footer`, `products/list`, `cart/detail`, `orders/detail`, `admin/*`
-- Tests: `./mvnw -f spring-boot-app/pom.xml -B test` ✅ (2026-01-22 02:28 JST)
+- Tests: `./mvnw -B test` ✅ (2026-01-22 02:28 JST)
 
 ### Phase 4 (Thymeleaf Full Implementation: JSP→Thymeleaf)
 
 - **Complete**: UI controller (`ViewController`, `AdminViewController`), all screen templates implementation, header/footer/styles, message resource organization, view test addition
-- Tests: `./mvnw -f spring-boot-app/pom.xml -B test` ✅ (2026-01-22 03:04 JST)
+- Tests: `./mvnw -B test` ✅ (2026-01-22 03:04 JST)
 
 ### Phase 5-8 Complete
 
@@ -139,7 +139,7 @@ Template: `src/main/resources/templates/index.html`
 #### Tests
 
 ```bash
-./mvnw -f spring-boot-app/pom.xml -B test
+./mvnw -B test
 ```
 - Success: 2026-01-22 15:19 JST
 

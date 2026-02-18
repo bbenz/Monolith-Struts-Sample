@@ -64,7 +64,7 @@ class RepositorySmokeTest {
         price.setId(uuid());
         price.setProductId(product.getId());
         price.setRegularPrice(new BigDecimal("100.00"));
-        price.setCurrencyCode("JPY");
+        price.setCurrencyCode("USD");
         price = priceRepository.save(price);
         assertThat(price.getId()).isNotNull();
 
@@ -181,9 +181,9 @@ class RepositorySmokeTest {
         ua.setId(uuid());
         ua.setUserId(user.getId());
         ua.setLabel("home");
-        ua.setRecipientName("Taro");
-        ua.setPostalCode("123-4567");
-        ua.setPrefecture("Tokyo");
+        ua.setRecipientName("John");
+        ua.setPostalCode("80435");
+        ua.setPrefecture("Colorado");
         ua.setAddress1("1-2-3");
         ua.setIsDefault(Boolean.TRUE);
         ua = userAddressRepository.save(ua);
@@ -221,9 +221,9 @@ class RepositorySmokeTest {
         os.setId(uuid());
         os.setOrderId(order.getId());
         os.setShippingFee(new BigDecimal("5.00"));
-        os.setPostalCode("123-4567");
-        os.setPrefecture("Tokyo");
-        os.setRecipientName("Taro");
+        os.setPostalCode("80435");
+        os.setPrefecture("Colorado");
+        os.setRecipientName("John");
         os.setAddress1("1-2-3");
         os = orderShippingRepository.save(os);
         assertThat(os.getId()).isNotNull();
@@ -232,7 +232,7 @@ class RepositorySmokeTest {
         Payment payment = new Payment();
         payment.setId(uuid());
         payment.setAmount(new BigDecimal("10.00"));
-        payment.setCurrency("JPY");
+        payment.setCurrency("USD");
         payment.setStatus("PENDING");
         payment = paymentRepository.save(payment);
         assertThat(payment.getId()).isNotNull();

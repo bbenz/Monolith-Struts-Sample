@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
+<head><title>Ski Trip Advisor — Results</title></head>
+<body>
+<div th:fragment="content">
+
+  <h1 class="page-title">&#127935; AI Ski Trip Recommendations</h1>
+
+  <!-- Trip summary -->
+  <div class="card" style="display:flex;gap:24px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:220px;">
+      <h3 style="margin:0 0 8px;color:var(--color-primary);">&#127967; Your Trip</h3>
+      <table style="width:100%;">
+        <tr><td style="font-weight:600;padding:4px 8px;">Location</td><td th:text="${result.form.location}" style="padding:4px 8px;"></td></tr>
+        <tr><td style="font-weight:600;padding:4px 8px;">Skill Level</td><td th:text="${result.form.skillLevel}" style="padding:4px 8px;"></td></tr>
+        <tr><td style="font-weight:600;padding:4px 8px;">Skiing Type</td><td th:text="${result.form.skiingType}" style="padding:4px 8px;"></td></tr>
+        <tr><td style="font-weight:600;padding:4px 8px;">Budget</td><td th:text="${result.form.budget}" style="padding:4px 8px;"></td></tr>
+      </table>
+    </div>
+
+    <div style="flex:1;min-width:220px;">
+      <h3 style="margin:0 0 8px;color:var(--color-primary);">&#9729;&#65039; Weather</h3>
+      <table style="width:100%;">
+        <tr><td style="font-weight:600;padding:4px 8px;">Temperature</td><td style="padding:4px 8px;" th:text="${#numbers.formatDecimal(result.weather.temperatureCelsius,1,1) + ' °C'}"></td></tr>
+        <tr><td style="font-weight:600;padding:4px 8px;">Conditions</td><td style="padding:4px 8px;" th:text="${result.weather.conditions}"></td></tr>
+        <tr><td style="font-weight:600;padding:4px 8px;">Wind</td><td style="padding:4px 8px;" th:text="${#numbers.formatDecimal(result.weather.windSpeedKmh,1,1) + ' km/h'}"></td></tr>
+        <tr><td style="font-weight:600;padding:4px 8px;">Snowfall</td><td style="padding:4px 8px;" th:text="${#numbers.formatDecimal(result.weather.snowfallCm,1,1) + ' cm'}"></td></tr>
+        <tr><td style="font-weight:600;padding:4px 8px;">Humidity</td><td style="padding:4px 8px;" th:text="${result.weather.humidityPercent + '%'}"></td></tr>
+      </table>
+    </div>
+
+    <div style="flex:1;min-width:220px;">
+      <h3 style="margin:0 0 8px;color:var(--color-primary);">&#9968; Slope Conditions</h3>
+      <table style="width:100%;">
+        <tr><td style="font-weight:600;padding:4px 8px;">Open Slopes</td><td style="padding:4px 8px;" th:text="${result.skiConditions.openSlopesCount + '/' + result.skiConditions.totalSlopesCount}"></td></tr>
+        <tr><td style="font-weight:600;padding:4px 8px;">Snow Depth</td><td style="padding:4px 8px;" th:text="${#numbers.formatDecimal(result.skiConditions.snowDepthCm,1,1) + ' cm'}"></td></tr>
+        <tr><td style="font-weight:600;padding:4px 8px;">Snow Quality</td><td style="padding:4px 8px;" th:text="${result.skiConditions.snowQuality}"></td></tr>
+        <tr><td style="font-weight:600;padding:4px 8px;">Difficulty</td><td style="padding:4px 8px;" th:text="${result.skiConditions.difficulty}"></td></tr>
+        <tr th:if="${result.skiConditions.powderDay}">
+          <td colspan="2" style="padding:4px 8px;font-weight:700;color:var(--color-accent);">&#10052;&#65039; POWDER DAY!</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- AI Recommendations -->
+  <div class="card">
+    <h2 style="margin:0 0 12px;color:var(--color-primary);">&#129302; AI Equipment Recommendations</h2>
+    <div class="ai-recommendations" th:utext="${result.recommendations}"></div>
+  </div>
+
+  <style>
+    .ai-recommendations { line-height:1.7; }
+    .ai-recommendations h2 { color:var(--color-primary); font-size:1.4rem; margin:20px 0 10px; border-bottom:2px solid var(--color-primary); padding-bottom:6px; }
+    .ai-recommendations h3 { color:var(--color-accent,#c0392b); font-size:1.15rem; margin:16px 0 8px; }
+    .ai-recommendations p { margin:6px 0; }
+    .ai-recommendations ul, .ai-recommendations ol { margin:6px 0 6px 20px; }
+    .ai-recommendations li { margin:3px 0; }
+    .ai-recommendations strong { color:#1a1a2e; }
+    .ai-recommendations hr { border:none; border-top:1px solid #ddd; margin:16px 0; }
+    .ai-recommendations code { background:#f4f4f4; padding:2px 5px; border-radius:3px; font-size:0.9em; }
+  </style>
+
+  <!-- Matching products -->
+  <div class="card" th:if="${result.products != null and !result.products.isEmpty()}">
+    <h2 style="margin:0 0 12px;color:var(--color-primary);">&#128722; Matching Products in the Chalet</h2>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="p : ${result.products}">
+            <td>
+              <a th:href="@{|/ui/products/${p.id}|}" th:text="${p.name}" style="font-weight:600;"></a>
+              <br/><span style="color:var(--color-text-muted);font-size:0.85rem;" th:text="${p.description}"></span>
+            </td>
+            <td><span class="tag" th:text="${p.categoryName}"></span></td>
+            <td style="font-weight:700;color:var(--color-accent);" th:text="${p.price != null ? '$' + #numbers.formatDecimal(p.price,1,2) : '-'}"></td>
+            <td th:text="${p.quantity}"></td>
+            <td>
+              <a th:href="@{|/ui/products/${p.id}|}" class="btn btn-secondary" style="font-size:0.85rem;">View</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div style="display:flex;gap:12px;margin-top:16px;">
+    <a th:href="@{/ui/ski-advisor}" class="btn">&#8592; New Search</a>
+    <a th:href="@{/ui/products}" class="btn btn-secondary" style="background:var(--color-primary);">Browse All Products</a>
+  </div>
+</div>
+</body>
+</html>

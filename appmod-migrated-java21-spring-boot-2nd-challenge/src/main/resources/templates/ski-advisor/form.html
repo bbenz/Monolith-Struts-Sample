@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
+<head><title>Ski Trip Advisor</title></head>
+<body>
+<div th:fragment="content">
+  <div class="hero" style="padding:32px 40px;">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>&#9924; AI Ski Trip Advisor</h1>
+        <p>Get personalized equipment recommendations powered by AI, based on current weather and slope conditions, your skill level, and the gear available at Duke's Ski Chalet.</p>
+      </div>
+      <div class="hero-image">
+        <img th:src="@{/images/duke-ski.png}" alt="Duke hits the slopes" />
+      </div>
+    </div>
+  </div>
+
+  <div class="card" th:if="${error}">
+    <div class="messages" th:text="${error}"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="page-title">Plan Your Trip</h2>
+    <form th:action="@{/ui/ski-advisor}" method="post" th:object="${form}" style="display:flex;flex-direction:column;gap:20px;max-width:560px;">
+
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-weight:600;color:var(--color-primary);">Ski Resort Location</label>
+        <input type="text" th:field="*{location}" placeholder="e.g. Aspen, Whistler, Chamonix" required
+               style="padding:10px 14px;border:1px solid var(--color-border);border-radius:8px;font-size:1rem;" />
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-weight:600;color:var(--color-primary);">Skill Level</label>
+        <select th:field="*{skillLevel}" required
+                style="padding:10px 14px;border:1px solid var(--color-border);border-radius:8px;font-size:1rem;background:var(--color-surface);">
+          <option value="">-- Select --</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+          <option value="Expert">Expert</option>
+        </select>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-weight:600;color:var(--color-primary);">Type of Skiing</label>
+        <select th:field="*{skiingType}" required
+                style="padding:10px 14px;border:1px solid var(--color-border);border-radius:8px;font-size:1rem;background:var(--color-surface);">
+          <option value="">-- Select --</option>
+          <option value="On-piste">On-piste</option>
+          <option value="Off-piste">Off-piste</option>
+          <option value="All-mountain">All-mountain</option>
+          <option value="Racing">Racing</option>
+        </select>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-weight:600;color:var(--color-primary);">Budget Range</label>
+        <select th:field="*{budget}" required
+                style="padding:10px 14px;border:1px solid var(--color-border);border-radius:8px;font-size:1rem;background:var(--color-surface);">
+          <option value="">-- Select --</option>
+          <option value="Low">Low (under $300)</option>
+          <option value="Medium">Medium ($300 – $600)</option>
+          <option value="High">High ($600+)</option>
+        </select>
+      </div>
+
+      <div>
+        <button type="submit" style="padding:12px 32px;font-size:1rem;">&#127935; Get Recommendations</button>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

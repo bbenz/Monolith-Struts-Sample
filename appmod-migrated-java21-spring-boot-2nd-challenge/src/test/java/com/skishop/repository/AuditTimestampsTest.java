@@ -48,7 +48,7 @@ class AuditTimestampsTest {
         Payment payment = new Payment();
         payment.setId(UUID.randomUUID().toString());
         payment.setAmount(BigDecimal.ONE);
-        payment.setCurrency("JPY");
+        payment.setCurrency("USD");
         payment.setStatus("PENDING");
 
         payment = paymentRepository.saveAndFlush(payment);
@@ -94,9 +94,9 @@ class AuditTimestampsTest {
         ua.setId(UUID.randomUUID().toString());
         ua.setUserId(UUID.randomUUID().toString());
         ua.setLabel("home");
-        ua.setRecipientName("Taro");
-        ua.setPostalCode("123-4567");
-        ua.setPrefecture("Tokyo");
+        ua.setRecipientName("John");
+        ua.setPostalCode("80435");
+        ua.setPrefecture("Colorado");
         ua.setAddress1("1-2-3");
         ua.setIsDefault(Boolean.TRUE);
 

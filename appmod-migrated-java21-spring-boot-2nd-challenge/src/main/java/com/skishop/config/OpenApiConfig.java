@@ -12,8 +12,8 @@ public class OpenApiConfig {
     public OpenAPI api() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("SkiShop API")
+                        .title("Duke's Ski Shop API")
                         .version("2.0.0")
-                        .description("Spring Boot migration API"));
+                        .description("Duke's Ski Chalet - Spring Boot API"));
     }
 }

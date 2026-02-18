@@ -9,13 +9,13 @@
   </div>
   <div class="card table-responsive" th:if="${!#lists.isEmpty(addresses)}">
     <table>
-      <thead><tr><th>Label</th><th>Recipient</th><th>Postal Code</th><th>Prefecture</th><th>Address 1</th><th>Phone</th><th>Default</th></tr></thead>
+      <thead><tr><th>Label</th><th>Recipient</th><th>Postal Code</th><th>State</th><th>Address</th><th>Phone</th><th>Default</th></tr></thead>
       <tbody>
         <tr th:each="a : ${addresses}">
           <td th:text="${a.label}">label</td>
           <td th:text="${a.recipientName}">recipient</td>
           <td th:text="${a.postalCode}">postal</td>
-          <td th:text="${a.prefecture}">prefecture</td>
+          <td th:text="${a.prefecture}">state</td>
           <td th:text="${a.address1}">address1</td>
           <td th:text="${a.phone}">phone</td>
           <td th:text="${a.isDefault}">false</td>

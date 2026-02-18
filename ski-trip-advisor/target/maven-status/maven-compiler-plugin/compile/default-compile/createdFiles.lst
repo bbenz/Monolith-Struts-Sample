@@ -1,0 +1,8 @@
+com/skiadvisor/service/DatabaseService.class
+com/skiadvisor/service/WeatherService.class
+com/skiadvisor/SkiTripAdvisor.class
+com/skiadvisor/model/EquipmentRecommendation.class
+com/skiadvisor/model/Product.class
+com/skiadvisor/model/WeatherInfo.class
+com/skiadvisor/service/OpenAIService.class
+com/skiadvisor/model/SkiConditions.class

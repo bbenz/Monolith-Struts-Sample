@@ -16,4 +16,6 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("SELECT p FROM Product p WHERE (:keyword IS NULL OR :keyword = '' OR UPPER(p.name) LIKE UPPER(CONCAT('%', :keyword, '%')) OR UPPER(p.brand) LIKE UPPER(CONCAT('%', :keyword, '%')) OR UPPER(p.description) LIKE UPPER(CONCAT('%', :keyword, '%')))")
     List<Product> search(@Param("keyword") String keyword);
+
+    List<Product> findByCategoryIdInAndStatus(List<String> categoryIds, String status);
 }
