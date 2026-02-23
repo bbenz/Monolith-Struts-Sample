@@ -4,7 +4,7 @@
 January 19, 2026
 
 ## Purpose
-Following the completion of migration from Java 1.5 + Struts 1.3 to Java 21 + Spring Boot, delete legacy Struts files and unnecessary files to organize the project into a clean state.
+Following the completion of migration from Java 1.5 + Struts 1.3 to Java 25 + Spring Boot, delete legacy Struts files and unnecessary files to organize the project into a clean state.
 
 ## Deleted Files and Directories
 
@@ -215,7 +215,7 @@ skishop/
 
 Updated the following content:
 - ✅ Title: "Struts 1.2.9" → "Spring Boot Application"
-- ✅ Technology stack: Java 21, Spring Boot 3.2, Thymeleaf
+- ✅ Technology stack: Java 25, Spring Boot 3.5, Thymeleaf
 - ✅ Startup method: Docker Compose priority
 - ✅ Project structure: Latest directory structure
 - ✅ API endpoint list

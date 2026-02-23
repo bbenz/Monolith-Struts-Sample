@@ -6,7 +6,7 @@ January 19, 2026
 
 ## Migration Overview
 
-Modernized a Struts 1.3 + JSP based application into a complete Spring Boot 3.2.12 + Thymeleaf application.
+Modernized a Struts 1.3 + JSP based application into a complete Spring Boot 3.5.0 + Thymeleaf application.
 
 ## Technology Stack
 
@@ -234,8 +234,8 @@ Create reusable components:
 
 ### Technical Achievements
 
-- Java 5 → Java 21 (LTS)
-- Struts 1.3 → Spring Boot 3.2.12
+- Java 5 → Java 25 (LTS)
+- Struts 1.3 → Spring Boot 3.5.0
 - JSP → Thymeleaf 3.x
 - External Tomcat → Embedded Tomcat
 - WAR → JAR packaging

@@ -7,11 +7,11 @@
 ### 進捗 (2026-01-22)
 
 - [x] Phase0: 現状分析（Action/JSP/DBパターン棚卸し）
-- [x] Maven Wrapper 導入 (3.9.6) / Java 21 対応 (`pom.xml` 更新)
-- [x] Dockerfile: Temurin 21 + Tomcat 9.0 化 / Postgres 15
-- [x] CI: GitHub Actions (Java 21 + ./mvnw)
+- [x] Maven Wrapper 導入 (3.9.6) / Java 25 対応 (`pom.xml` 更新)
+- [x] Dockerfile: Temurin 25 + Tomcat 9.0 化 / Postgres 15
+- [x] CI: GitHub Actions (Java 25 + ./mvnw)
 - [x] Phase1: Spring Boot プロトタイプ追加 (`spring-boot-app/`)
-    - Spring Boot 3.2.2 / Java 21 プロトタイプ作成
+    - Spring Boot 3.5.0 / Java 25 プロトタイプ作成
 - [x] Phase2: JPA実装（全テーブルのエンティティ/リポジトリ/サービス、H2テスト緑）
 - [x] Phase3: RESTコントローラ/DTO 完成、WebMvcTest 整備、Thymeleaf テンプレート素体追加
 - [x] Phase4: Thymeleaf 本実装（JSP→Thymeleaf 全画面移行）
@@ -22,12 +22,12 @@
 - [x] Phase9: ドキュメント・運用準備（運用/アーキテクチャDocs, OpenAPI, 監視手順）
 - [x] Phase10: レガシー整理（Boot内Struts参照ゼロ確認、docs/legacy.md、検証スクリプト、README/Docs更新）
 
-## Java 21 LTS ランタイムアップグレード計画 (#generate_upgrade_plan)
+## Java 25 LTS ランタイムアップグレード計画 (#generate_upgrade_plan)
 
 ### 進捗サマリ（Phase 0 / Phase 1 / Phase 2 / Phase 3 / Phase 4 / Phase 5 / Phase 6 / Phase 7 / Phase 8 / Phase 9 / Phase 10）
 
-- Phase 0: ✅ 完了（アクション/JSP/DAO棚卸し、JDK21/Maven/CI方針策定、Docker/Tomcat9計画策定）
-- Phase 1: ✅ 完了（Spring Boot 3.2.2 Java21 プロトタイプ `spring-boot-app/` 作成、パッケージ骨格用意）
+- Phase 0: ✅ 完了（アクション/JSP/DAO棚卸し、JDK25/Maven/CI方針策定、Docker/Tomcat9計画策定）
+- Phase 1: ✅ 完了（Spring Boot 3.5.0 Java25 プロトタイプ `spring-boot-app/` 作成、パッケージ骨格用意）
 - Phase 2: ✅ 完了（全テーブルのJPAエンティティ/リポジトリ/サービス実装、H2(PostgreSQLモード)テスト緑）
     - 備考: JPAエンティティはRecord未採用（ライフサイクルコールバックと可変フィールドのため）
 - Phase 3: ✅ 完了（RESTコントローラ/DTO/例外ハンドラ、WebMvcTest整備、Thymeleafレイアウト・ページ素体作成）
@@ -46,7 +46,7 @@
 - `docs/inventory/actions.txt` — Struts Action 一覧
 - `docs/inventory/jsp.txt` — JSP 一覧
 - `docs/inventory/dao.txt` — JDBC PreparedStatement 使用箇所
-- `spring-boot-app/` — Spring Boot プロジェクト（Java 21, Boot 3.2.2）
+- `spring-boot-app/` — Spring Boot プロジェクト（Java 25, Boot 3.5.0）
     - `model/entity/*` — **全テーブル**（roles, users, security_logs, categories, products, prices, inventory, carts, cart_items, payments, orders, order_items, shipments, returns, order_shipping, point_accounts, point_transactions, campaigns, coupons, coupon_usage, user_addresses, password_reset_tokens, shipping_methods, email_queue）
     - `repository/*Repository.java` — 各エンティティのSpring Data JPAリポジトリ
     - `service/*Service.java` — 各エンティティのサービス実装
@@ -81,20 +81,20 @@
 ### 背景
 
 - 現状: **JDK 5 + Maven 2.2.1 + Tomcat 6**（DockerfileでJDK1.5/Tomcat6を使用）
-- 目標: **JDK 21 + Maven 3.9.x + Tomcat 9(javax)** で稼働し、後続の Spring Boot 3 への移行を容易にする
+- 目標: **JDK 25 + Maven 3.9.x + Tomcat 9(javax)** で稼働し、後続の Spring Boot 3 への移行を容易にする
 
 ### 方針
 
-1. **ビルドツール刷新**: Maven Wrapper 導入、Maven 3.9.x 以上、JDK 21 を標準化
+1. **ビルドツール刷新**: Maven Wrapper 導入、Maven 3.9.x 以上、JDK 25 を標準化
 2. **コンパイル互換性**: `maven-compiler-plugin` を 3.11+ に更新し `source/target` を **8** 以上（推奨 17/21）へ引き上げ
 3. **アプリサーバ**: **Tomcat 9.0.x（javax版）** を採用（Tomcat 10+ は jakarta.* で非互換のため避ける）
-4. **コンテナ**: `eclipse-temurin:21` ベースのマルチステージビルドに置換
-5. **CI**: GitHub Actions 等で JDK 21 をセットアップし、テスト実行
+4. **コンテナ**: `eclipse-temurin:25` ベースのマルチステージビルドに置換
+5. **CI**: GitHub Actions 等で JDK 25 をセットアップし、テスト実行
 
 ### 手順
 
-1. **JDK 21 / Maven 3.9.x を導入**
-     - ローカル / CI で `JAVA_HOME` を JDK 21 に設定
+1. **JDK 25 / Maven 3.9.x を導入**
+     - ローカル / CI で `JAVA_HOME` を JDK 25 に設定
      - Maven Wrapper 追加: `mvn -N io.takari:maven:0.7.7:wrapper -Dmaven=3.9.6`
 2. **pom.xml 更新**
      - `maven.compiler.source` / `target` を **8**（もしくは **21**）に変更
@@ -130,15 +130,15 @@
          </plugin>
          ```
 
-     - テスト: `mvn -DskipTests=false test` を JDK 21 で実行
+     - テスト: `mvn -DskipTests=false test` を JDK 25 で実行
 3. **依存関係の最低限アップデート**（互換性向上）
      - PostgreSQL JDBC: `42.7.4`
      - commons-fileupload: `1.5`
      - junit: `4.13.2`（JUnit5 移行は後続）
      - log4j: 1.x は EOL。短期は SLF4J + Logback へ移行を検討
 4. **Dockerfile 更新**
-     - ベース: `eclipse-temurin:21-jdk`（build）/ `eclipse-temurin:21-jre`（runtime）
-     - Tomcat: `tomcat:9.0-jre17-temurin` など javax 対応タグを使用（JRE21 版があればそれを採用）
+     - ベース: `eclipse-temurin:25-jdk`（build）/ `eclipse-temurin:25-jre`（runtime）
+     - Tomcat: `tomcat:9.0-jre17-temurin` など javax 対応タグを使用（JRE25 版があればそれを採用）
      - `COPY target/*.war /usr/local/tomcat/webapps/ROOT.war`
 5. **ローカル動作確認**
      - `mvn clean package`
@@ -162,7 +162,7 @@
 
 ### 検証チェックリスト
 
-- [ ] `mvn clean verify` が JDK 21 で成功
+- [ ] `mvn clean verify` が JDK 25 で成功
 - [ ] `docker run` で Tomcat 9 + WAR が起動
 - [ ] 主要画面・フォーム・DBアクセス・メール送信が動作
 - [ ] 依存ライブラリ警告（illegal access 等）がない
@@ -173,7 +173,7 @@
 | リスク | 説明 | 緩和策 |
 | --- | --- | --- |
 | jakarta 移行問題 | Tomcat 10+ は jakarta.* で Struts1 非対応 | **Tomcat 9** を使用 |
-| 古い JDBC ドライバ | Java 21 で未検証 | PostgreSQL JDBC を 42.7.4 に更新 |
+| 古い JDBC ドライバ | Java 25 で未検証 | PostgreSQL JDBC を 42.7.4 に更新 |
 | log4j 1.x 脆弱性 | EOL, CVE 多数 | SLF4J + Logback へ段階移行 |
 | ビルド互換性 | `--release` 5 は不可 | `source/target` を 8+ に引き上げ |
 
@@ -191,19 +191,19 @@ docker build -t skishop:java21 .
 docker run --rm -p 8080:8080 skishop:java21
 ```
 
-このプロジェクトは Apache Struts 1.3.10 を使用した古いJavaアプリケーションで、Java 1.5 をターゲットにしています。このドキュメントは、**Java 21 + Spring Boot 3.2.x + Thymeleaf + Spring Data JPA** への完全移行計画を示します。
+このプロジェクトは Apache Struts 1.3.10 を使用した古いJavaアプリケーションで、Java 1.5 をターゲットにしています。このドキュメントは、**Java 25 + Spring Boot 3.5.x + Thymeleaf + Spring Data JPA** への完全移行計画を示します。
 
 ## 現在の状態
 
 ### Javaバージョン
 
 - **現在**: Java 1.5 (2004年リリース、サポート終了)
-- **移行先**: Java 21 LTS (2023年9月リリース、2031年9月までのLTSサポート)
+- **移行先**: Java 25 LTS (2023年9月リリース、2031年9月までのLTSサポート)
 
 ### フレームワーク
 
 - **現在**: Apache Struts 1.3.10 (2008年リリース、EOL、多数の既知の脆弱性)
-- **移行先**: Spring Boot 3.2.x (最新安定版、長期サポート)
+- **移行先**: Spring Boot 3.5.x (最新安定版、長期サポート)
 
 ### 依存関係の現在のバージョン
 
@@ -252,21 +252,21 @@ docker run --rm -p 8080:8080 skishop:java21
 
 **Apache Struts 1.x は2013年にEOLとなり、多数の既知の脆弱性があります。** 依存関係の部分的なアップグレードでは根本的な問題は解決しません。
 
-#### Spring Boot 3.2.x への完全移行を推奨する理由
+#### Spring Boot 3.5.x への完全移行を推奨する理由
 
 1. **セキュリティ**: 継続的なセキュリティアップデートとサポート
 2. **コミュニティ**: 最大のJavaコミュニティと豊富なドキュメント
-3. **最新技術**: Java 21の全機能を活用可能
+3. **最新技術**: Java 25の全機能を活用可能
 4. **生産性**: 自動設定、組み込みサーバー、開発ツールによる高速開発
 5. **将来性**: マイクロサービス、クラウドネイティブへの移行パスが明確
 6. **エコシステム**: 豊富なSpring Bootスターター、統合サポート
 
 ### 移行先の技術スタック
 
-| コンポーネント | Struts 1.x | Spring Boot 3.2.x |
+| コンポーネント | Struts 1.x | Spring Boot 3.5.x |
 | --- | --- | --- |
-| **フレームワーク** | Apache Struts 1.3.10 | Spring Boot 3.2.x + Spring MVC 6.1.x |
-| **Javaバージョン** | Java 1.5 | Java 21 LTS |
+| **フレームワーク** | Apache Struts 1.3.10 | Spring Boot 3.5.x + Spring MVC 6.1.x |
+| **Javaバージョン** | Java 1.5 | Java 25 LTS |
 | **ビューテンプレート** | JSP + Struts Taglib | Thymeleaf 3.1.x |
 | **データアクセス** | JDBC + Commons DBUtils | Spring Data JPA 3.2.x + Hibernate 6.4.x |
 | **接続プール** | Commons DBCP 1.x | HikariCP (Spring Boot標準) |
@@ -308,7 +308,7 @@ docker run --rm -p 8080:8080 skishop:java21
    - 外部ライブラリの依存関係確認
 
 2. **環境構築**
-   - JDK 21のインストール
+   - JDK 25のインストール
    - IDE (IntelliJ IDEA / Eclipse) の準備
    - Gitブランチ戦略の決定（例: `feature/spring-boot-migration`）
 
@@ -349,7 +349,7 @@ Dependencies:
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version>
+        <version>3.4.3</version>
         <relativePath/>
     </parent>
     
@@ -860,7 +860,7 @@ public class ProductFormDTO {
 
 #### 目的
 
-- Java 5時代のコードスタイルやAPIを Java 21 のモダンな書き方へ刷新し、可読性・安全性・性能を向上させる。
+- Java 5時代のコードスタイルやAPIを Java 25 のモダンな書き方へ刷新し、可読性・安全性・性能を向上させる。
 
 #### チェックポイント
 
@@ -881,7 +881,7 @@ public class ProductFormDTO {
 | ラムダ/メソッド参照 | `new Runnable(){ public void run(){...}}` | `Runnable r = () -> {...}` / `System.out::println` | Java 8 |
 | 関数型IF | 独自IF多数 | `java.util.function.*` | 再利用と統一 |
 | switch構文 | `switch(x){case A: ... break;}` | `switch (x) { case A -> ...; default -> ...; }` | switch expressions |
-| switchパターン | `if/else`で型分岐 | `switch (obj) { case String s -> ... }` | Java 21 |
+| switchパターン | `if/else`で型分岐 | `switch (obj) { case String s -> ... }` | Java 25 |
 | マルチキャッチ | 複数catch重複 | `catch (IOException\|SQLException e)` | Java 7 |
 | 数値リテラル | `1000000` | `1_000_000` | 可読性 |
 | Optional | `if (obj == null) ...` | `Optional.ofNullable(obj).ifPresent(...)` | null安全 |
@@ -894,8 +894,8 @@ public class ProductFormDTO {
 | Stringユーティリティ | `trim().isEmpty()` | `isBlank()/strip()/lines()/repeat()` | Java 11 |
 | Random | `new Random()` | `ThreadLocalRandom.current()` / `RandomGenerator` | 並列安全/再現性 |
 | finalize | `protected void finalize()` | `Cleaner` / try-with-resources | Java 9+非推奨 |
-| レコードパターン | `if (obj instanceof Point) { ... }` | `if (obj instanceof Point(int x, int y)) { ... }` | Java 21 |
-| 文字列テンプレート | `"Hello " + name` | `STR."Hello ${name}"` | Java 21 (Preview) |
+| レコードパターン | `if (obj instanceof Point) { ... }` | `if (obj instanceof Point(int x, int y)) { ... }` | Java 25 |
+| 文字列テンプレート | `"Hello " + name` | `STR."Hello ${name}"` | Java 25 (Preview) |
 
 #### 実施ステップ
 
@@ -1393,10 +1393,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up JDK 21
+    - name: Set up JDK 25
       uses: actions/setup-java@v4
       with:
-        java-version: '21'
+        java-version: '25'
         distribution: 'temurin'
     
     - name: Build with Maven
@@ -1935,7 +1935,7 @@ public String listProducts() {
 | フェーズ2: データアクセス層 | 2週間 | 2-3名 | エンティティ、リポジトリ、サービス |
 | フェーズ3: コントローラー層 | 3週間 | 3-4名 | 全Controller、DTO、バリデーション |
 | フェーズ4: ビュー層 | 3週間 | 2-3名 | 全Thymeleafテンプレート |
-| フェーズ5: モダンJavaリファクタリング | 1週間 | 2名 | Java 21モダンコード適用 |
+| フェーズ5: モダンJavaリファクタリング | 1週間 | 2名 | Java 25モダンコード適用 |
 | フェーズ6: 設定・その他 | 1週間 | 2名 | 例外処理、ファイルアップロード等 |
 | フェーズ7: テスト | 2週間 | 3-4名 | 単体・統合テスト |
 | フェーズ8: パフォーマンステスト | 1週間 | 2名 | 性能測定、チューニング |
@@ -1994,7 +1994,7 @@ public String listProducts() {
 
 - [ ] プロジェクトチームの編成
 - [ ] ステークホルダーの承認取得
-- [ ] JDK 21のインストールと環境設定
+- [ ] JDK 25のインストールと環境設定
 - [ ] Spring Initializrでプロジェクト生成
 - [ ] Git リポジトリのブランチ戦略決定
 - [ ] CI/CD パイプラインの準備
@@ -2148,7 +2148,7 @@ public String listProducts() {
 
 ### 中長期的効果（6ヶ月以降）
 
-- Java 21の最新機能活用によるコード品質向上
+- Java 25の最新機能活用によるコード品質向上
 - マイクロサービス化への道筋
 - クラウドネイティブアーキテクチャへの移行可能性
 - 新規開発者のオンボーディング容易化
@@ -2156,7 +2156,7 @@ public String listProducts() {
 
 ## まとめ
 
-このプロジェクトはApache Struts 1.3.10という2008年のフレームワークを使用しており、セキュリティリスクが極めて高い状態です。本移行計画では、**Java 21 + Spring Boot 3.2.x + Thymeleaf + Spring Data JPA** への完全移行を提案します。
+このプロジェクトはApache Struts 1.3.10という2008年のフレームワークを使用しており、セキュリティリスクが極めて高い状態です。本移行計画では、**Java 25 + Spring Boot 3.5.x + Thymeleaf + Spring Data JPA** への完全移行を提案します。
 
 ### 移行のメリット
 
@@ -2187,10 +2187,10 @@ public String listProducts() {
 
 ### 最終的な推奨事項
 
-このApache Struts 1.xアプリケーションは**今すぐに移行を開始すべき**状態です。セキュリティリスクと技術的負債を考慮すると、**Spring Boot 3.2.x への完全移行が最適な選択**です。
+このApache Struts 1.xアプリケーションは**今すぐに移行を開始すべき**状態です。セキュリティリスクと技術的負債を考慮すると、**Spring Boot 3.5.x への完全移行が最適な選択**です。
 
-- ✅ **Java 21**: 2031年までのLTSサポート
-- ✅ **Spring Boot 3.2.x**: 業界標準、豊富なエコシステム
+- ✅ **Java 25**: 2031年までのLTSサポート
+- ✅ **Spring Boot 3.5.x**: 業界標準、豊富なエコシステム
 - ✅ **Thymeleaf**: モダンで保守しやすいテンプレートエンジン
 - ✅ **Spring Data JPA**: 宣言的で生産性の高いデータアクセス
 

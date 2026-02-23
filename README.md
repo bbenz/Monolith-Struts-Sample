@@ -1,14 +1,14 @@
 # SkiShop - Legacy to Modern Application Migration Demo
 
-This repository demonstrates the complete journey of modernizing a legacy monolithic web application, from its original Java 5 + Struts 1.x implementation through migration to Java 21 + Spring Boot, showcasing the power of AI-assisted development and migration tools.
+This repository demonstrates the complete journey of modernizing a legacy monolithic web application, from its original Java 5 + Struts 1.x implementation through migration to Java 25 + Spring Boot, showcasing the power of AI-assisted development and migration tools.
 
 ## 📖 Project Overview
 
 This project recreates a monolithic e-commerce web application from approximately 20 years ago to demonstrate modern application modernization techniques. The codebase includes three distinct versions of the same SkiShop application, each representing a different stage in the modernization journey:
 
 1. **Original Legacy Application** - Java 5 + Struts 1.2.9 (circa 2004)
-2. **First Migration** - Java 21 + Spring Boot 3.2 with Thymeleaf
-3. **Enhanced Migration** - Java 21 + Spring Boot 3.2 with modern architecture patterns
+2. **First Migration** - Java 25 + Spring Boot 3.5 with Thymeleaf
+3. **Enhanced Migration** - Java 25 + Spring Boot 3.5 with modern architecture patterns
 
 ### Development Process
 
@@ -20,7 +20,7 @@ The development of this application followed a systematic, AI-assisted approach:
    - Defined clear requirements and validation criteria for each phase
 
 **Migration to Modern Stack**
-   - Used GitHub Copilot App Modernization Agent to migrate to Java 21 and Spring Boot
+   - Used GitHub Copilot App Modernization Agent to migrate to Java 25 and Spring Boot
    - Generated [UPGRADE_PLAN.md](UPGRADE_PLAN.md) with detailed migration strategy
    - Enhanced the plan to include:
      - Latest Spring Boot best practices
@@ -74,12 +74,12 @@ docker-compose up --build
 
 ---
 
-### Version 2: First Spring Boot Migration (Java 21 + Spring Boot 3.2)
+### Version 2: First Spring Boot Migration (Java 25 + Spring Boot 3.5)
 
 Located in the `appmod-migrated-java21-spring-boot/` directory.
 
 **Requirements:**
-- Java 21
+- Java 25
 - Docker & Docker Compose (recommended)
 
 **Build & Run:**
@@ -99,7 +99,7 @@ java -jar target/skishop-0.0.1-SNAPSHOT.jar
 - Database: PostgreSQL (auto-configured via Docker Compose)
 
 **Features:**
-- Migrated from Struts 1.x to Spring Boot 3.2
+- Migrated from Struts 1.x to Spring Boot 3.5
 - JSP templates converted to Thymeleaf
 - Modern dependency injection with Spring
 - RESTful controller architecture
@@ -112,12 +112,12 @@ java -jar target/skishop-0.0.1-SNAPSHOT.jar
 
 ---
 
-### Version 3: Enhanced Migration (Java 21 + Spring Boot 3.2)
+### Version 3: Enhanced Migration (Java 25 + Spring Boot 3.5)
 
 Located in the `appmod-migrated-java21-spring-boot-2nd-challenge/` directory.
 
 **Requirements:**
-- Java 21
+- Java 25
 - Docker & Docker Compose
 
 **Build & Run:**
@@ -374,12 +374,12 @@ kubectl apply -f k8s/ingress.yaml
 ### Core Documentation
 - [Detailed Design Document](monolith-struts.md) - Original Struts 1.x application design
 - [Implementation Plan](impl-plan.md) - Phase-by-phase development plan
-- [Upgrade Plan](UPGRADE_PLAN.md) - Migration strategy to Java 21 + Spring Boot
+- [Upgrade Plan](UPGRADE_PLAN.md) - Migration strategy to Java 25 + Spring Boot
 
 ### Migration Reports
 - [Migration Completion Report](appmod-migrated-java21-spring-boot/MIGRATION_REPORT.md)
 - [JSP to Thymeleaf Migration](appmod-migrated-java21-spring-boot/JSP_TO_THYMELEAF_MIGRATION.md)
-- [Project Cleanup Report](appmod-migrated-java21-spring-boot/PROJECT_CLEANUP_REPORT.md)
+- [Upgrade Plan](UPGRADE_PLAN.md) - Migration strategy to Java 25 + Spring Boot
 
 ### English Translations
 All documentation is available in English with `-EN` suffix:
@@ -406,8 +406,8 @@ All documentation is available in English with `-EN` suffix:
 - Maven
 
 ### Modern Versions (Versions 2 & 3)
-- Java 21
-- Spring Boot 3.2
+- Java 25
+- Spring Boot 3.5
 - Spring Web MVC
 - Spring Data JPA
 - Thymeleaf

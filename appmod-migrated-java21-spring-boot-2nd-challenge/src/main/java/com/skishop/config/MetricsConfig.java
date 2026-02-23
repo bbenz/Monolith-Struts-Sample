@@ -1,24 +1,15 @@
 package com.skishop.config;
 
-import io.micrometer.prometheus.PrometheusConfig;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 
+/**
+ * Metrics Configuration for Prometheus
+ * Note: Spring Boot 3.4.x auto-configures Prometheus metrics when 
+ * micrometer-registry-prometheus is on the classpath.
+ * No manual bean configuration needed.
+ */
 @Configuration
 public class MetricsConfig {
-
-    @Bean
-    @ConditionalOnMissingBean
-    public PrometheusMeterRegistry prometheusMeterRegistry() {
-        return new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public PrometheusScrapeEndpoint prometheusScrapeEndpoint(PrometheusMeterRegistry registry) {
-        return new PrometheusScrapeEndpoint(registry.getPrometheusRegistry());
-    }
+    // Prometheus metrics are auto-configured by Spring Boot Actuator
+    // Access metrics at: /actuator/prometheus
 }

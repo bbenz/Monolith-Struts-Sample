@@ -1,6 +1,6 @@
-# Multi-stage build for Spring Boot 3.2.12 + Java 21
+# Multi-stage build for Spring Boot 3.2.12 + Java 25
 # Stage 1: Build with Maven
-FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
+FROM maven:4.0.0-rc-5-eclipse-temurin-25-alpine AS build
 
 WORKDIR /workspace
 
@@ -12,8 +12,8 @@ RUN mvn dependency:go-offline -B || true
 COPY src ./src
 RUN mvn clean package -DskipTests -B
 
-# Stage 2: Runtime with Java 21
-FROM eclipse-temurin:21-jre-alpine AS runtime
+# Stage 2: Runtime with Java 25
+FROM eclipse-temurin:25-jre-alpine AS runtime
 
 # Install required packages
 RUN apk add --no-cache curl bash

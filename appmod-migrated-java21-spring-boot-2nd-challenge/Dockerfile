@@ -1,4 +1,4 @@
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+FROM maven:4.0.0-rc-5-eclipse-temurin-25 AS build
 
 WORKDIR /workspace
 
@@ -12,7 +12,7 @@ COPY /src spring-boot-app/src
 RUN mvn -f spring-boot-app/pom.xml -B -DskipTests package
 
 # Runtime
-FROM eclipse-temurin:21-jre AS runtime
+FROM eclipse-temurin:25-jre AS runtime
 WORKDIR /app
 
 ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:+UseG1GC"

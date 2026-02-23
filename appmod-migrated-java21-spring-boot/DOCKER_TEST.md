@@ -5,11 +5,11 @@
 
 ## テスト概要
 
-Docker Compose環境でSpring Boot 3.2.12アプリケーションが正常に動作することを確認します。
+Docker Compose環境でSpring Boot 3.5.0アプリケーションが正常に動作することを確認します。
 
 ## テスト環境
 
-- **アプリケーション**: Spring Boot 3.2.12 + Java 21
+- **アプリケーション**: Spring Boot 3.5.0 + Java 25
 - **データベース**: PostgreSQL 15
 - **コンテナランタイム**: Docker Desktop
 
@@ -252,12 +252,12 @@ docker volume ls | grep struts
 - **コンテナ起動時間**: 約11秒（DB待機含む）
 - **アプリケーション起動時間**: 約2.3秒
 - **イメージサイズ**: 
-  - App: ~400MB（Java 21 JRE + アプリケーション）
+  - App: ~400MB（Java 25 JRE + アプリケーション）
   - DB: ~240MB（PostgreSQL 15 Alpine）
 
 ### 🎉 結論
 
-Docker環境でSpring Boot 3.2.12アプリケーションが正常に動作することを確認しました。
+Docker環境でSpring Boot 3.5.0アプリケーションが正常に動作することを確認しました。
 
 ---
 

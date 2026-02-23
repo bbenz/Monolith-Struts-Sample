@@ -4,19 +4,19 @@
 
 ## Overview
 
-This project uses Apache Struts 1.3.10, an old Java framework, targeting Java 1.5. This document outlines a complete migration plan to **Java 21 + Spring Boot 3.2.x + Thymeleaf + Spring Data JPA**.
+This project uses Apache Struts 1.3.10, an old Java framework, targeting Java 1.5. This document outlines a complete migration plan to **Java 25 + Spring Boot 3.5.x + Thymeleaf + Spring Data JPA**.
 
 ## Current State
 
 ### Java Version
 
 - **Current**: Java 1.5 (released 2004, end of support)
-- **Migration target**: Java 21 LTS (released September 2023, LTS support until September 2031)
+- **Migration target**: Java 25 LTS (released September 2023, LTS support until September 2031)
 
 ### Framework
 
 - **Current**: Apache Struts 1.3.10 (released 2008, EOL, numerous known vulnerabilities)
-- **Migration target**: Spring Boot 3.2.x (latest stable, long-term support)
+- **Migration target**: Spring Boot 3.5.x (latest stable, long-term support)
 
 ### Current Dependency Versions
 
@@ -53,21 +53,21 @@ This project uses Apache Struts 1.3.10, an old Java framework, targeting Java 1.
 
 **Apache Struts 1.x reached EOL in 2013 and has numerous known vulnerabilities.** Partial dependency upgrades will not solve fundamental issues.
 
-#### Reasons to Recommend Complete Migration to Spring Boot 3.2.x
+#### Reasons to Recommend Complete Migration to Spring Boot 3.5.x
 
 1. **Security**: Continuous security updates and support
 2. **Community**: Largest Java community with abundant documentation
-3. **Modern Technology**: Can leverage all Java 21 features
+3. **Modern Technology**: Can leverage all Java 25 features
 4. **Productivity**: High-speed development with auto-configuration, embedded server, development tools
 5. **Future-proofing**: Clear migration path to microservices and cloud-native
 6. **Ecosystem**: Rich Spring Boot starters, integration support
 
 ### Target Technology Stack
 
-| Component | Struts 1.x | Spring Boot 3.2.x |
+| Component | Struts 1.x | Spring Boot 3.5.x |
 | --- | --- | --- |
-| **Framework** | Apache Struts 1.3.10 | Spring Boot 3.2.x + Spring MVC 6.1.x |
-| **Java Version** | Java 1.5 | Java 21 LTS |
+| **Framework** | Apache Struts 1.3.10 | Spring Boot 3.5.x + Spring MVC 6.1.x |
+| **Java Version** | Java 1.5 | Java 25 LTS |
 | **View Template** | JSP + Struts Taglib | Thymeleaf 3.1.x |
 | **Data Access** | JDBC + Commons DBUtils | Spring Data JPA 3.2.x + Hibernate 6.4.x |
 | **Connection Pool** | Commons DBCP 1.x | HikariCP (Spring Boot standard) |
@@ -150,7 +150,7 @@ Dependencies:
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version>
+        <version>3.4.3</version>
         <relativePath/>
     </parent>
     
@@ -161,7 +161,7 @@ Dependencies:
     <name>SkiShop Application</name>
     
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
     </properties>
     
     <dependencies>
@@ -661,7 +661,7 @@ public class ProductFormDTO {
 
 #### Objective
 
-- Modernize Java 5-era code style and APIs to Java 21 modern writing style, improving readability, safety, and performance.
+- Modernize Java 5-era code style and APIs to Java 25 modern writing style, improving readability, safety, and performance.
 
 #### Checkpoints
 
@@ -682,7 +682,7 @@ public class ProductFormDTO {
 | Lambda/method reference | `new Runnable(){ public void run(){...}}` | `Runnable r = () -> {...}` / `System.out::println` | Java 8 |
 | Functional IF | Many custom IFs | `java.util.function.*` | Reuse and unification |
 | switch syntax | `switch(x){case A: ... break;}` | `switch (x) { case A -> ...; default -> ...; }` | switch expressions |
-| switch pattern | Type branching with `if/else` | `switch (obj) { case String s -> ... }` | Java 21 |
+| switch pattern | Type branching with `if/else` | `switch (obj) { case String s -> ... }` | Java 25 |
 | Multi-catch | Multiple duplicate catches | `catch (IOException\|SQLException e)` | Java 7 |
 | Numeric literals | `1000000` | `1_000_000` | Readability |
 | Optional | `if (obj == null) ...` | `Optional.ofNullable(obj).ifPresent(...)` | null safety |
@@ -695,8 +695,8 @@ public class ProductFormDTO {
 | String utility | `trim().isEmpty()` | `isBlank()/strip()/lines()/repeat()` | Java 11 |
 | Random | `new Random()` | `ThreadLocalRandom.current()` / `RandomGenerator` | Thread-safe/reproducible |
 | finalize | `protected void finalize()` | `Cleaner` / try-with-resources | Java 9+ deprecated |
-| Record pattern | `if (obj instanceof Point) { ... }` | `if (obj instanceof Point(int x, int y)) { ... }` | Java 21 |
-| String template | `"Hello " + name` | `STR."Hello ${name}"` | Java 21 (Preview) |
+| Record pattern | `if (obj instanceof Point) { ... }` | `if (obj instanceof Point(int x, int y)) { ... }` | Java 25 |
+| String template | `"Hello " + name` | `STR."Hello ${name}"` | Java 25 (Preview) |
 
 #### Implementation Steps
 
@@ -1194,10 +1194,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up JDK 21
+    - name: Set up JDK 25
       uses: actions/setup-java@v4
       with:
-        java-version: '21'
+        java-version: '25'
         distribution: 'temurin'
     
     - name: Build with Maven
@@ -1736,7 +1736,7 @@ public String listProducts() {
 | Phase 2: Data access layer | 2 weeks | 2-3 people | Entities, repositories, services |
 | Phase 3: Controller layer | 3 weeks | 3-4 people | All Controllers, DTOs, validation |
 | Phase 4: View layer | 3 weeks | 2-3 people | All Thymeleaf templates |
-| Phase 5: Modern Java refactoring | 1 week | 2 people | Apply Java 21 modern code |
+| Phase 5: Modern Java refactoring | 1 week | 2 people | Apply Java 25 modern code |
 | Phase 6: Configuration/other | 1 week | 2 people | Exception handling, file upload, etc. |
 | Phase 7: Testing | 2 weeks | 3-4 people | Unit/integration tests |
 | Phase 8: Performance testing | 1 week | 2 people | Performance measurement, tuning |
@@ -1949,7 +1949,7 @@ Migrate all functionality at once:
 
 ### Medium to Long-term Benefits (After 6 months)
 
-- Improved code quality by leveraging latest Java 21 features
+- Improved code quality by leveraging latest Java 25 features
 - Path to microservices
 - Possibility of migrating to cloud-native architecture
 - Easier onboarding of new developers
@@ -1957,7 +1957,7 @@ Migrate all functionality at once:
 
 ## Summary
 
-This project uses Apache Struts 1.3.10, a 2008 framework, and has extremely high security risks. This migration plan proposes complete migration to **Java 21 + Spring Boot 3.2.x + Thymeleaf + Spring Data JPA**.
+This project uses Apache Struts 1.3.10, a 2008 framework, and has extremely high security risks. This migration plan proposes complete migration to **Java 25 + Spring Boot 3.5.x + Thymeleaf + Spring Data JPA**.
 
 ### Migration Benefits
 
@@ -1988,10 +1988,10 @@ This project uses Apache Struts 1.3.10, a 2008 framework, and has extremely high
 
 ### Final Recommendation
 
-This Apache Struts 1.x application **should start migration immediately**. Considering security risks and technical debt, **complete migration to Spring Boot 3.2.x is the optimal choice**.
+This Apache Struts 1.x application **should start migration immediately**. Considering security risks and technical debt, **complete migration to Spring Boot 3.5.x is the optimal choice**.
 
-- ✅ **Java 21**: LTS support until 2031
-- ✅ **Spring Boot 3.2.x**: Industry standard, rich ecosystem
+- ✅ **Java 25**: LTS support until 2031
+- ✅ **Spring Boot 3.5.x**: Industry standard, rich ecosystem
 - ✅ **Thymeleaf**: Modern, maintainable template engine
 - ✅ **Spring Data JPA**: Declarative, highly productive data access
 

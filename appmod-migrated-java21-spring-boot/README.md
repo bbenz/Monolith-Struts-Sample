@@ -3,8 +3,8 @@
 Modern e-commerce application built with Spring Boot, migrated from legacy Struts 1.3 monolith.
 
 ## Tech Stack
-- **Java**: 21 LTS
-- **Framework**: Spring Boot 3.2.12
+- **Java**: 25 LTS
+- **Framework**: Spring Boot 3.5.0
 - **Template Engine**: Thymeleaf 3.x
 - **Database**: PostgreSQL 15
 - **Build Tool**: Maven 3.9.x
@@ -19,7 +19,7 @@ Modern e-commerce application built with Spring Boot, migrated from legacy Strut
 
 ## Prerequisites
 - Docker & Docker Compose
-- Java 21 (for local development)
+- Java 25 (for local development)
 - Maven 3.9+ (for local development)
 
 ## Quick Start with Docker
@@ -145,7 +145,7 @@ src/
 
 ## Migration History
 This application was successfully migrated from:
-- **Java 1.5** → **Java 21**
+- **Java 1.5** → **Java 25**
 - **Struts 1.3** → **Spring Boot 3.2**
 - **JSP** → **Thymeleaf**
 - **Tomcat 6** → **Embedded Tomcat**

@@ -1,8 +1,8 @@
 # Architecture Overview
 
 ## Stack
-- **Language**: Java 21
-- **Framework**: Spring Boot 3.2.2
+- **Language**: Java 25
+- **Framework**: Spring Boot 3.5.0
 - **View**: Thymeleaf
 - **Persistence**: Spring Data JPA + Hibernate
 - **DB**: PostgreSQL (prod), H2 (test)

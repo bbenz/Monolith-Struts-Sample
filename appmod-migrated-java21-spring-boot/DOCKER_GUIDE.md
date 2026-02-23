@@ -2,7 +2,7 @@
 
 ## 概要
 
-このガイドでは、DockerとDocker Composeを使用してSpring Boot 3.2.12アプリケーションを実行する方法を説明します。
+このガイドでは、DockerとDocker Composeを使用してSpring Boot 3.5.0アプリケーションを実行する方法を説明します。
 
 ## 前提条件
 
@@ -11,7 +11,7 @@
 
 ## アーキテクチャ
 
-- **アプリケーション**: Spring Boot 3.2.12 + Java 21 (Eclipse Temurin)
+- **アプリケーション**: Spring Boot 3.5.0 + Java 25 (Eclipse Temurin)
 - **データベース**: PostgreSQL 15
 - **ビルドツール**: Maven 3.9.9
 - **コンテナ**: Alpine Linux (軽量化)

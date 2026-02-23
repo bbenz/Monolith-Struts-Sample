@@ -1,4 +1,4 @@
-# Struts 1.x → Spring Boot 3.2.12 Migration Completion Report
+# Struts 1.x → Spring Boot 3.5.0 Migration Completion Report
 
 ## Implementation Date
 
@@ -210,8 +210,8 @@ Created the following test classes:
 
 ### After (Spring Boot)
 
-- Spring Boot 3.2.12
-- Java 21 LTS
+- Spring Boot 3.5.0
+- Java 25 LTS
 - Spring MVC 6.1.15
 - Spring Data JPA
 - Hibernate 6.4.10
@@ -296,7 +296,7 @@ mvn test -Dtest=ApplicationIntegrationTest
 
 ## Summary
 
-The migration work from Struts 1.x to Spring Boot 3.2.12 was successful from the following perspectives:
+The migration work from Struts 1.x to Spring Boot 3.5.0 was successful from the following perspectives:
 
 ✅ **Code Migration**: Migrated all 29 controllers, 13 services, 19 DAOs, 12 DTOs  
 ✅ **JSP Updates**: Converted 32 JSP files from Struts tags to JSTL/Spring tags  

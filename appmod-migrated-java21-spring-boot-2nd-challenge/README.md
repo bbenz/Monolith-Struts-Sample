@@ -2,7 +2,7 @@
 
 # SkiShop Monolith (Struts 1.x → Spring Boot) — Docker Compose Quickstart
 
-> Spring Boot 3.2 + PostgreSQL 15 (Java 21). Legacy Struts 1.x roots kept for reference (see `UPGRADE_PLAN.md`).
+> Spring Boot 3.5 + PostgreSQL 15 (Java 25). Legacy Struts 1.x roots kept for reference (see `UPGRADE_PLAN.md`).
 
 ## ✅ Prerequisites
 
@@ -15,7 +15,7 @@
 docker compose up -d --build
 ```
 
-- `app`: Spring Boot (JDK 21, embedded Tomcat 10.1), port `8080`
+- `app`: Spring Boot (JDK 25, embedded Tomcat 10.1), port `8080`
 - `db`: PostgreSQL 15, init SQL: `src/main/resources/db`
 
 ## 🔍 Verify
@@ -68,7 +68,7 @@ docker run --rm --name skishop-app-boot2-alt \
 .
 ├── docker-compose.yml       # docker compose configuration
 ├── Dockerfile               # multi-stage (build + runtime)
-├── pom.xml                  # Maven build (Spring Boot 3.2)
+├── pom.xml                  # Maven build (Spring Boot 3.5)
 ├── src/main/java            # Spring Boot Java sources
 ├── src/main/resources/db    # Postgres init SQL (01-schema.sql, 02-data.sql)
 ├── src/main/resources/templates  # Thymeleaf templates
@@ -78,7 +78,7 @@ docker run --rm --name skishop-app-boot2-alt \
 
 ## 🧪 Local Maven Build (optional)
 
-> JDK 21 / Maven Wrapper included (`./mvnw`).
+> JDK 25 / Maven Wrapper included (`./mvnw`).
 
 ```bash
 ./mvnw -B package -DskipTests
@@ -93,7 +93,7 @@ JAR: `target/*.jar`
 
 ## 🌱 Spring Boot Prototype
 
-Experimentally added Spring Boot 3.2.x (Java 21) project to `spring-boot-app/`:
+Experimentally added Spring Boot 3.5.x (Java 25) project to `spring-boot-app/`:
 
 ```bash
 ./mvnw spring-boot:run

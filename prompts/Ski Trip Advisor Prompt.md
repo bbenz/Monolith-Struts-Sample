@@ -135,8 +135,8 @@ return htmlRenderer.render(document);  // Returns HTML string
 
 ## Java & Build Requirements
 
-- **Java 21** — all code must compile with Java 21. Use `<java.version>21</java.version>` in pom.xml.
-- **Spring Boot 3.2.2** — match the existing app version.
+- **Java 25** — all code must compile with Java 25. Use `<java.version>25</java.version>` in pom.xml.
+- **Spring Boot 3.5.0** — match the existing app version.
 - **Maven** — the project uses Maven (no Gradle, no mvnw wrapper).
 - **WSL on Windows** — use forward slashes in paths when running terminal commands. The workspace is at `/mnt/c/githublocal/Monolith-Struts-Sample/`.
 
