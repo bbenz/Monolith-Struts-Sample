@@ -27,13 +27,16 @@ public class SkiTripAdvisor {
         System.out.println("╚════════════════════════════════════════════╝");
         System.out.println();
 
+        WeatherService weatherService = null;
+        Scanner scanner = null;
+        
         try {
             // Initialize services
             DatabaseService dbService = new DatabaseService();
-            WeatherService weatherService = new WeatherService();
+            weatherService = new WeatherService();
             OpenAIService aiService = new OpenAIService();
 
-            Scanner scanner = new Scanner(System.in);
+            scanner = new Scanner(System.in);
 
             // Get user input
             System.out.print("Enter ski resort location: ");
@@ -124,8 +127,6 @@ public class SkiTripAdvisor {
                     }
                 }
             }
-
-            scanner.close();
             
             System.out.println("\n" + "=".repeat(50));
             System.out.println("Thank you for using AI Ski Trip Advisor!");
@@ -144,6 +145,14 @@ public class SkiTripAdvisor {
             System.out.println("3. Update OpenAI API key in database.properties");
             System.out.println("4. Run: mvn clean package");
             System.out.println("5. Run: mvn exec:java");
+        } finally {
+            // Clean up resources
+            if (scanner != null) {
+                scanner.close();
+            }
+            if (weatherService != null) {
+                weatherService.close();
+            }
         }
     }
 

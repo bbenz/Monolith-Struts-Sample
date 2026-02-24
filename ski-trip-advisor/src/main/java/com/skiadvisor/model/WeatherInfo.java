@@ -10,18 +10,29 @@ public class WeatherInfo {
     private double windSpeedKmh;
     private double snowfallCm;
     private int humidityPercent;
+    private int cloudCoverPercent;
+    private double precipitationMm;
 
     public WeatherInfo() {
     }
 
     public WeatherInfo(String location, double temperatureCelsius, String conditions,
                        double windSpeedKmh, double snowfallCm, int humidityPercent) {
+        this(location, temperatureCelsius, conditions, windSpeedKmh, snowfallCm, 
+             humidityPercent, 0, 0.0);
+    }
+
+    public WeatherInfo(String location, double temperatureCelsius, String conditions,
+                       double windSpeedKmh, double snowfallCm, int humidityPercent,
+                       int cloudCoverPercent, double precipitationMm) {
         this.location = location;
         this.temperatureCelsius = temperatureCelsius;
         this.conditions = conditions;
         this.windSpeedKmh = windSpeedKmh;
         this.snowfallCm = snowfallCm;
         this.humidityPercent = humidityPercent;
+        this.cloudCoverPercent = cloudCoverPercent;
+        this.precipitationMm = precipitationMm;
     }
 
     // Getters and Setters
@@ -47,9 +58,20 @@ public class WeatherInfo {
         this.humidityPercent = humidityPercent; 
     }
 
+    public int getCloudCoverPercent() { return cloudCoverPercent; }
+    public void setCloudCoverPercent(int cloudCoverPercent) {
+        this.cloudCoverPercent = cloudCoverPercent;
+    }
+
+    public double getPrecipitationMm() { return precipitationMm; }
+    public void setPrecipitationMm(double precipitationMm) {
+        this.precipitationMm = precipitationMm;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s: %.1f°C, %s, Wind: %.1f km/h, Snowfall: %.1f cm, Humidity: %d%%",
-            location, temperatureCelsius, conditions, windSpeedKmh, snowfallCm, humidityPercent);
+        return String.format("%s: %.1f°C, %s, Wind: %.1f km/h, Snowfall: %.1f cm, Humidity: %d%%, Clouds: %d%%, Precip: %.1f mm",
+            location, temperatureCelsius, conditions, windSpeedKmh, snowfallCm, humidityPercent,
+            cloudCoverPercent, precipitationMm);
     }
 }
