@@ -1,0 +1,22 @@
+# Database Configuration
+# Matches Spring Boot app defaults (appmod-migrated-spring-boot-2nd-challenge)
+db.url=jdbc:postgresql://localhost:5432/skishop
+db.username=postgres
+db.password=your-database-password
+db.driver=org.postgresql.Driver
+
+# OpenAI Configuration
+# Replace with your actual Azure OpenAI endpoint and API key
+# Get these from your Azure Portal: Azure OpenAI Service -> Keys and Endpoint
+openai.endpoint=https://your-azure-openai-resource.cognitiveservices.azure.com/openai/v1/
+openai.apikey=your-azure-openai-api-key-here
+openai.deployment=your-deployment-name
+
+# Weather Service Configuration
+# Mode: 'mock' = generate random data (testing), 'real' = fetch from Open-Meteo API (production)
+weather.service.mode=real
+# Open-Meteo API endpoint (no API key required, completely free)
+weather.api.url=https://api.open-meteo.com/v1/forecast
+weather.geocoding.url=https://geocoding-api.open-meteo.com/v1/search
+# Fallback to mock data if API fails
+weather.fallback.enabled=true
