@@ -53,10 +53,10 @@ docker compose down -v
 ```bash
 docker compose up -d db
 docker run --rm --name skishop-app-boot2-alt \
-  --network appmod-migrated-java21-spring-boot-2nd-challenge_default -p 18080:8080 \
+  --network appmod-migrated-spring-boot-2nd-challenge_default -p 18080:8080 \
   -e DB_HOST=db -e DB_PORT=5432 -e DB_NAME=skishop \
   -e DB_USER=skishop -e DB_PASSWORD=skishop \
-  appmod-migrated-java21-spring-boot-2nd-challenge-app
+  appmod-migrated-spring-boot-2nd-challenge-app
 ```
 
 - **Apple Silicon**: `export DOCKER_DEFAULT_PLATFORM=linux/amd64` or `docker compose build --platform linux/amd64`.

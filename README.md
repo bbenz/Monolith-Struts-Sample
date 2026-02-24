@@ -190,7 +190,7 @@ mvn clean package -DskipTests
 az webapp up \
   --resource-group skishop-rg \
   --name skishop-app \
-  --runtime JAVA:21-java21 \
+  --runtime JAVA:25-java25 \
   --sku B1
 
 # Configure environment variables
