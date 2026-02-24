@@ -2,7 +2,7 @@
 
 ## Goal
 
-Rebrand and modernize the web UI of the Spring Boot app in `appmod-migrated-java21-spring-boot-2nd-challenge/`. The app was migrated from a Struts app originally branded as "Ski Resort Shop" and may still contain Japanese locale references. Rebrand it to **"Duke's Ski Chalet"** with a consistent color scheme, mascot image, and English-only content.
+Rebrand and modernize the web UI of the Spring Boot app in `appmod-migrated-spring-boot-2nd-challenge/`. The app was migrated from a Struts app originally branded as "Ski Resort Shop" and may still contain Japanese locale references. Rebrand it to **"Duke's Ski Chalet"** with a consistent color scheme, mascot image, and English-only content.
 
 ---
 

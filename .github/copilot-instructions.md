@@ -1,6 +1,6 @@
 # Duke's Ski Chalet — Project Instructions
 
-These are shared project-wide rules for the Spring Boot application in `appmod-migrated-java21-spring-boot-2nd-challenge/`. Task-specific prompts are in the `prompts/` directory and build on these shared conventions.
+These are shared project-wide rules for the Spring Boot application in `appmod-migrated-spring-boot-2nd-challenge/`. Task-specific prompts are in the `prompts/` directory and build on these shared conventions.
 
 ---
 

@@ -6,14 +6,14 @@
 
 ## Goal
 
-Add an AI-powered "Ski Trip Advisor" feature to the Spring Boot web application in `appmod-migrated-java21-spring-boot-2nd-challenge/`. The feature should be a new web page (not a separate CLI app) that lets users enter trip details and receive AI-generated equipment recommendations based on weather, ski conditions, and the product catalog from the database.
+Add an AI-powered "Ski Trip Advisor" feature to the Spring Boot web application in `appmod-migrated-spring-boot-2nd-challenge/`. The feature should be a new web page (not a separate CLI app) that lets users enter trip details and receive AI-generated equipment recommendations based on weather, ski conditions, and the product catalog from the database.
 
 ---
 
 ## Key Requirements
 
 ### 1. Integrate into the existing Spring Boot app
-- Add the feature as a new page in the **existing** `appmod-migrated-java21-spring-boot-2nd-challenge/` Spring Boot app — do NOT create a separate project or CLI app.
+- Add the feature as a new page in the **existing** `appmod-migrated-spring-boot-2nd-challenge/` Spring Boot app — do NOT create a separate project or CLI app.
 - Create a new controller, service classes, DTOs, and Thymeleaf templates within the existing package structure (`com.skishop`).
 - Add a nav link in the shared header template (`fragments/header.html`).
 - Follow the existing app's patterns: Spring MVC controller, `@Service` classes, Thymeleaf templates using the existing `layout/main.html` layout.

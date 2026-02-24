@@ -76,7 +76,7 @@ docker-compose up --build
 
 ### Version 2: First Spring Boot Migration (Java 25 + Spring Boot 3.5)
 
-Located in the `appmod-migrated-java21-spring-boot/` directory.
+Located in the `appmod-migrated-spring-boot/` directory.
 
 **Requirements:**
 - Java 25
@@ -84,7 +84,7 @@ Located in the `appmod-migrated-java21-spring-boot/` directory.
 
 **Build & Run:**
 ```sh
-cd appmod-migrated-java21-spring-boot
+cd appmod-migrated-spring-boot
 
 # Run with Docker Compose (PostgreSQL included)
 docker-compose up -d --build
@@ -106,15 +106,15 @@ java -jar target/skishop-0.0.1-SNAPSHOT.jar
 - Enhanced error handling and validation
 
 **Documentation:**
-- [Migration Report](appmod-migrated-java21-spring-boot/MIGRATION_REPORT.md)
-- [JSP to Thymeleaf Migration](appmod-migrated-java21-spring-boot/JSP_TO_THYMELEAF_MIGRATION.md)
-- [Docker Guide](appmod-migrated-java21-spring-boot/DOCKER_GUIDE.md)
+- [Migration Report](appmod-migrated-spring-boot/MIGRATION_REPORT.md)
+- [JSP to Thymeleaf Migration](appmod-migrated-spring-boot/JSP_TO_THYMELEAF_MIGRATION.md)
+- [Docker Guide](appmod-migrated-spring-boot/DOCKER_GUIDE.md)
 
 ---
 
 ### Version 3: Enhanced Migration (Java 25 + Spring Boot 3.5)
 
-Located in the `appmod-migrated-java21-spring-boot-2nd-challenge/` directory.
+Located in the `appmod-migrated-spring-boot-2nd-challenge/` directory.
 
 **Requirements:**
 - Java 25
@@ -122,7 +122,7 @@ Located in the `appmod-migrated-java21-spring-boot-2nd-challenge/` directory.
 
 **Build & Run:**
 ```sh
-cd appmod-migrated-java21-spring-boot-2nd-challenge
+cd appmod-migrated-spring-boot-2nd-challenge
 
 # Run with Docker Compose
 docker-compose up -d --build
@@ -140,9 +140,9 @@ docker-compose up -d --build
 - Production-ready configuration
 
 **Documentation:**
-- [Quick Start Guide](appmod-migrated-java21-spring-boot-2nd-challenge/README.md)
-- [Architecture Overview](appmod-migrated-java21-spring-boot-2nd-challenge/docs/architecture.md)
-- [Operations Guide](appmod-migrated-java21-spring-boot-2nd-challenge/docs/operations.md)
+- [Quick Start Guide](appmod-migrated-spring-boot-2nd-challenge/README.md)
+- [Architecture Overview](appmod-migrated-spring-boot-2nd-challenge/docs/architecture.md)
+- [Operations Guide](appmod-migrated-spring-boot-2nd-challenge/docs/operations.md)
 
 ---
 
@@ -161,7 +161,7 @@ The enhanced migration (Version 3) is designed for cloud deployment and can be e
 #### Option 1: Deploy to Azure App Service
 
 ```sh
-cd appmod-migrated-java21-spring-boot-2nd-challenge
+cd appmod-migrated-spring-boot-2nd-challenge
 
 # Login to Azure
 az login
@@ -377,8 +377,8 @@ kubectl apply -f k8s/ingress.yaml
 - [Upgrade Plan](UPGRADE_PLAN.md) - Migration strategy to Java 25 + Spring Boot
 
 ### Migration Reports
-- [Migration Completion Report](appmod-migrated-java21-spring-boot/MIGRATION_REPORT.md)
-- [JSP to Thymeleaf Migration](appmod-migrated-java21-spring-boot/JSP_TO_THYMELEAF_MIGRATION.md)
+- [Migration Completion Report](appmod-migrated-spring-boot/MIGRATION_REPORT.md)
+- [JSP to Thymeleaf Migration](appmod-migrated-spring-boot/JSP_TO_THYMELEAF_MIGRATION.md)
 - [Upgrade Plan](UPGRADE_PLAN.md) - Migration strategy to Java 25 + Spring Boot
 
 ### English Translations
@@ -389,8 +389,8 @@ All documentation is available in English with `-EN` suffix:
 
 ### Operations & Deployment
 - [Operations Guide](docs/ops.md) - Tomcat 6 deployment for legacy version
-- [Docker Guide](appmod-migrated-java21-spring-boot/DOCKER_GUIDE.md) - Container deployment
-- [Architecture Guide](appmod-migrated-java21-spring-boot-2nd-challenge/docs/architecture.md)
+- [Docker Guide](appmod-migrated-spring-boot/DOCKER_GUIDE.md) - Container deployment
+- [Architecture Guide](appmod-migrated-spring-boot-2nd-challenge/docs/architecture.md)
 
 ---
 
