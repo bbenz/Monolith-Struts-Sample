@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: skishop-config
+  namespace: dukes-ski-chalet
+  labels:
+    app: dukes-ski-chalet
+data:
+  DB_HOST: "PLACEHOLDER_DB_HOST"
+  DB_PORT: "5432"
+  DB_NAME: "skishop"
+  OPENAI_DEPLOYMENT: "gpt-5.2-chat"
+  WEATHER_MODE: "real"
+  WEATHER_FALLBACK: "true"

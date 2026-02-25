@@ -1,0 +1,29 @@
+# AKS-optimized Dockerfile using Microsoft OpenJDK + JAZ
+# JAZ (Java Accelerator for Azure) auto-detects container environment
+# and applies battle-tested JVM tuning — no manual JAVA_TOOL_OPTIONS needed.
+
+FROM maven:4.0.0-rc-5-eclipse-temurin-25 AS build
+
+WORKDIR /workspace
+
+# Preload dependencies for Spring Boot app
+COPY pom.xml spring-boot-app/pom.xml
+RUN mvn -f pom.xml -B dependency:go-offline || true
+
+# Build application (jar)
+COPY /src spring-boot-app/src
+RUN mvn -f spring-boot-app/pom.xml -B -DskipTests package
+
+# Runtime — Microsoft OpenJDK with JAZ pre-installed
+FROM mcr.microsoft.com/openjdk/jdk:25-ubuntu AS runtime
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /workspace/spring-boot-app/target/*.jar /app/app.jar
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=5 CMD curl -f http://localhost:8080/actuator/health || exit 1
+
+ENTRYPOINT ["jaz", "-jar", "/app/app.jar"]

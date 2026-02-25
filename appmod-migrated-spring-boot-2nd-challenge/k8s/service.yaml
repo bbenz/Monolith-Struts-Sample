@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: skishop-service
+  namespace: dukes-ski-chalet
+  labels:
+    app: dukes-ski-chalet
+spec:
+  type: LoadBalancer
+  selector:
+    app: dukes-ski-chalet
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
