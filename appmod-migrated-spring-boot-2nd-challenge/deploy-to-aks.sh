@@ -22,7 +22,7 @@ set -euo pipefail
 ###############################################################################
 
 # ── Defaults ─────────────────────────────────────────────────────────────────
-LOCATION=""
+LOCATION="swedencentral"
 RESOURCE_GROUP="rg-dukes-ski-chalet"
 ACR_NAME="acrdukesskichalet"
 AKS_NAME="aks-dukes-ski-chalet"
@@ -56,23 +56,118 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# ── Validate required arguments ──────────────────────────────────────────────
-if [[ -z "$LOCATION" ]]; then
-  echo "ERROR: --location is required (e.g., eastus2)"
-  exit 1
-fi
+# ── Helper: extract default value from application.yml ───────────────────────
+# Parses lines like:  key: ${ENV_VAR:default_value}
+# Returns the default_value portion, or empty string if not found.
+APP_YML="${SCRIPT_DIR}/src/main/resources/application.yml"
+
+extract_yml_default() {
+  local env_var_name="$1"
+  if [[ -f "$APP_YML" ]]; then
+    # Match ${ENV_VAR:default} and extract the default after the colon
+    grep -oP "\\\$\{${env_var_name}:\K[^}]+" "$APP_YML" 2>/dev/null | head -1 || true
+  fi
+}
+
+# ── Resolve variables: CLI arg → exported env var → application.yml default ──
+resolve_var() {
+  local current_val="$1"
+  local env_var_name="$2"
+  local source=""
+
+  # 1. CLI arg already set — keep it
+  if [[ -n "$current_val" ]]; then
+    return
+  fi
+
+  # 2. Exported environment variable
+  local env_val="${!env_var_name:-}"
+  if [[ -n "$env_val" ]]; then
+    echo "$env_val"
+    return
+  fi
+
+  # 3. Default from application.yml
+  local yml_val
+  yml_val="$(extract_yml_default "$env_var_name")"
+  if [[ -n "$yml_val" ]]; then
+    echo "$yml_val"
+    return
+  fi
+}
+
+echo ""
+echo "Resolving configuration (CLI args → env vars → application.yml)..."
+
+# Required variables — try fallback chain
 if [[ -z "$OPENAI_ENDPOINT" ]]; then
-  echo "ERROR: --openai-endpoint is required"
-  exit 1
+  OPENAI_ENDPOINT="$(resolve_var "$OPENAI_ENDPOINT" "OPENAI_ENDPOINT")"
+  [[ -n "$OPENAI_ENDPOINT" ]] && echo "  OPENAI_ENDPOINT resolved from env/application.yml"
 fi
 if [[ -z "$OPENAI_APIKEY" ]]; then
-  echo "ERROR: --openai-apikey is required"
+  OPENAI_APIKEY="$(resolve_var "$OPENAI_APIKEY" "OPENAI_APIKEY")"
+  [[ -n "$OPENAI_APIKEY" ]] && echo "  OPENAI_APIKEY resolved from env/application.yml"
+fi
+
+# Optional variables — try fallback chain for overrides
+if [[ -z "$OPENAI_DEPLOYMENT" || "$OPENAI_DEPLOYMENT" == "gpt-5.2-chat" ]]; then
+  resolved="$(resolve_var "" "OPENAI_DEPLOYMENT")"
+  if [[ -n "$resolved" ]]; then
+    OPENAI_DEPLOYMENT="$resolved"
+    echo "  OPENAI_DEPLOYMENT resolved from env/application.yml"
+  fi
+fi
+if [[ -z "$DB_NAME" || "$DB_NAME" == "skishop" ]]; then
+  resolved="$(resolve_var "" "DB_NAME")"
+  if [[ -n "$resolved" ]]; then
+    DB_NAME="$resolved"
+    echo "  DB_NAME resolved from env/application.yml"
+  fi
+fi
+if [[ -z "$DB_USER" || "$DB_USER" == "skishop" ]]; then
+  resolved="$(resolve_var "" "DB_USER")"
+  if [[ -n "$resolved" ]]; then
+    DB_USER="$resolved"
+    echo "  DB_USER resolved from env/application.yml"
+  fi
+fi
+if [[ -z "$DB_PASSWORD" ]]; then
+  resolved="$(resolve_var "" "DB_PASSWORD")"
+  if [[ -n "$resolved" && "$resolved" != "password" ]]; then
+    DB_PASSWORD="$resolved"
+    echo "  DB_PASSWORD resolved from env/application.yml"
+  fi
+fi
+
+# ── Validate required arguments ──────────────────────────────────────────────
+MISSING=()
+if [[ -z "$LOCATION" ]]; then
+  MISSING+=("LOCATION (use --location or export LOCATION)")
+fi
+if [[ -z "$OPENAI_ENDPOINT" ]]; then
+  MISSING+=("OPENAI_ENDPOINT (use --openai-endpoint, export OPENAI_ENDPOINT, or set in application.yml)")
+fi
+if [[ -z "$OPENAI_APIKEY" ]]; then
+  MISSING+=("OPENAI_APIKEY (use --openai-apikey, export OPENAI_APIKEY, or set in application.yml)")
+fi
+
+if [[ ${#MISSING[@]} -gt 0 ]]; then
+  echo ""
+  echo "ERROR: The following required variables are missing:"
+  for var in "${MISSING[@]}"; do
+    echo "  ✗ ${var}"
+  done
+  echo ""
+  echo "Provide them via CLI flags, exported environment variables, or"
+  echo "defaults in src/main/resources/application.yml"
   exit 1
 fi
 
 # Auto-generate a DB password if not provided
+DB_PASSWORD_WAS_GENERATED="false"
 if [[ -z "$DB_PASSWORD" ]]; then
   DB_PASSWORD="$(openssl rand -base64 24 | tr -d '/+=' | head -c 24)Aa1!"
+  DB_PASSWORD_WAS_GENERATED="true"
   echo "Generated DB password (save this): ${DB_PASSWORD}"
 fi
 
@@ -93,75 +188,171 @@ echo "============================================================"
 # ── 1. Resource Group ────────────────────────────────────────────────────────
 echo ""
 echo "▶ Step 1/8: Creating resource group..."
-az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output none
-echo "  ✓ Resource group '${RESOURCE_GROUP}' ready"
+if az group exists --name "$RESOURCE_GROUP" 2>/dev/null | grep -q true; then
+  echo "  ⏩ Resource group '${RESOURCE_GROUP}' already exists — reusing"
+else
+  az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output none
+  echo "  ✓ Resource group '${RESOURCE_GROUP}' created"
+fi
 
 # ── 2. Azure Container Registry ─────────────────────────────────────────────
 echo ""
 echo "▶ Step 2/8: Creating Azure Container Registry..."
-az acr create \
-  --resource-group "$RESOURCE_GROUP" \
-  --name "$ACR_NAME" \
-  --sku Basic \
-  --output none
-echo "  ✓ ACR '${ACR_NAME}' ready"
+if az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --output none 2>/dev/null; then
+  echo "  ⏩ ACR '${ACR_NAME}' already exists — reusing"
+else
+  az acr create \
+    --resource-group "$RESOURCE_GROUP" \
+    --name "$ACR_NAME" \
+    --sku Basic \
+    --output none
+  echo "  ✓ ACR '${ACR_NAME}' created"
+fi
 
 # ── 3. PostgreSQL Flexible Server ────────────────────────────────────────────
 echo ""
 echo "▶ Step 3/8: Creating Azure Database for PostgreSQL..."
-az postgres flexible-server create \
+PSQL_EXISTS=false
+if az postgres flexible-server show --name "$PSQL_NAME" --resource-group "$RESOURCE_GROUP" --output none 2>/dev/null; then
+  PSQL_EXISTS=true
+  echo "  ⏩ PostgreSQL server '${PSQL_NAME}' already exists — reusing"
+  if [[ "$DB_PASSWORD_WAS_GENERATED" == "true" ]]; then
+    echo ""
+    echo "  ERROR: Server already exists but no password was provided."
+    echo "  On re-runs you must supply the original password via:"
+    echo "    --db-password <pw>  or  export DB_PASSWORD=<pw>"
+    echo ""
+    echo "  If you've lost the password, reset it with:"
+    echo "    az postgres flexible-server update \\"
+    echo "      --resource-group $RESOURCE_GROUP --name $PSQL_NAME \\"
+    echo "      --admin-password <new-password>"
+    exit 1
+  fi
+  # Update the password on the existing server to match what was provided
+  echo "  Updating admin password on existing server..."
+  az postgres flexible-server update \
+    --resource-group "$RESOURCE_GROUP" \
+    --name "$PSQL_NAME" \
+    --admin-password "$DB_PASSWORD" \
+    --output none
+  echo "  ✓ Admin password updated"
+else
+  az postgres flexible-server create \
+    --resource-group "$RESOURCE_GROUP" \
+    --name "$PSQL_NAME" \
+    --location "$LOCATION" \
+    --admin-user "$DB_USER" \
+    --admin-password "$DB_PASSWORD" \
+    --sku-name Standard_B1ms \
+    --tier Burstable \
+    --storage-size 32 \
+    --version 15 \
+    --public-access 0.0.0.0 \
+    --yes \
+    --output none
+  echo "  ✓ PostgreSQL server '${PSQL_NAME}' created"
+fi
+
+# Add firewall rule for the current deployer's IP
+echo "  Configuring firewall rules..."
+DEPLOYER_IP="$(curl -s https://api.ipify.org)"
+if [[ -n "$DEPLOYER_IP" ]]; then
+  az postgres flexible-server firewall-rule create \
+    --resource-group "$RESOURCE_GROUP" \
+    --name "$PSQL_NAME" \
+    --rule-name "AllowDeployerIP" \
+    --start-ip-address "$DEPLOYER_IP" \
+    --end-ip-address "$DEPLOYER_IP" \
+    --output none 2>/dev/null || true
+  echo "  ✓ Firewall rule added for deployer IP (${DEPLOYER_IP})"
+else
+  echo "  ⚠ Could not detect public IP — you may need to add a firewall rule manually"
+fi
+
+# Allow Azure services (so AKS pods can reach the database)
+az postgres flexible-server firewall-rule create \
   --resource-group "$RESOURCE_GROUP" \
   --name "$PSQL_NAME" \
-  --location "$LOCATION" \
-  --admin-user "$DB_USER" \
-  --admin-password "$DB_PASSWORD" \
-  --sku-name Standard_B1ms \
-  --tier Burstable \
-  --storage-size 32 \
-  --version 15 \
-  --public-access 0.0.0.0 \
-  --yes \
-  --output none
-echo "  ✓ PostgreSQL server '${PSQL_NAME}' ready"
+  --rule-name "AllowAzureServices" \
+  --start-ip-address "0.0.0.0" \
+  --end-ip-address "0.0.0.0" \
+  --output none 2>/dev/null || true
+echo "  ✓ Firewall rule added for Azure services"
 
-# Create the database
-echo "  Creating database '${DB_NAME}'..."
-az postgres flexible-server db create \
-  --resource-group "$RESOURCE_GROUP" \
-  --server-name "$PSQL_NAME" \
-  --database-name "$DB_NAME" \
-  --output none
-echo "  ✓ Database '${DB_NAME}' created"
+# Create the database (idempotent — no error if it already exists)
+echo "  Ensuring database '${DB_NAME}' exists..."
+if az postgres flexible-server db show --resource-group "$RESOURCE_GROUP" --server-name "$PSQL_NAME" --database-name "$DB_NAME" --output none 2>/dev/null; then
+  echo "  ⏩ Database '${DB_NAME}' already exists — reusing"
+else
+  az postgres flexible-server db create \
+    --resource-group "$RESOURCE_GROUP" \
+    --server-name "$PSQL_NAME" \
+    --database-name "$DB_NAME" \
+    --output none
+  echo "  ✓ Database '${DB_NAME}' created"
+fi
 
 # ── 4. Initialize Database ──────────────────────────────────────────────────
 echo ""
 echo "▶ Step 4/8: Initializing database with schema and seed data..."
 DB_HOST="${PSQL_NAME}.postgres.database.azure.com"
 
-export PGPASSWORD="$DB_PASSWORD"
-psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" --set=sslmode=require \
-  -f "${DB_DIR}/01-schema.sql"
-echo "  ✓ Schema loaded"
+# Check whether tables already exist (products is a core table present after init)
+TABLE_CHECK=$(az postgres flexible-server execute \
+  --name "$PSQL_NAME" \
+  --admin-user "$DB_USER" \
+  --admin-password "$DB_PASSWORD" \
+  --database-name "$DB_NAME" \
+  --querytext "SELECT COUNT(*) AS cnt FROM information_schema.tables WHERE table_schema='public' AND table_name='products';" \
+  2>/dev/null || echo "")
 
-psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" --set=sslmode=require \
-  -f "${DB_DIR}/02-data.sql"
-echo "  ✓ Seed data loaded"
-unset PGPASSWORD
+if echo "$TABLE_CHECK" | grep -q '"cnt":.*1'; then
+  echo "  ⏩ Database already initialized (tables exist) — skipping"
+else
+  # Use --querytext with file contents to avoid WSL/Windows path issues with --file-path
+  SCHEMA_SQL="$(cat "${DB_DIR}/01-schema.sql")"
+  az postgres flexible-server execute \
+    --name "$PSQL_NAME" \
+    --admin-user "$DB_USER" \
+    --admin-password "$DB_PASSWORD" \
+    --database-name "$DB_NAME" \
+    --querytext "$SCHEMA_SQL"
+  echo "  ✓ Schema loaded"
+
+  SEED_SQL="$(cat "${DB_DIR}/02-data.sql")"
+  az postgres flexible-server execute \
+    --name "$PSQL_NAME" \
+    --admin-user "$DB_USER" \
+    --admin-password "$DB_PASSWORD" \
+    --database-name "$DB_NAME" \
+    --querytext "$SEED_SQL"
+  echo "  ✓ Seed data loaded"
+fi
 
 # ── 5. AKS Cluster ──────────────────────────────────────────────────────────
 echo ""
 echo "▶ Step 5/8: Creating AKS cluster (this may take several minutes)..."
-az aks create \
-  --resource-group "$RESOURCE_GROUP" \
-  --name "$AKS_NAME" \
-  --location "$LOCATION" \
-  --node-count 1 \
-  --node-vm-size Standard_D2s_v3 \
-  --attach-acr "$ACR_NAME" \
-  --generate-ssh-keys \
-  --enable-managed-identity \
-  --output none
-echo "  ✓ AKS cluster '${AKS_NAME}' ready"
+if az aks show --name "$AKS_NAME" --resource-group "$RESOURCE_GROUP" --output none 2>/dev/null; then
+  echo "  ⏩ AKS cluster '${AKS_NAME}' already exists — reusing"
+  # Ensure ACR is still attached
+  az aks update \
+    --resource-group "$RESOURCE_GROUP" \
+    --name "$AKS_NAME" \
+    --attach-acr "$ACR_NAME" \
+    --output none 2>/dev/null || true
+else
+  az aks create \
+    --resource-group "$RESOURCE_GROUP" \
+    --name "$AKS_NAME" \
+    --location "$LOCATION" \
+    --node-count 1 \
+    --node-vm-size Standard_D2s_v3 \
+    --attach-acr "$ACR_NAME" \
+    --generate-ssh-keys \
+    --enable-managed-identity \
+    --output none
+  echo "  ✓ AKS cluster '${AKS_NAME}' created"
+fi
 
 # Get credentials
 echo "  Fetching kubeconfig..."

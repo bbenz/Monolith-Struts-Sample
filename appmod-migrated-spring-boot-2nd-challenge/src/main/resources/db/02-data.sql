@@ -3,14 +3,14 @@
 
 INSERT INTO roles(id, name) VALUES
   ('r-admin', 'ADMIN'),
-  ('r-user', 'USER');
+  ('r-user', 'USER') ON CONFLICT DO NOTHING;
 
 INSERT INTO users(id, email, username, password_hash, salt, status, role, created_at, updated_at) VALUES
-  ('u-1', 'user@example.com', 'demo', 'hash', 'salt', 'ACTIVE', 'USER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  ('u-1', 'user@example.com', 'demo', 'hash', 'salt', 'ACTIVE', 'USER', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) ON CONFLICT DO NOTHING;
 
 -- Admin user for demo login
 INSERT INTO users(id, email, username, password_hash, salt, status, role, created_at, updated_at) VALUES
-  ('u-admin', 'admin@example.com', 'admin', 'hash', 'salt', 'ACTIVE', 'ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  ('u-admin', 'admin@example.com', 'admin', 'hash', 'salt', 'ACTIVE', 'ADMIN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) ON CONFLICT DO NOTHING;
 
 -- categories: schema has (id, name, parent_id) only
 INSERT INTO categories(id, name, parent_id) VALUES
@@ -21,7 +21,7 @@ INSERT INTO categories(id, name, parent_id) VALUES
   ('c-5', 'All-round', 'c-1'),
   ('c-6', 'Freestyle', 'c-1'),
   ('c-7', 'Freeride', 'c-1'),
-  ('c-8', 'Carving', 'c-1');
+  ('c-8', 'Carving', 'c-1') ON CONFLICT DO NOTHING;
 
 -- products: schema has (id, name, brand, description, category_id, sku, status, created_at, updated_at)
 INSERT INTO products(id, name, brand, description, category_id, sku, status, created_at, updated_at) VALUES
@@ -54,7 +54,7 @@ INSERT INTO products(id, name, brand, description, category_id, sku, status, cre
   ('p-27', 'Wax B', 'WaxWorks', 'Cold wax', 'c-4', 'WAX-B-001', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   ('p-28', 'Wax C', 'WaxWorks', 'Warm wax', 'c-4', 'WAX-C-001', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   ('p-29', 'Wax D', 'WaxWorks', 'Liquid wax', 'c-4', 'WAX-D-001', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  ('p-30', 'Wax E', 'WaxWorks', 'Spring wax', 'c-4', 'WAX-E-001', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  ('p-30', 'Wax E', 'WaxWorks', 'Spring wax', 'c-4', 'WAX-E-001', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) ON CONFLICT DO NOTHING;
 
 -- prices: schema has (id, product_id, regular_price, sale_price, currency_code, sale_start_date, sale_end_date)
 INSERT INTO prices(id, product_id, regular_price, sale_price, currency_code, sale_start_date, sale_end_date) VALUES
@@ -87,7 +87,7 @@ INSERT INTO prices(id, product_id, regular_price, sale_price, currency_code, sal
   ('pp-27', 'p-27', 19.50, NULL, 'USD', '2024-01-01', '2024-12-31'),
   ('pp-28', 'p-28', 19.50, NULL, 'USD', '2024-01-01', '2024-12-31'),
   ('pp-29', 'p-29', 13.00, NULL, 'USD', '2024-01-01', '2024-12-31'),
-  ('pp-30', 'p-30', 22.75, NULL, 'USD', '2024-01-01', '2024-12-31');
+  ('pp-30', 'p-30', 22.75, NULL, 'USD', '2024-01-01', '2024-12-31') ON CONFLICT DO NOTHING;
 
 -- inventory: schema has (id, product_id, quantity, reserved_quantity, status)
 INSERT INTO inventory(id, product_id, quantity, reserved_quantity, status) VALUES
@@ -120,66 +120,66 @@ INSERT INTO inventory(id, product_id, quantity, reserved_quantity, status) VALUE
   ('i-27', 'p-27', 80, 0, 'IN_STOCK'),
   ('i-28', 'p-28', 75, 0, 'IN_STOCK'),
   ('i-29', 'p-29', 120, 0, 'IN_STOCK'),
-  ('i-30', 'p-30', 60, 0, 'IN_STOCK');
+  ('i-30', 'p-30', 60, 0, 'IN_STOCK') ON CONFLICT DO NOTHING;
 
 -- carts: schema has (id, user_id, session_id, status, expires_at)
 INSERT INTO carts(id, user_id, session_id, status, expires_at) VALUES
-  ('cart-1', 'u-1', 'sess-demo-001', 'ACTIVE', '2024-12-31 23:59:59');
+  ('cart-1', 'u-1', 'sess-demo-001', 'ACTIVE', '2024-12-31 23:59:59') ON CONFLICT DO NOTHING;
 
 -- cart_items: schema has (id, cart_id, product_id, quantity, unit_price)
 INSERT INTO cart_items(id, cart_id, product_id, quantity, unit_price) VALUES
   ('ci-1', 'cart-1', 'p-2', 1, 325.00),
   ('ci-2', 'cart-1', 'p-17', 1, 162.50),
-  ('ci-3', 'cart-1', 'p-22', 1, 130.00);
+  ('ci-3', 'cart-1', 'p-22', 1, 130.00) ON CONFLICT DO NOTHING;
 
 -- order_shipping: needed before orders that reference shipping
 INSERT INTO order_shipping(id, order_id, recipient_name, postal_code, prefecture, address1, address2, phone, shipping_method_code, shipping_fee, requested_delivery_date) VALUES
   ('os-1', 'o-1', 'Duke Johnson', '80435', 'Colorado', '123 Ski Run Blvd', 'Suite 101', '970-555-1234', 'STANDARD', 10.00, NULL),
   ('os-2', 'o-2', 'Duke Johnson', '80435', 'Colorado', '123 Ski Run Blvd', 'Suite 101', '970-555-1234', 'STANDARD', 10.00, NULL),
-  ('os-3', 'o-3', 'Sarah Johnson', '84060', 'Utah', '456 Powder Lane', 'Apt 202', '801-555-5678', 'EXPRESS', 15.00, NULL);
+  ('os-3', 'o-3', 'Sarah Johnson', '84060', 'Utah', '456 Powder Lane', 'Apt 202', '801-555-5678', 'EXPRESS', 15.00, NULL) ON CONFLICT DO NOTHING;
 
 -- orders: schema has (id, order_number, user_id, status, payment_status, subtotal, tax, shipping_fee, discount_amount, total_amount, coupon_code, used_points, created_at, updated_at)
 INSERT INTO orders(id, order_number, user_id, status, payment_status, subtotal, tax, shipping_fee, discount_amount, total_amount, coupon_code, used_points, created_at, updated_at) VALUES
   ('o-1', 'ORD-2024-0001', 'u-1', 'DELIVERED', 'PAID', 357.50, 35.75, 10.00, 0.00, 403.25, NULL, 0, '2024-01-15 10:30:00', '2024-01-20 15:45:00'),
   ('o-2', 'ORD-2024-0002', 'u-1', 'SHIPPED', 'PAID', 325.00, 32.50, 10.00, 0.00, 367.50, NULL, 0, '2024-02-01 14:20:00', '2024-02-03 09:15:00'),
-  ('o-3', 'ORD-2024-0003', 'u-1', 'PROCESSING', 'PENDING', 487.50, 48.75, 15.00, 0.00, 551.25, NULL, 0, '2024-02-10 11:00:00', '2024-02-10 11:00:00');
+  ('o-3', 'ORD-2024-0003', 'u-1', 'PROCESSING', 'PENDING', 487.50, 48.75, 15.00, 0.00, 551.25, NULL, 0, '2024-02-10 11:00:00', '2024-02-10 11:00:00') ON CONFLICT DO NOTHING;
 
 -- order_items: schema has (id, order_id, product_id, product_name, sku, unit_price, quantity, subtotal)
 INSERT INTO order_items(id, order_id, product_id, product_name, sku, unit_price, quantity, subtotal) VALUES
   ('oi-1', 'o-1', 'p-11', 'Board K', 'BRD-K-001', 357.50, 1, 357.50),
   ('oi-2', 'o-2', 'p-2', 'Board B', 'BRD-B-001', 325.00, 1, 325.00),
-  ('oi-3', 'o-3', 'p-15', 'Board O', 'BRD-O-001', 487.50, 1, 487.50);
+  ('oi-3', 'o-3', 'p-15', 'Board O', 'BRD-O-001', 487.50, 1, 487.50) ON CONFLICT DO NOTHING;
 
 -- shipments: schema has (id, order_id, carrier, tracking_number, status, shipped_at, delivered_at)
 INSERT INTO shipments(id, order_id, carrier, tracking_number, status, shipped_at, delivered_at) VALUES
   ('s-1', 'o-1', 'UPS', 'TRACK-001', 'DELIVERED', '2024-01-16 09:00:00', '2024-01-17 14:00:00'),
-  ('s-2', 'o-2', 'FedEx', 'TRACK-002', 'IN_TRANSIT', '2024-02-02 10:30:00', NULL);
+  ('s-2', 'o-2', 'FedEx', 'TRACK-002', 'IN_TRANSIT', '2024-02-02 10:30:00', NULL) ON CONFLICT DO NOTHING;
 
 -- returns: schema has (id, order_id, order_item_id, reason, quantity, refund_amount, status)
 INSERT INTO returns(id, order_id, order_item_id, reason, quantity, refund_amount, status) VALUES
-  ('ret-1', 'o-1', 'oi-1', 'Size did not fit', 1, 357.50, 'APPROVED');
+  ('ret-1', 'o-1', 'oi-1', 'Size did not fit', 1, 357.50, 'APPROVED') ON CONFLICT DO NOTHING;
 
 -- payments: schema has (id, order_id, cart_id, amount, currency, status, payment_intent_id, created_at)
 INSERT INTO payments(id, order_id, cart_id, amount, currency, status, payment_intent_id, created_at) VALUES
   ('pay-1', 'o-1', NULL, 403.25, 'USD', 'COMPLETED', 'pi_demo_001', '2024-01-15 10:31:00'),
   ('pay-2', 'o-2', NULL, 367.50, 'USD', 'COMPLETED', 'pi_demo_002', '2024-02-01 14:21:00'),
-  ('pay-3', 'o-3', NULL, 551.25, 'USD', 'PENDING', 'pi_demo_003', '2024-02-10 11:01:00');
+  ('pay-3', 'o-3', NULL, 551.25, 'USD', 'PENDING', 'pi_demo_003', '2024-02-10 11:01:00') ON CONFLICT DO NOTHING;
 
 -- user_addresses: schema has (id, user_id, label, recipient_name, postal_code, prefecture, address1, address2, phone, is_default, created_at, updated_at)
 INSERT INTO user_addresses(id, user_id, label, recipient_name, postal_code, prefecture, address1, address2, phone, is_default, created_at, updated_at) VALUES
   ('addr-1', 'u-1', 'Home', 'Duke Johnson', '80435', 'Colorado', '123 Ski Run Blvd', 'Suite 101', '970-555-1234', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  ('addr-2', 'u-1', 'Office', 'Sarah Johnson', '84060', 'Utah', '456 Powder Lane', 'Apt 202', '801-555-5678', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  ('addr-2', 'u-1', 'Office', 'Sarah Johnson', '84060', 'Utah', '456 Powder Lane', 'Apt 202', '801-555-5678', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) ON CONFLICT DO NOTHING;
 
 -- point_accounts
 INSERT INTO point_accounts(id, user_id, balance, lifetime_earned, lifetime_redeemed) VALUES
-  ('pa-1', 'u-1', 100, 200, 100);
+  ('pa-1', 'u-1', 100, 200, 100) ON CONFLICT DO NOTHING;
 
 -- shipping_methods
 INSERT INTO shipping_methods(id, code, name, fee, is_active, sort_order) VALUES
   ('sm-1', 'STANDARD', 'Standard Shipping', 10.00, true, 1),
-  ('sm-2', 'EXPRESS', 'Express Shipping', 15.00, true, 2);
+  ('sm-2', 'EXPRESS', 'Express Shipping', 15.00, true, 2) ON CONFLICT DO NOTHING;
 
 -- coupons
 INSERT INTO coupons(id, campaign_id, code, coupon_type, discount_value, discount_type, minimum_amount, maximum_discount, usage_limit, used_count, is_active, expires_at) VALUES
   ('coup-1', NULL, 'WINTER2024', 'GENERAL', 10.00, 'PERCENTAGE', 325.00, 100.00, 1000, 45, true, '2024-02-29 23:59:59'),
-  ('coup-2', NULL, 'FIRSTBUY', 'GENERAL', 32.50, 'FIXED_AMOUNT', 325.00, 32.50, 500, 120, true, '2024-12-31 23:59:59');
+  ('coup-2', NULL, 'FIRSTBUY', 'GENERAL', 32.50, 'FIXED_AMOUNT', 325.00, 32.50, 500, 120, true, '2024-12-31 23:59:59') ON CONFLICT DO NOTHING;
