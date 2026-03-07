@@ -75,7 +75,7 @@ public class SkiOpenAIService {
                 .model(ChatModel.of(deploymentName))
                 .addDeveloperMessage(systemPrompt)
                 .addUserMessage(userPrompt)
-                .maxCompletionTokens(4000)
+                .maxCompletionTokens(8000)
                 .build();
 
             log.debug("Calling OpenAI deployment '{}' at endpoint '{}'", deploymentName, endpoint);
