@@ -73,11 +73,12 @@ public class SkiOpenAIService {
         try {
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model(ChatModel.of(deploymentName))
-                .addSystemMessage(systemPrompt)
+                .addDeveloperMessage(systemPrompt)
                 .addUserMessage(userPrompt)
-                .maxCompletionTokens(1500)
+                .maxCompletionTokens(4000)
                 .build();
 
+            log.debug("Calling OpenAI deployment '{}' at endpoint '{}'", deploymentName, endpoint);
             ChatCompletion completion = client.chat().completions().create(params);
 
             if (completion.choices() != null && !completion.choices().isEmpty()) {
